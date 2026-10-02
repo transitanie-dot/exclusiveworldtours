@@ -13,7 +13,9 @@ tools/tours.json     o catalogo: 36 tours, 6 paises, precos, itinerarios
 assets/atlas.json    as coordenadas das 19 cidades e a geometria dos paises
 tools/atlas.py       gera o atlas.json (GeoNames + Natural Earth)
 tools/home3.py       gera a index.html
+tools/logos.py       gera a /logos/, as propostas de logotipo
 index.html           a homepage, gerada — nao editar a mao
+logos/index.html     propostas de logotipo, gerada — noindex
 ```
 
 ## Gerar o site
@@ -21,7 +23,9 @@ index.html           a homepage, gerada — nao editar a mao
 ```bash
 python3 tools/home3.py              # escreve index.html (producao)
 python3 tools/home3.py --revisao    # escreve index-marketplace.html, com a
-                                    # barra de paletas para rever
+                                    # barra de paletas e o diagnostico de
+                                    # fotografias, para rever
+python3 tools/logos.py              # escreve logos/index.html
 ```
 
 O `atlas.json` so precisa de ser regenerado se mudarem as cidades de
@@ -56,8 +60,10 @@ fotografos no fim da pagina sao gerados dessa mesma tabela.
 
 ## Por decidir
 
-- A paleta: estao tres no gerador (indigo, petroleo, magenta). A de
-  producao e a indigo, no `:root` do `home3.py`.
+- O logotipo: seis propostas em /logos/, por escolher. A paleta sai da
+  marca depois de escolhida, e nao antes.
+- A paleta: as tres do gerador (indigo, petroleo, magenta) foram todas
+  rejeitadas. A de producao e a indigo, provisoria.
 - Os precos de 22 dos 36 tours sao de teste e esperam confirmacao.
 - Os operadores de cada tour ainda nao estao nomeados.
 - O numero de WhatsApp e o email da marca.
