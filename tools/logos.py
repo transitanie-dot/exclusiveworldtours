@@ -327,13 +327,19 @@ p:last-child{margin-bottom:0}
 
 
 def main():
-    destino = os.path.join(RAIZ, 'logos')
-    os.makedirs(destino, exist_ok=True)
     html = PAGINA.replace('{{PROPOSTAS}}', '\n'.join(bloco(p) for p in PROPOSTAS))
-    caminho = os.path.join(destino, 'index.html')
-    with open(caminho, 'w') as f:
-        f.write(html)
-    print('escrito: %s (%.0f KB)' % (caminho, os.path.getsize(caminho) / 1024))
+
+    # Escreve-se nos dois sitios de proposito. O Render nem sempre serve
+    # uma pasta a partir do index.html quando o endereco leva barra no
+    # fim — ja apanhei um 404 em /logos/ com o /logos/index.html a
+    # funcionar. Um ficheiro na raiz nao depende disso e abre sempre.
+    destinos = [os.path.join(RAIZ, 'logos', 'index.html'),
+                os.path.join(RAIZ, 'logos.html')]
+    for caminho in destinos:
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        with open(caminho, 'w') as f:
+            f.write(html)
+        print('escrito: %s (%.0f KB)' % (caminho, os.path.getsize(caminho) / 1024))
     print('%d propostas' % len(PROPOSTAS))
 
 
