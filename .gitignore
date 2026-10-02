@@ -1,0 +1,10 @@
+# O que nao vai para o repositorio
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+
+# Paginas de revisao: sao para mostrar ao Ricardo, nao para o site
+index-marketplace.html
+index-indice.html
+tools/revisao-cliffs.html

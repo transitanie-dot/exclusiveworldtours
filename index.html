@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en" data-pal="indigo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exclusive World Tours</title>
+<meta name="description" content="Private day tours in six countries, booked direct with named local operators. One vehicle for your group, priced by group size.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================================
+   Exclusive World Tours — homepage, direcao "Marketplace"
+
+   A estrutura e a convencional: pesquisa grande, barra de confianca,
+   mosaico de destinos, filas de produtos, grelha de paises, porque
+   reservar connosco, ligacoes por pais, rodape.
+
+   Enquanto nao houver fotografia, cada mosaico e um gradiente com o
+   nome do destino. A classe .foto ja aceita uma <img> por cima no dia
+   em que as imagens chegarem — nao e preciso mexer no resto.
+   ========================================================================= */
+
+:root{
+  --branco:#FFFFFF;
+  --p:#4338CA; --pf:#352BA3; --tint:#EEEDFB;
+  --sup:#F6F6FA; --tinta:#161629; --mudo:#5B5B70; --linha:#E4E4EE;
+  --rodape-mudo:#A8AAB8;   /* 5.9:1 na paleta mais clara das tres */
+  --raio:14px; --raio-p:10px; --pill:999px;
+  --sombra:0 1px 2px rgba(22,22,41,.06), 0 8px 20px -8px rgba(22,22,41,.12);
+  --sombra-f:0 2px 6px rgba(22,22,41,.08), 0 18px 36px -12px rgba(22,22,41,.20);
+  --ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --e1:4px; --e2:8px; --e3:12px; --e4:16px; --e5:20px;
+  --e6:28px; --e7:40px; --e8:56px; --e9:76px;
+}
+html[data-pal="teal"]{--p:#0E6E6B;--pf:#0A5250;--tint:#E3F0EE;--sup:#F4F7F6;
+  --tinta:#17322F;--mudo:#55666400;--mudo:#556664;--linha:#E2EAE8}
+html[data-pal="rosa"]{--p:#B3246B;--pf:#8C1A53;--tint:#FBE8F1;--sup:#FBF5F8;
+  --tinta:#2B1522;--mudo:#6B5260;--linha:#EEE1E8}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--branco);color:var(--tinta);font-family:var(--ui);
+     font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;height:auto;display:block}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-0.03em;line-height:1.12}
+h1{font-size:clamp(1.9rem, 1.3rem + 2.2vw, 3rem);letter-spacing:-0.038em}
+h2{font-size:clamp(1.35rem, 1.1rem + 1vw, 1.75rem)}
+h3{font-size:1rem;font-weight:600;letter-spacing:-0.02em}
+p{margin:0 0 var(--e4);max-width:62ch}
+p:last-child{margin-bottom:0}
+a{color:inherit;text-decoration:none}
+.num,.d-preco,.p-preco,.pa-preco{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.001ms!important}}
+.salto{position:absolute;left:-9999px;background:var(--p);color:#fff;
+       padding:var(--e3) var(--e5);z-index:300;border-radius:var(--pill);font-weight:600}
+.salto:focus{left:var(--e4);top:var(--e4)}
+.invisivel{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+           overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.largura{width:100%;max-width:1280px;margin-inline:auto;padding-inline:var(--e4)}
+@media(min-width:900px){.largura{padding-inline:var(--e6)}}
+
+/* ------------------------------------------- barra de revisao (so aqui) */
+.revisao{background:var(--sup);border-bottom:1px solid var(--linha);
+         padding:var(--e3) 0;font-size:13px}
+.revisao-in{display:flex;flex-wrap:wrap;gap:var(--e3) var(--e5);align-items:center}
+.revisao legend{color:var(--mudo);margin-right:var(--e3)}
+.revisao fieldset{border:0;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap}
+.revisao button{font-family:var(--ui);font-size:13px;cursor:pointer;
+  background:var(--branco);color:var(--tinta);border:1px solid var(--linha);
+  border-radius:var(--pill);padding:7px 15px;min-height:34px}
+.revisao button[aria-pressed="true"]{background:var(--p);color:#fff;border-color:var(--p)}
+.revisao .nota{color:var(--mudo);flex:1 1 200px}
+
+/* ============================================================== cabecalho */
+.cabeca{background:var(--branco);border-bottom:1px solid var(--linha);
+        position:sticky;top:0;z-index:150}
+.cabeca-in{display:flex;align-items:center;gap:var(--e4);min-height:70px}
+.marca{font-weight:700;font-size:15px;letter-spacing:-0.025em;color:var(--p);
+       line-height:1.15;flex:0 0 auto}
+.marca small{display:block;font-weight:500;font-size:10px;letter-spacing:.13em;
+             color:var(--mudo);margin-top:2px}
+.busca-top{display:none;flex:1 1 auto;max-width:420px;align-items:center;
+  border:1px solid var(--linha);border-radius:var(--pill);padding-left:var(--e4);
+  box-shadow:var(--sombra)}
+@media(min-width:1000px){.busca-top{display:flex}}
+.busca-top svg{color:var(--mudo);flex:0 0 auto}
+.busca-top input{flex:1 1 auto;min-width:0;border:0;background:transparent;
+  font-family:var(--ui);font-size:14.5px;color:var(--tinta);padding:0 var(--e3);
+  min-height:44px}
+.busca-top input:focus{outline:0}
+.menu{display:none;gap:var(--e5);margin-left:auto;align-items:center}
+@media(min-width:1180px){.menu{display:flex}}
+.menu a{font-size:14.5px}
+.menu a:hover{color:var(--p)}
+
+/* ================================================================== heroi */
+/* O heroi e fotografia a toda a largura, nao um campo de cor.
+   Por cima da imagem vai um veu escuro em gradiente: sem ele o texto
+   branco deixa de se ler quando a fotografia tem ceu claro, e isso
+   muda de fotografia para fotografia. O veu garante o contraste seja
+   qual for a imagem que la esteja. */
+.heroi{position:relative;background:#081320;color:#fff;overflow:hidden;
+       padding-block:var(--e9) var(--e9);min-height:clamp(440px,52vw,620px);
+       display:flex;align-items:center}
+.heroi-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+            z-index:0;max-width:none}
+.heroi::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg, rgba(8,19,32,.86) 0%,
+             rgba(8,19,32,.72) 44%, rgba(8,19,32,.38) 74%,
+             rgba(8,19,32,.24) 100%)}
+.heroi>.largura{position:relative;z-index:2}
+.heroi h1{color:#fff;max-width:19ch;
+          text-shadow:0 1px 20px rgba(0,0,0,.35)}
+.heroi .sub{color:rgba(255,255,255,.94);margin-top:var(--e4);max-width:52ch;
+            font-size:17px;text-shadow:0 1px 14px rgba(0,0,0,.35)}
+.heroi-credito{position:absolute;right:var(--e4);bottom:var(--e3);z-index:3;
+  font-size:11.5px;color:rgba(255,255,255,.72)}
+.heroi-credito a{text-decoration:underline;text-underline-offset:2px}
+.procura{margin-top:var(--e7);background:var(--branco);border-radius:var(--raio);
+  padding:var(--e2);display:grid;gap:var(--e2);box-shadow:var(--sombra-f)}
+@media(min-width:760px){
+  .procura{grid-template-columns:minmax(0,1.5fr) minmax(154px,1fr)
+           minmax(112px,.7fr) auto}
+}
+.procura .campo{padding:var(--e3) var(--e4);min-width:0;border-radius:var(--raio-p)}
+.procura .campo+.campo{border-top:1px solid var(--linha)}
+@media(min-width:760px){.procura .campo+.campo{border-top:0;
+                                               border-left:1px solid var(--linha)}}
+.procura label{display:block;font-size:12px;font-weight:600;color:var(--mudo);
+               margin-bottom:2px}
+.procura input,.procura select{width:100%;border:0;background:transparent;
+  font-family:var(--ui);font-size:15.5px;color:var(--tinta);min-height:30px;padding:0}
+.procura input:focus,.procura select:focus{outline:0}
+.procura .ir{display:flex;align-items:center;justify-content:center;gap:var(--e2);
+  background:var(--p);color:#fff;border:0;border-radius:var(--raio-p);
+  font-family:var(--ui);font-size:16px;font-weight:600;cursor:pointer;
+  min-height:60px;padding-inline:var(--e7);white-space:nowrap}
+.procura .ir:hover{background:var(--pf)}
+.atalhos{display:flex;flex-wrap:wrap;gap:var(--e2);margin:var(--e5) 0 0;
+         list-style:none;padding:0;font-size:14px}
+.atalhos span{color:rgba(255,255,255,.94);margin-right:var(--e2)}
+.atalhos a{border:1px solid rgba(255,255,255,.46);border-radius:var(--pill);
+           padding:6px 14px;background:rgba(8,19,32,.34)}
+.atalhos a:hover{background:rgba(255,255,255,.14)}
+
+/* ======================================================== barra de confianca */
+.confianca{border-bottom:1px solid var(--linha);background:var(--sup)}
+.confianca ul{display:grid;gap:var(--e4);list-style:none;margin:0;padding:0;
+              padding-block:var(--e5)}
+@media(min-width:720px){.confianca ul{grid-template-columns:repeat(4,1fr);
+                                      gap:var(--e5)}}
+.confianca li{display:grid;grid-template-columns:22px 1fr;gap:var(--e3);
+              align-items:start;font-size:14px}
+.confianca svg{color:var(--p);margin-top:1px}
+.confianca b{display:block;font-weight:600}
+.confianca span{color:var(--mudo)}
+
+/* ================================================================= seccoes */
+.secao{padding-block:var(--e9)}
+.secao-sup{background:var(--sup)}
+.secao-cab{display:flex;flex-wrap:wrap;gap:var(--e4);align-items:flex-end;
+           justify-content:space-between;margin-bottom:var(--e6)}
+.secao-cab p{color:var(--mudo);margin:var(--e2) 0 0}
+.ligacao{font-size:15px;font-weight:600;color:var(--p);white-space:nowrap}
+.ligacao:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ============================================= o mosaico que substitui foto */
+.foto{display:grid;place-items:center;position:relative;overflow:hidden;
+  background:linear-gradient(140deg, var(--a) 0%, var(--b) 100%);
+  isolation:isolate}
+.foto::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(120% 80% at 18% 12%, rgba(255,255,255,.22) 0%,
+             transparent 55%);pointer-events:none}
+.foto>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:2;max-width:none}
+.foto-nome{position:relative;z-index:1;color:#fff;font-weight:700;
+  letter-spacing:-0.03em;font-size:clamp(1.1rem,.9rem + 1vw,1.6rem);
+  text-align:center;padding:var(--e4);line-height:1.1;
+  text-shadow:0 1px 10px rgba(0,0,0,.28)}
+
+/* =============================================================== destinos */
+.destinos{display:grid;gap:var(--e4)}
+@media(min-width:560px){.destinos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:900px){.destinos{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.destino{border-radius:var(--raio);overflow:hidden;background:var(--branco);
+  border:1px solid var(--linha);display:flex;flex-direction:column;
+  transition:box-shadow .18s ease, transform .18s ease}
+.destino:hover{box-shadow:var(--sombra-f);transform:translateY(-2px)}
+.destino .foto{aspect-ratio:4/3}
+.destino-txt{padding:var(--e4);display:flex;flex-direction:column;gap:3px}
+.d-nome{font-weight:700;font-size:16px;letter-spacing:-0.025em}
+.d-meta{font-size:13.5px;color:var(--mudo);font-weight:500}
+.d-preco{font-size:14px;font-weight:600;color:var(--p);margin-top:var(--e2)}
+
+/* ============================================================== produtos */
+.produtos{display:grid;gap:var(--e5)}
+@media(min-width:580px){.produtos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1020px){.produtos{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.produto{background:var(--branco);border:1px solid var(--linha);
+  border-radius:var(--raio);overflow:hidden;display:flex;flex-direction:column;
+  transition:box-shadow .18s ease, transform .18s ease}
+.produto:hover{box-shadow:var(--sombra-f);transform:translateY(-2px)}
+.produto .foto{aspect-ratio:3/2}
+.produto-corpo{padding:var(--e4);display:flex;flex-direction:column;gap:5px;
+               flex:1 1 auto}
+.p-sitio{font-size:11.5px;color:var(--mudo);letter-spacing:.05em;
+         text-transform:uppercase}
+.p-nome{font-size:15.5px;font-weight:600;letter-spacing:-0.02em;line-height:1.3}
+.p-meta{font-size:13px;color:var(--mudo);margin-top:auto}
+.p-preco{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;
+  border-top:1px solid var(--linha);margin-top:var(--e3);padding-top:var(--e3)}
+.p-preco .de{font-size:12.5px;color:var(--mudo)}
+.p-preco .v{font-size:1.25rem;font-weight:700;letter-spacing:-0.035em;color:var(--pf)}
+.p-preco .un{font-size:12px;color:var(--mudo)}
+
+/* ================================================================= paises */
+.paises{display:grid;gap:var(--e4)}
+@media(min-width:560px){.paises{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:960px){.paises{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pais{position:relative;border-radius:var(--raio);overflow:hidden;
+  display:grid;transition:transform .18s ease}
+.pais:hover{transform:translateY(-2px)}
+.pais .foto{grid-area:1/1;aspect-ratio:16/7}
+/* O nome do pais vive na legenda; no mosaico ficaria a dobrar. */
+.pais .foto-nome{display:none}
+.pais-txt{grid-area:1/1;position:relative;z-index:2;align-self:end;
+  padding:var(--e5);display:flex;flex-direction:column;gap:2px;color:#fff;
+  background:linear-gradient(to top, rgba(10,10,24,.72) 0%,
+             rgba(10,10,24,.30) 55%, transparent 100%)}
+.pa-nome{font-weight:700;font-size:1.25rem;letter-spacing:-0.03em}
+.pa-meta{font-size:13.5px;color:rgba(255,255,255,.90)}
+.pa-preco{font-size:14px;font-weight:600;margin-top:var(--e2)}
+
+/* ================================================================= porque */
+.porque{display:grid;gap:var(--e7)}
+@media(min-width:760px){.porque{grid-template-columns:repeat(3,1fr)}}
+.porque .n{display:grid;place-items:center;width:40px;height:40px;
+  border-radius:var(--pill);background:var(--tint);color:var(--pf);
+  font-weight:700;font-size:14px;margin-bottom:var(--e4)}
+.porque h3{margin-bottom:var(--e2)}
+.porque p{font-size:15px;color:var(--mudo);max-width:38ch}
+
+/* ============================================================== ligacoes */
+.ligacoes{display:grid;gap:var(--e6)}
+@media(min-width:620px){.ligacoes{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.ligacoes{grid-template-columns:repeat(3,1fr)}}
+.ligacoes h4{font-size:13px;margin:0 0 var(--e3);font-weight:700}
+.ligacoes ul{list-style:none;margin:0;padding:0}
+.ligacoes li{margin-bottom:7px;font-size:13.5px;color:var(--mudo)}
+.ligacoes a:hover{color:var(--p);text-decoration:underline;
+                  text-underline-offset:2px}
+
+/* ============================================================== creditos */
+.creditos{border-top:1px solid var(--linha);padding-block:var(--e5)}
+.creditos p{font-size:12.5px;color:var(--mudo);max-width:none;margin:0}
+.creditos a{text-decoration:underline;text-underline-offset:2px}
+.creditos a:hover{color:var(--p)}
+
+/* ================================================================ rodape */
+.rodape{background:var(--tinta);color:#C3C3D2;padding-block:var(--e8) var(--e5)}
+.rodape-grelha{display:grid;gap:var(--e6)}
+@media(min-width:760px){.rodape-grelha{grid-template-columns:2fr 1fr 1fr 1fr}}
+.rodape .marca{color:#fff}
+.rodape .marca small{color:var(--rodape-mudo)}
+.rodape h4{font-size:12px;color:#fff;margin:0 0 var(--e3);font-weight:600;
+           letter-spacing:.08em;text-transform:uppercase}
+.rodape ul{list-style:none;margin:0;padding:0}
+.rodape li{margin-bottom:7px;font-size:14px}
+.rodape a:hover{color:#fff}
+.rodape-fim{margin-top:var(--e7);padding-top:var(--e4);
+  border-top:1px solid rgba(255,255,255,.16);display:flex;flex-wrap:wrap;
+  gap:var(--e3);justify-content:space-between;font-size:13px}
+.pagamentos{display:flex;flex-wrap:wrap;gap:var(--e3);margin-top:var(--e3)}
+.pagamentos li{font-size:12.5px;color:var(--rodape-mudo);margin:0}
+</style>
+</head>
+<body>
+
+<a class="salto" href="#conteudo">Skip to content</a>
+
+
+
+<header class="cabeca">
+  <div class="largura cabeca-in">
+    <a href="/" class="marca">Exclusive World Tours<small>PRIVATE DAY TOURS</small></a>
+    <form class="busca-top" role="search" action="/tours/">
+      <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true">
+        <circle cx="7.6" cy="7.6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M11.6 11.6l4.3 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <label class="invisivel" for="qt">Search tours</label>
+      <input id="qt" name="q" type="search" placeholder="Search 36 private day tours">
+    </form>
+    <nav class="menu" aria-label="Main">
+      <a href="/tours/">All tours</a>
+      <a href="/operators/">Operators</a>
+      <a href="/airporttransfers/">Airport transfers</a>
+      <a href="/magazine/">Magazine</a>
+      <a href="/contact/">Help</a>
+    </nav>
+  </div>
+</header>
+
+<section class="heroi">
+  <img class="heroi-foto" src="https://images.unsplash.com/photo-1768382651261-7cc3c02349d3?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=2000" srcset="https://images.unsplash.com/photo-1768382651261-7cc3c02349d3?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w, https://images.unsplash.com/photo-1768382651261-7cc3c02349d3?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1400 1400w, https://images.unsplash.com/photo-1768382651261-7cc3c02349d3?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=2000 2000w, https://images.unsplash.com/photo-1768382651261-7cc3c02349d3?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=2600 2600w" sizes="100vw"
+       width="2400" height="1600" fetchpriority="high"
+       alt="A coast road winding along the water, seen from above"
+       onerror="this.style.display='none'">
+  <div class="largura">
+    <h1>Private day tours in 6 countries, booked direct.</h1>
+    <p class="sub">36 full days with a vehicle for your group and
+    nobody else, from 19 cities. Priced per vehicle, not per person.</p>
+
+    <form class="procura" action="/tours/">
+      <div class="campo">
+        <label for="onde">Destination</label>
+        <input id="onde" name="q" type="search" placeholder="Dublin, Rome, Lisbon…">
+      </div>
+      <div class="campo">
+        <label for="quando">When</label>
+        <input id="quando" name="date" type="date">
+      </div>
+      <div class="campo">
+        <label for="quantos">Travellers</label>
+        <select id="quantos" name="pax">
+          <option>1</option><option>2</option><option>3</option>
+          <option selected>4</option><option>5</option><option>6</option>
+          <option>7</option><option>8</option><option>9</option><option>10</option>
+          <option>11</option><option>12</option><option>13</option>
+          <option>14</option><option>15</option><option>16</option>
+        </select>
+      </div>
+      <button type="submit" class="ir">Search</button>
+    </form>
+
+    <ul class="atalhos">
+      <li><span>Popular:</span></li>
+      <li><a href="/tours/#ireland">Dublin</a></li>
+      <li><a href="/tours/#uk">London</a></li>
+      <li><a href="/tours/#france">Paris</a></li>
+      <li><a href="/tours/#italy">Rome</a></li>
+      <li><a href="/tours/#portugal">Lisbon</a></li>
+    </ul>
+  </div>
+  <p class="heroi-credito">Photograph by
+    <a href="https://unsplash.com/@ssarasframes?utm_source=exclusive_world_tours&amp;utm_medium=referral">Sara Ruffoni</a></p>
+</section>
+
+<div class="confianca">
+  <div class="largura">
+    <ul>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V9.8l2-4.3h12l2 4.3v6.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="16.5" r="1.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="16.5" r="1.9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <div><b>Priced per vehicle</b><span>Not per person. The group decides the price.</span></div></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.4l5 5 11-11.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><b>Free cancellation</b><span>Full refund up to 24 hours before.</span></div></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.4" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.6 20c0-4 3.3-6.8 7.4-6.8s7.4 2.8 7.4 6.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><b>Named local operators</b><span>You book their day, through us.</span></div></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><b>Customisable</b><span>Change the stops on the day.</span></div></li>
+    </ul>
+  </div>
+</div>
+
+<main id="conteudo">
+
+<section class="secao" aria-labelledby="h-dest">
+  <div class="largura">
+    <div class="secao-cab">
+      <div>
+        <h2 id="h-dest">Popular destinations</h2>
+        <p>The eight cities with the most private days.</p>
+      </div>
+      <a class="ligacao" href="/tours/">All 19 cities</a>
+    </div>
+    <div class="destinos"><a class="destino" href="/tours/#ireland">
+  <span class="foto" style="--a:#2B2E83;--b:#5B4BD6"><span class="foto-nome" aria-hidden="true">Dublin</span><img src="https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Dublin, Ireland" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Ireland &middot; 5 tours</span>
+    <span class="d-preco">from &euro;159.90</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#uk">
+  <span class="foto" style="--a:#0E5C6B;--b:#19A5A0"><span class="foto-nome" aria-hidden="true">London</span><img src="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="London, United Kingdom" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">United Kingdom &middot; 5 tours</span>
+    <span class="d-preco">from &euro;169.90</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#france">
+  <span class="foto" style="--a:#6B2A63;--b:#B5458C"><span class="foto-nome" aria-hidden="true">Paris</span><img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Paris, France" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">France &middot; 4 tours</span>
+    <span class="d-preco">from &euro;600</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#italy">
+  <span class="foto" style="--a:#1C3C7A;--b:#2F79C4"><span class="foto-nome" aria-hidden="true">Rome</span><img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Rome, Italy" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Italy &middot; 3 tours</span>
+    <span class="d-preco">from &euro;420</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#portugal">
+  <span class="foto" style="--a:#7A3A1C;--b:#C4762F"><span class="foto-nome" aria-hidden="true">Algarve</span><img src="https://images.unsplash.com/photo-1662142063545-eef59b226744?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1662142063545-eef59b226744?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1662142063545-eef59b226744?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Algarve, Portugal" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Portugal &middot; 2 tours</span>
+    <span class="d-preco">from &euro;240</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#italy">
+  <span class="foto" style="--a:#1F5A3A;--b:#3FA06A"><span class="foto-nome" aria-hidden="true">Florence</span><img src="https://images.unsplash.com/photo-1585595684482-984bf2cf8041?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1585595684482-984bf2cf8041?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1585595684482-984bf2cf8041?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Florence, Italy" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Italy &middot; 2 tours</span>
+    <span class="d-preco">from &euro;470</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#portugal">
+  <span class="foto" style="--a:#2B2E83;--b:#5B4BD6"><span class="foto-nome" aria-hidden="true">Lisbon</span><img src="https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Lisbon, Portugal" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Portugal &middot; 2 tours</span>
+    <span class="d-preco">from &euro;480</span>
+  </span>
+</a>
+<a class="destino" href="/tours/#portugal">
+  <span class="foto" style="--a:#0E5C6B;--b:#19A5A0"><span class="foto-nome" aria-hidden="true">Madeira</span><img src="https://images.unsplash.com/photo-1757440156760-8880058ce691?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900" srcset="https://images.unsplash.com/photo-1757440156760-8880058ce691?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=500 500w, https://images.unsplash.com/photo-1757440156760-8880058ce691?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=900 900w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Madeira, Portugal" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="destino-txt">
+    <span class="d-meta">Portugal &middot; 2 tours</span>
+    <span class="d-preco">from &euro;190</span>
+  </span>
+</a></div>
+  </div>
+</section>
+
+<section class="secao" aria-labelledby="h-dublin">
+  <div class="largura">
+    <div class="secao-cab">
+      <div>
+        <h2 id="h-dublin">Private day tours from Dublin</h2>
+        <p>5 tours, all leaving from your hotel door.</p>
+      </div>
+      <a class="ligacao" href="/tours/#ireland">See all Dublin tours</a>
+    </div>
+    <div class="produtos"><a class="produto" href="/tours/cliffs-of-moher-galway/">
+  <span class="foto" style="--a:#2B2E83;--b:#5B4BD6"><span class="foto-nome" aria-hidden="true">Cliffs of Moher</span><img src="https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private Tour: Cliffs of Moher &amp; Galway" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">Ireland &middot; Dublin</span>
+    <span class="p-nome">Private Tour: Cliffs of Moher &amp; Galway</span>
+    <span class="p-meta">12h 30m &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;790</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/belfast-titanic-giants-causeway/">
+  <span class="foto" style="--a:#0E5C6B;--b:#19A5A0"><span class="foto-nome" aria-hidden="true">Belfast</span><img src="https://images.unsplash.com/photo-1595538853083-dc3160ca6881?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1595538853083-dc3160ca6881?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1595538853083-dc3160ca6881?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private Tour: Belfast, Titanic &amp; Giant's Causeway" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">Ireland &middot; Dublin</span>
+    <span class="p-nome">Private Tour: Belfast, Titanic &amp; Giant's Causeway</span>
+    <span class="p-meta">13h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;840</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/wicklow-glendalough/">
+  <span class="foto" style="--a:#6B2A63;--b:#B5458C"><span class="foto-nome" aria-hidden="true">Wicklow</span><img src="https://images.unsplash.com/photo-1571609227120-1ec3adc4249a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1571609227120-1ec3adc4249a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1571609227120-1ec3adc4249a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Wicklow &amp; Glendalough Private Day Tour" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">Ireland &middot; Dublin</span>
+    <span class="p-nome">Wicklow &amp; Glendalough Private Day Tour</span>
+    <span class="p-meta">7h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;630</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/dublin-private-chauffeur/">
+  <span class="foto" style="--a:#1C3C7A;--b:#2F79C4"><span class="foto-nome" aria-hidden="true">Dublin</span><img src="https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1549918864-48ac978761a4?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Dublin: Private Chauffeur Tour" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">Ireland &middot; Dublin</span>
+    <span class="p-nome">Dublin: Private Chauffeur Tour</span>
+    <span class="p-meta">4h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;540</span><span class="un">per vehicle</span></span>
+  </span>
+</a></div>
+  </div>
+</section>
+<section class="secao" aria-labelledby="h-london">
+  <div class="largura">
+    <div class="secao-cab">
+      <div>
+        <h2 id="h-london">Private day tours from London</h2>
+        <p>5 tours, all leaving from your hotel door.</p>
+      </div>
+      <a class="ligacao" href="/tours/#uk">See all London tours</a>
+    </div>
+    <div class="produtos"><a class="produto" href="/tours/central-london/">
+  <span class="foto" style="--a:#2B2E83;--b:#5B4BD6"><span class="foto-nome" aria-hidden="true">Central London</span><img src="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private Tour of Central London" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">United Kingdom &middot; London</span>
+    <span class="p-nome">Private Tour of Central London</span>
+    <span class="p-meta">4h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;550</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/stonehenge-oxford/">
+  <span class="foto" style="--a:#0E5C6B;--b:#19A5A0"><span class="foto-nome" aria-hidden="true">Stonehenge</span><img src="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private Day Tour: Stonehenge &amp; Oxford" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">United Kingdom &middot; London</span>
+    <span class="p-nome">Private Day Tour: Stonehenge &amp; Oxford</span>
+    <span class="p-meta">12h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;1390</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/london-photography-walk/">
+  <span class="foto" style="--a:#6B2A63;--b:#B5458C"><span class="foto-nome" aria-hidden="true">London</span><img src="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1681407979872-0a4cbde28391?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="London Personal Photography Walking Tour" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">United Kingdom &middot; London</span>
+    <span class="p-nome">London Personal Photography Walking Tour</span>
+    <span class="p-meta">3h &middot; up to 8 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;169.90</span><span class="un">per vehicle</span></span>
+  </span>
+</a>
+<a class="produto" href="/tours/bath-cotswolds/">
+  <span class="foto" style="--a:#1C3C7A;--b:#2F79C4"><span class="foto-nome" aria-hidden="true">Bath</span><img src="https://images.unsplash.com/photo-1568144510602-c4082cb85d43?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760" srcset="https://images.unsplash.com/photo-1568144510602-c4082cb85d43?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=420 420w, https://images.unsplash.com/photo-1568144510602-c4082cb85d43?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=760 760w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Bath and the Cotswolds Day Trip from London" onerror="this.style.display=&quot;none&quot;"></span>
+  <span class="produto-corpo">
+    <span class="p-sitio">United Kingdom &middot; London</span>
+    <span class="p-nome">Bath and the Cotswolds Day Trip from London</span>
+    <span class="p-meta">11h &middot; up to 16 &middot; free cancellation</span>
+    <span class="p-preco"><span class="de">From</span>
+      <span class="v">&euro;1110</span><span class="un">per vehicle</span></span>
+  </span>
+</a></div>
+  </div>
+</section>
+
+<section class="secao secao-sup" aria-labelledby="h-pais">
+  <div class="largura">
+    <div class="secao-cab">
+      <div>
+        <h2 id="h-pais">Browse by country</h2>
+        <p>36 tours across 6 countries.</p>
+      </div>
+    </div>
+    <div class="paises"><a class="pais" href="/tours/#ireland"><span class="foto" style="--a:#2B2E83;--b:#5B4BD6"><span class="foto-nome" aria-hidden="true">Ireland</span><img src="https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1570875450638-044bca38ec92?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in Ireland" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">Ireland</span><span class="pa-meta">5 tours &middot; 1 city</span><span class="pa-preco">from &euro;159.90</span></span></a>
+<a class="pais" href="/tours/#uk"><span class="foto" style="--a:#0E5C6B;--b:#19A5A0"><span class="foto-nome" aria-hidden="true">United Kingdom</span><img src="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in United Kingdom" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">United Kingdom</span><span class="pa-meta">6 tours &middot; 2 cities</span><span class="pa-preco">from &euro;169.90</span></span></a>
+<a class="pais" href="/tours/#france"><span class="foto" style="--a:#6B2A63;--b:#B5458C"><span class="foto-nome" aria-hidden="true">France</span><img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in France" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">France</span><span class="pa-meta">4 tours &middot; 1 city</span><span class="pa-preco">from &euro;600</span></span></a>
+<a class="pais" href="/tours/#italy"><span class="foto" style="--a:#1C3C7A;--b:#2F79C4"><span class="foto-nome" aria-hidden="true">Italy</span><img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in Italy" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">Italy</span><span class="pa-meta">10 tours &middot; 7 cities</span><span class="pa-preco">from &euro;240</span></span></a>
+<a class="pais" href="/tours/#spain"><span class="foto" style="--a:#7A3A1C;--b:#C4762F"><span class="foto-nome" aria-hidden="true">Spain</span><img src="https://images.unsplash.com/photo-1661442196029-ecc4a8e0a0b8?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1661442196029-ecc4a8e0a0b8?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1661442196029-ecc4a8e0a0b8?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in Spain" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">Spain</span><span class="pa-meta">3 tours &middot; 3 cities</span><span class="pa-preco">from &euro;590</span></span></a>
+<a class="pais" href="/tours/#portugal"><span class="foto" style="--a:#1F5A3A;--b:#3FA06A"><span class="foto-nome" aria-hidden="true">Portugal</span><img src="https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100" srcset="https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=600 600w, https://images.unsplash.com/photo-1599069158346-684fee0e414a?auto=format&crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=76&w=1100 1100w" sizes="(min-width:1020px) 320px, 100vw" loading="lazy" decoding="async" alt="Private day tours in Portugal" onerror="this.style.display=&quot;none&quot;"></span><span class="pais-txt"><span class="pa-nome">Portugal</span><span class="pa-meta">8 tours &middot; 5 cities</span><span class="pa-preco">from &euro;190</span></span></a></div>
+  </div>
+</section>
+
+<section class="secao" aria-labelledby="h-porque">
+  <div class="largura">
+    <div class="secao-cab"><h2 id="h-porque">Why book here</h2></div>
+    <div class="porque">
+      <div>
+        <span class="n">1</span>
+        <h3>The vehicle, not a seat</h3>
+        <p>Sedan, van, or two vehicles travelling together. The price follows
+        the size of your group and nobody else rides with you.</p>
+      </div>
+      <div>
+        <span class="n">2</span>
+        <h3>Direct with the operator</h3>
+        <p>Every day belongs to a local operator with a name and a licence.
+        We handle the booking; they drive the day.</p>
+      </div>
+      <div>
+        <span class="n">3</span>
+        <h3>Nothing is fixed but the start</h3>
+        <p>Stretch the stop you love, skip the one you don't. Tell your guide
+        in the morning or decide over lunch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="secao secao-sup" aria-labelledby="h-lig">
+  <div class="largura">
+    <div class="secao-cab">
+      <div>
+        <h2 id="h-lig">Every tour we run</h2>
+        <p>All 36 days, by country.</p>
+      </div>
+    </div>
+    <div class="ligacoes"><div class="col"><h4>Ireland</h4><ul><li><a href="/tours/cliffs-of-moher-galway/">Private Tour: Cliffs of Moher &amp; Galway</a></li><li><a href="/tours/belfast-titanic-giants-causeway/">Private Tour: Belfast, Titanic &amp; Giant's Causeway</a></li><li><a href="/tours/wicklow-glendalough/">Wicklow &amp; Glendalough Private Day Tour</a></li><li><a href="/tours/dublin-private-chauffeur/">Dublin: Private Chauffeur Tour</a></li><li><a href="/tours/dublin-photography-walk/">Dublin Personal Photography Walking Tour</a></li></ul></div>
+<div class="col"><h4>United Kingdom</h4><ul><li><a href="/tours/central-london/">Private Tour of Central London</a></li><li><a href="/tours/stonehenge-oxford/">Private Day Tour: Stonehenge &amp; Oxford</a></li><li><a href="/tours/london-photography-walk/">London Personal Photography Walking Tour</a></li><li><a href="/tours/highlands-loch-ness/">Loch Ness and the Highlands from Edinburgh</a></li><li><a href="/tours/bath-cotswolds/">Bath and the Cotswolds Day Trip from London</a></li><li><a href="/tours/windsor-castle/">Windsor Castle Private Tour from London</a></li></ul></div>
+<div class="col"><h4>France</h4><ul><li><a href="/tours/paris-city-tour/">Paris Private Tour by Car</a></li><li><a href="/tours/versailles-giverny/">Versailles and Giverny Day Trip from Paris</a></li><li><a href="/tours/normandy-d-day-beaches/">Normandy D-Day Beaches Day Trip from Paris</a></li><li><a href="/tours/loire-valley-castles/">Loire Valley Castles Day Trip from Paris</a></li></ul></div>
+<div class="col"><h4>Italy</h4><ul><li><a href="/tours/rome-city-tour/">Rome Private Day Tour by Car</a></li><li><a href="/tours/pompeii-amalfi-coast/">Pompeii and Amalfi Coast Day Trip from Rome</a></li><li><a href="/tours/tivoli-villa-deste-hadrians-villa/">Tivoli Day Trip from Rome: Villa d’Este and Hadrian’s Villa</a></li><li><a href="/tours/chianti-wine-tour/">Chianti Wine Tour from Florence</a></li><li><a href="/tours/siena-san-gimignano/">Siena and San Gimignano Day Trip from Florence</a></li><li><a href="/tours/amalfi-coast-positano-ravello/">Amalfi Coast Private Day Tour: Positano, Amalfi and Ravello</a></li><li><a href="/tours/etna-taormina/">Mount Etna and Taormina Private Day Tour</a></li><li><a href="/tours/palermo-monreale-cefalu/">Palermo, Monreale and Cefalù Private Day Tour</a></li><li><a href="/tours/costa-smeralda-gallura/">Costa Smeralda and Gallura Private Day Tour</a></li><li><a href="/tours/cagliari-south-sardinia/">Cagliari and South Sardinia Private Day Tour</a></li></ul></div>
+<div class="col"><h4>Spain</h4><ul><li><a href="/tours/madrid-highlights/">Madrid Private Highlights Tour</a></li><li><a href="/tours/barcelona-gaudi-gothic/">Barcelona: Gaudí &amp; Gothic Quarter Private Tour</a></li><li><a href="/tours/seville-day-tour/">Seville Private Day Tour</a></li></ul></div>
+<div class="col"><h4>Portugal</h4><ul><li><a href="/tours/sintra-cascais/">Private Tour: Sintra &amp; Cascais</a></li><li><a href="/tours/lisbon-city/">Lisbon Private City Tour</a></li><li><a href="/tours/porto-douro-valley/">Porto &amp; Douro Valley Private Experience</a></li><li><a href="/tours/algarve-coast-benagil-sagres/">Algarve Coast Private Tour: Benagil, Lagos and Sagres</a></li><li><a href="/tours/tavira-ria-formosa/">Eastern Algarve Private Tour: Faro, Tavira and the Ria Formosa</a></li><li><a href="/tours/madeira-west-porto-moniz/">Madeira West Private Tour: Cabo Girão and Porto Moniz</a></li><li><a href="/tours/madeira-east-pico-arieiro/">Madeira East Private Tour: Pico do Arieiro and Santana</a></li><li><a href="/tours/azores-sao-miguel/">São Miguel Private Day Tour: Sete Cidades, Lagoa do Fogo and Furnas</a></li></ul></div></div>
+  </div>
+</section>
+
+</main>
+
+<div class="creditos">
+  <div class="largura">
+    <p>Photographs by <a href="https://unsplash.com/@ssarasframes?utm_source=exclusive_world_tours&utm_medium=referral">Sara Ruffoni</a>, <a href="https://unsplash.com/@gregda?utm_source=exclusive_world_tours&utm_medium=referral">Gregory Dalleau</a>, <a href="https://unsplash.com/@jacob_diehl_film?utm_source=exclusive_world_tours&utm_medium=referral">Jacob Diehl</a>, <a href="https://unsplash.com/@chriskaridis?utm_source=exclusive_world_tours&utm_medium=referral">Chris Karidis</a>, <a href="https://unsplash.com/@davidkhlr?utm_source=exclusive_world_tours&utm_medium=referral">David Kohler</a>, <a href="https://unsplash.com/@andrelergier?utm_source=exclusive_world_tours&utm_medium=referral">Andre Lergier</a>, <a href="https://unsplash.com/@pavan_nicola?utm_source=exclusive_world_tours&utm_medium=referral">Nicola Pavan</a>, <a href="https://unsplash.com/@rsjmiller?utm_source=exclusive_world_tours&utm_medium=referral">Ryan Miller</a>, <a href="https://unsplash.com/@mick_gw?utm_source=exclusive_world_tours&utm_medium=referral">Mick Waanders</a>, <a href="https://unsplash.com/@shotsbytania?utm_source=exclusive_world_tours&utm_medium=referral">Tania Mousinho</a>, <a href="https://unsplash.com/@saadchdhry?utm_source=exclusive_world_tours&utm_medium=referral">Saad Chaudhry</a>, <a href="https://unsplash.com/@sean189?utm_source=exclusive_world_tours&utm_medium=referral">Sean Kuriyan</a>, <a href="https://unsplash.com/@h_alayoub?utm_source=exclusive_world_tours&utm_medium=referral">Hamed Alayoub</a>, <a href="https://unsplash.com/@kmitchhodge?utm_source=exclusive_world_tours&utm_medium=referral">K. Mitch Hodge</a>, <a href="https://unsplash.com/@_twistedplot?utm_source=exclusive_world_tours&utm_medium=referral">Magda Vrabetz</a> on
+    <a href="https://unsplash.com/?utm_source=exclusive_world_tours&amp;utm_medium=referral">Unsplash</a>.
+    Placeholders until our operators' own photography is in place.</p>
+  </div>
+</div>
+
+<footer class="rodape">
+  <div class="largura">
+    <div class="rodape-grelha">
+      <div>
+        <span class="marca">Exclusive World Tours<small>PRIVATE DAY TOURS</small></span>
+        <p style="color:var(--rodape-mudo);font-size:14px;max-width:32ch;margin-top:var(--e4)">Private
+        day tours in six countries, run by named local operators.</p>
+        <p style="font-size:13px;margin-top:var(--e6);color:#fff">Secure online payment with Stripe</p>
+        <ul class="pagamentos"><li>Visa</li><li>Mastercard</li><li>PayPal</li><li>Apple Pay</li><li>Google Pay</li></ul>
+      </div>
+      <div><h4>Travellers</h4><ul><li><a href="/tours/">All tours</a></li>
+        <li><a href="/airporttransfers/">Airport transfers</a></li>
+        <li><a href="/cancellation/">Cancellation policy</a></li>
+        <li><a href="/contact/">Help</a></li></ul></div>
+      <div><h4>Operators</h4><ul><li><a href="/operators/">Our operators</a></li>
+        <li><a href="/operators/join/">List your tours</a></li></ul></div>
+      <div><h4>Destinations</h4><ul><li><a href="/tours/#ireland">Ireland</a></li>
+        <li><a href="/tours/#uk">United Kingdom</a></li><li><a href="/tours/#france">France</a></li>
+        <li><a href="/tours/#italy">Italy</a></li><li><a href="/tours/#spain">Spain</a></li>
+        <li><a href="/tours/#portugal">Portugal</a></li></ul></div>
+    </div>
+    <div class="rodape-fim">
+      <span>&copy; 2026 Exclusive World Tours</span>
+      <span>53.3500&deg; N, 6.2603&deg; W</span>
+    </div>
+  </div>
+</footer>
+
+
+
+</body>
+</html>
