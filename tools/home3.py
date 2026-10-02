@@ -268,17 +268,19 @@ def main():
             .replace('{{N_PAISES}}', str(len(por_pais)))
             .replace('{{N_CIDADES}}', str(len(por_cidade))))
 
-    # A barra de revisao so entra com --revisao; em producao sai fora,
-    # junto com o <script> que a faz funcionar.
+    # A barra de revisao e o diagnostico so entram com --revisao; em
+    # producao saem fora, junto com o <script> que os faz funcionar.
     if '--revisao' not in sys.argv:
-        i = html.find('<div class="revisao">')
-        j = html.find('</div>\n</div>', i)
-        if i != -1 and j != -1:
-            html = html[:i] + html[j + len('</div>\n</div>'):]
-        i = html.find("<script>\ndocument.querySelectorAll('.revisao button')")
-        if i != -1:
-            j = html.find('</script>', i)
-            html = html[:i] + html[j + len('</script>'):]
+        for abre, fecha in (('<div class="diag"', '</div>'),
+                            ('<div class="revisao">', '</div>\n</div>'),
+                            ('<script>\n/* Diagnostico das fotografias', '</script>')):
+            i = html.find(abre)
+            if i == -1:
+                continue
+            j = html.find(fecha, i)
+            if j == -1:
+                continue
+            html = html[:i] + html[j + len(fecha):]
 
     destino = os.path.join(RAIZ, 'index-marketplace.html'
                            if '--revisao' in sys.argv else 'index.html')
@@ -352,6 +354,16 @@ a{color:inherit;text-decoration:none}
            overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .largura{width:100%;max-width:1280px;margin-inline:auto;padding-inline:var(--e4)}
 @media(min-width:900px){.largura{padding-inline:var(--e6)}}
+
+
+/* ----------------------------------------- diagnostico (so na revisao) */
+.diag{position:sticky;top:0;z-index:400;font-family:var(--ui);font-size:14px;
+  font-weight:600;padding:12px var(--e4);text-align:center;color:#fff;
+  background:#5B5B70}
+.diag.ok{background:#146C43}
+.diag.mal{background:#A32B2B}
+.diag small{display:block;font-weight:400;font-size:12.5px;opacity:.92;
+            margin-top:3px}
 
 /* ------------------------------------------- barra de revisao (so aqui) */
 .revisao{background:var(--sup);border-bottom:1px solid var(--linha);
@@ -572,6 +584,8 @@ a{color:inherit;text-decoration:none}
 
 <a class="salto" href="#conteudo">Skip to content</a>
 
+<div class="diag" id="diag" role="status">A verificar as fotografias&hellip;</div>
+
 <div class="revisao">
   <div class="largura revisao-in">
     <fieldset>
@@ -771,6 +785,43 @@ a{color:inherit;text-decoration:none}
 </footer>
 
 <script>
+/* Diagnostico das fotografias: conta quantas <img> carregaram mesmo.
+   Serve para responder de uma vez a pergunta "porque e que nao vejo as
+   fotos" — a pagina diz-o em vez de eu ter de adivinhar. */
+(function () {
+  var caixa = document.getElementById('diag');
+  if (!caixa) return;
+  var imgs = [].slice.call(document.images).filter(function (i) {
+    return /images\.unsplash\.com/.test(i.currentSrc || i.src);
+  });
+  function carregada(i) { return i.complete && i.naturalWidth > 0; }
+  function contar() {
+    var ok = imgs.filter(carregada).length;
+    var pendentes = imgs.filter(function (i) { return !i.complete; }).length;
+    if (pendentes) { caixa.textContent = 'A carregar as fotografias\u2026 ' + ok + ' de ' + imgs.length; return; }
+    if (ok === imgs.length && ok > 0) {
+      caixa.className = 'diag ok';
+      caixa.innerHTML = 'As ' + ok + ' fotografias carregaram.' +
+        '<small>Est\u00e1s a ver a p\u00e1gina como um cliente a veria.</small>';
+    } else if (ok > 0) {
+      caixa.className = 'diag';
+      caixa.innerHTML = ok + ' de ' + imgs.length + ' fotografias carregaram.' +
+        '<small>Liga\u00e7\u00e3o lenta, ou algumas est\u00e3o bloqueadas.</small>';
+    } else {
+      caixa.className = 'diag mal';
+      caixa.innerHTML = 'Nenhuma das ' + imgs.length + ' fotografias carregou aqui.' +
+        '<small>O images.unsplash.com est\u00e1 bloqueado neste visualizador. ' +
+        'Descarrega o ficheiro e abre-o no Chrome, ou espera pelo site no Render.</small>';
+    }
+  }
+  imgs.forEach(function (i) {
+    if (!i.complete) { i.addEventListener('load', contar); i.addEventListener('error', contar); }
+  });
+  contar();
+  setTimeout(contar, 1200);
+  setTimeout(contar, 4000);
+})();
+
 document.querySelectorAll('.revisao button').forEach(function (b) {
   b.addEventListener('click', function () {
     document.documentElement.setAttribute('data-pal', b.dataset.val);
