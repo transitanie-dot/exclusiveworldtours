@@ -164,7 +164,8 @@ CSS = '''<style>
 .escaloes th{text-align:left;font-weight:600;color:var(--mudo);
   font-size:12px;letter-spacing:.06em;text-transform:uppercase;
   padding:0 0 8px}
-.escaloes th:last-child,.escaloes td:last-child{text-align:right}
+.escaloes th:not(:first-child),.escaloes td:not(:first-child){text-align:right}
+.escaloes .pp{color:var(--mudo);font-size:13px}
 .escaloes td{padding:8px 0;border-top:1px solid var(--risco);
   font-variant-numeric:tabular-nums}
 .escaloes tr.activo td{color:var(--tinta);font-weight:600}
@@ -173,10 +174,69 @@ CSS = '''<style>
 .painel .nota b{color:var(--tinta)}
 .reservar{display:block;width:100%;text-align:center;margin:0 0 14px}
 
+/* o mapa pequeno */
+.pratico-g{display:grid;grid-template-columns:1fr 240px;gap:var(--e4);
+  align-items:start}
+@media (max-width:860px){.pratico-g{grid-template-columns:1fr}}
+.mapinha{overflow:hidden}
+.mapinha svg{width:100%;height:auto;display:block;background:var(--papel)}
+.mapinha .m-ctx path{fill:none;stroke:var(--risco);stroke-width:1.4}
+.mapinha .m-pais path{fill:var(--papel);stroke:var(--tinta-f);
+  stroke-width:1.6}
+.mapinha .m-eu{fill:var(--cor);stroke:var(--branco);stroke-width:2.5}
+/* a coordenada nao pode partir a meio: "6.2489° W" numa linha e o "W"
+   na seguinte deixa de se ler como uma coordenada */
+.mapinha-pe{display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin:0;padding:9px 11px;border-top:1px solid var(--risco);
+  font-size:12.5px;flex-wrap:wrap}
+.mapinha-pe .cod{white-space:nowrap;font-size:10.5px;padding:2px 5px}
+.mapinha-pe b{color:var(--tinta)}
+
+.reservar-bloco{padding:var(--e3) var(--e3) var(--e3)}
+.reservar-bloco h2{margin-bottom:6px}
+
 .relacionados{background:var(--papel);border-top:1px solid var(--risco);
   padding:64px 0 76px}
 .relacionados h2{font-size:1.5rem;margin:0 0 24px}
 </style>'''
+
+
+def mapa_cidade(t):
+    """Um mapa pequeno com a cidade de partida marcada.
+
+    Os contornos vem do Natural Earth e o ponto da coordenada real do
+    GeoNames — o mesmo atlas da homepage. Nao e um enfeite: e a resposta
+    a pergunta "onde e isto ao certo", que e das primeiras que se faz
+    quando se compara dois dias."""
+    caminho = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), 'assets', 'atlas.json')
+    if not os.path.exists(caminho):
+        return ''
+    a = json.load(open(caminho))
+    c = a['cidades'].get(t['city'])
+    if not c:
+        return ''
+    vb = a['viewBox']
+    # janela apertada a volta da cidade, para se ver onde ela esta sem o
+    # mapa inteiro da Europa
+    lado = 300.0
+    x0 = max(0, min(vb[2] - lado, c['x'] - lado / 2))
+    y0 = max(0, min(vb[3] - lado * .72, c['y'] - lado * .36))
+    paises = ''.join('<path d="%s"/>' % p['d'] for p in a['paises_com_tours'])
+    ctx = ''.join('<path d="%s"/>' % p['d'] for p in a['paises_contexto'])
+    graus = '%.4f&deg; %s &nbsp;%.4f&deg; %s' % (
+        abs(c['lat']), 'N' if c['lat'] >= 0 else 'S',
+        abs(c['lon']), 'E' if c['lon'] >= 0 else 'W')
+    return '''<div class="mapinha moldura">
+  <svg viewBox="%(x0).0f %(y0).0f %(l).0f %(a).0f" aria-hidden="true">
+    <g class="m-ctx">%(ctx)s</g>
+    <g class="m-pais">%(paises)s</g>
+    <circle class="m-eu" cx="%(cx).1f" cy="%(cy).1f" r="7"/>
+  </svg>
+  <p class="mapinha-pe"><b>%(cidade)s</b><span class="cod num">%(graus)s</span></p>
+</div>''' % {'x0': x0, 'y0': y0, 'l': lado, 'a': lado * .72,
+               'ctx': ctx, 'paises': paises, 'cx': c['x'], 'cy': c['y'],
+               'cidade': e(t['city']), 'graus': graus}
 
 
 def facto(valor, rotulo):
@@ -233,7 +293,9 @@ def faq(t, tirados):
                       % (e(q), e(a)))
     if not linhas:
         return ''
-    return ('<section class="sec faq"><h2>Questions</h2>%s</section>'
+    return ('<section class="sec faq" data-rev>'
+            '<p class="rot"><b>04</b> Questions</p>'
+            '<h2>Before you ask</h2>%s</section>'
             % '\n'.join(linhas))
 
 
@@ -243,17 +305,22 @@ def painel(t):
     linhas = []
     for x in d['tiers']:
         activo = ' class="activo"' if x is menor else ''
+        # o preco por pessoa e uma divisao dos numeros que ja estao na
+        # tabela, nao um preco novo: serve para comparar com quem vende
+        # por lugar, que e o que a concorrencia faz
         linhas.append('<tr%s><td>Up to %d<span class="veic">%s</span></td>'
-                      '<td>&euro;%s</td></tr>'
+                      '<td class="num">&euro;%s</td>'
+                      '<td class="num pp">&euro;%s</td></tr>'
                       % (activo, x['max'],
                          (' &middot; ' + e(x['vehicle'])) if x.get('vehicle') else '',
-                         euros(x['price'])))
+                         euros(x['price']),
+                         euros(round(x['price'] / x['max']))))
     return '''<aside class="painel">
   <p class="desde">From</p>
   <p class="preco">&euro;%(preco)s</p>
   <p class="por">for the whole group, up to %(max)d people</p>
   <table class="escaloes">
-    <thead><tr><th>Group size</th><th>Total</th></tr></thead>
+    <thead><tr><th>Group</th><th>Total</th><th>Per person</th></tr></thead>
     <tbody>%(linhas)s</tbody>
   </table>
   <a class="botao reservar" href="#book">Check this date</a>
@@ -307,28 +374,34 @@ def main():
     <div>
       <div class="factos">%(factos)s</div>
 
-      <section class="sec">
-        <h2>The day</h2>
+      <section class="sec" data-rev>
+        <p class="rot"><b>01</b> The day</p>
+        <h2>From %(cidade)s, door to door</h2>
         <p class="intro">%(stopsIntro)s</p>
         %(fita)s
         %(paragens)s
       </section>
 
-      <section class="sec">
-        <h2>What the price covers</h2>
+      <section class="sec" data-rev>
+        <p class="rot"><b>02</b> What the price covers</p>
+        <h2>The vehicle, not the seat</h2>
         <p class="intro">%(includedIntro)s</p>
         <ul class="inclui">%(inclui)s</ul>
         <p class="nao-inclui">%(naoInclui)s</p>
       </section>
 
-      <section class="sec">
-        <h2>Practical</h2>
-        <table class="pratico"><tbody>%(pratico)s</tbody></table>
+      <section class="sec pratico-sec" data-rev>
+        <p class="rot"><b>03</b> Practical</p>
+        <div class="pratico-g">
+          <table class="pratico"><tbody>%(pratico)s</tbody></table>
+          %(mapa)s
+        </div>
       </section>
 
       %(faq)s
 
-      <section class="sec" id="book">
+      <section class="sec moldura reservar-bloco" id="book" data-rev>
+        <p class="rot"><b>05</b> Booking</p>
         <h2>How to book</h2>
         <p class="intro">Online booking opens shortly. Until then, tell us the
           date and the size of your group and we will come back to you with the
@@ -363,7 +436,7 @@ def main():
             'naoInclui': e(t.get('notIncluded') or ''),
             'pratico': '\n'.join('<tr><th>%s</th><td>%s</td></tr>'
                                  % (e(a), e(b)) for a, b in t.get('practical', [])),
-            'faq': faq(t, tirados),
+            'faq': faq(t, tirados), 'mapa': mapa_cidade(t),
             'painel': painel(t),
             'relacionados': ('''<section class="relacionados">
   <div class="folha">

@@ -148,27 +148,37 @@ def por_pais(tours):
 
 
 def cartao_tour(t, destaque=False):
+    """O cartao de um tour.
+
+    Leva o preco do grupo e, ao lado, o preco por pessoa no escalao mais
+    cheio — que e a conta que o cliente faz de cabeca quando compara com
+    um concorrente que vende por lugar. E uma divisao, nao uma promessa:
+    sai dos mesmos numeros que ja estao na tabela.
+    """
     foto = t['_foto']
-    media = (img(foto['id'], foto['alt'], (560, 900),
-                 '(min-width:1100px) 33vw, (min-width:700px) 50vw, 100vw',
+    media = (img(foto['id'], foto['alt'], (420, 760),
+                 '(min-width:1100px) 25vw, (min-width:700px) 50vw, 100vw',
                  eager=destaque)
              if foto else '')
-    credito = ('<span class="credito">Photo %s</span>'
-               % e(foto['by'])) if foto else ''
+    credito = ('<span class="credito">%s</span>' % e(foto['by'])) if foto else ''
     tier = t['_menor']
+    cheio = max(t['durations'][0]['tiers'], key=lambda x: x['max'])
+    por_pessoa = cheio['price'] / cheio['max']
     return '''<a class="tour" href="/tours/%(slug)s/">
-  <span class="tour-foto">%(media)s%(credito)s</span>
+  <span class="tour-foto">%(media)s%(credito)s
+    <span class="tour-sel">%(h)s</span></span>
   <span class="tour-corpo">
-    <span class="tour-onde">%(cidade)s, %(pais)s</span>
+    <span class="tour-onde">%(cidade)s <span class="pt">&middot;</span> %(pais)s</span>
     <span class="tour-nome">%(titulo)s</span>
     <span class="tour-linha">
-      <span class="etiq">%(h)s</span>
       <span class="etiq">up to %(max)d</span>
       %(partida)s
+      %(paragens)s
     </span>
     <span class="tour-preco">
-      <b>&euro;%(preco)s</b>
-      <span class="tour-preco-nota">total for up to %(tmax)d%(veic)s</span>
+      <b class="num">&euro;%(preco)s</b>
+      <span class="tour-preco-nota">group total<br>
+        <span class="num">&euro;%(pp)s</span> pp at %(cheiomax)d</span>
     </span>
   </span>
 </a>''' % {
@@ -176,16 +186,13 @@ def cartao_tour(t, destaque=False):
         'cidade': e(t['city']), 'pais': e(t['countryName']),
         'titulo': e(t['title'].replace('Private Tour: ', '')),
         'h': e(t['_h']), 'max': t['_max'],
-        'partida': ('<span class="etiq">departs %s</span>' % e(t['_partida'])
+        'partida': ('<span class="etiq">dep. %s</span>' % e(t['_partida'])
                     if t['_partida'] else ''),
-        'preco': euros(tier['price']), 'tmax': tier['max'],
-        # dois dos tours sao caminhadas fotograficas e nao tem veiculo
-        # nenhum. Em vez de inventar um, a linha fica sem ele.
-        'veic': (' &middot; ' + e(tier['vehicle'])) if tier.get('vehicle') else '',
+        'paragens': ('<span class="etiq">%d stops</span>' % len(t['stops'])
+                     if t.get('stops') else ''),
+        'preco': euros(tier['price']),
+        'pp': euros(round(por_pessoa)), 'cheiomax': cheio['max'],
     }
-
-
-# -------------------------------------------------------------------- css
 
 
 def css_base():
@@ -199,7 +206,10 @@ def css_base():
   --texto:%(texto)s; --mudo:%(mudo)s; --risco:%(risco)s;
   --tipo:'Inter',system-ui,-apple-system,sans-serif;
   --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
-  --raio:14px;
+  --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
+  --raio:10px;
+  /* a escala de intervalos: tudo no site sai daqui */
+  --e1:6px; --e2:12px; --e3:20px; --e4:32px; --e5:52px;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%%;scroll-behavior:smooth}
@@ -207,13 +217,13 @@ html{-webkit-text-size-adjust:100%%;scroll-behavior:smooth}
   *,*::before,*::after{animation-duration:.01ms !important;
     transition-duration:.01ms !important}}
 body{margin:0;background:var(--branco);color:var(--texto);
-  font-family:var(--tipo);font-size:17px;line-height:1.6;
+  font-family:var(--tipo);font-size:15.5px;line-height:1.55;
   -webkit-font-smoothing:antialiased}
 img{max-width:100%%;display:block}
 a{color:inherit}
 h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
   letter-spacing:-.025em;line-height:1.08;margin:0}
-.folha{max-width:1240px;margin:0 auto;padding:0 24px}
+.folha{max-width:1320px;margin:0 auto;padding:0 clamp(16px,2.4vw,32px)}
 /* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
    homepage e a pagina de resultados ficou com um botao cinzento do
    browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
@@ -237,46 +247,97 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .topo{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
   backdrop-filter:saturate(180%%) blur(12px);
   border-bottom:1px solid var(--risco)}
-.topo-i{display:flex;align-items:center;gap:28px;height:74px}
+.topo-i{display:flex;align-items:center;gap:28px;height:62px}
 .nav{display:flex;gap:26px;margin-left:auto;font-size:15px;font-weight:500}
 .nav a{text-decoration:none;color:var(--texto);padding:6px 0;
   border-bottom:2px solid transparent}
 .nav a:hover{color:var(--tinta);border-bottom-color:var(--cor)}
 .topo .marca{color:var(--tinta)}
 @media (max-width:760px){.nav{display:none}}
+/* ------------------------------------------------------- o detalhe fino
+   O Ricardo pediu mais detalhe decorativo. Nao e enfeite solto: e um
+   sistema pequeno que se repete em todas as paginas e faz o site parecer
+   um instrumento em vez de uma brochura — rotulos numerados, filetes,
+   cantos marcados, numeros de largura fixa. */
+
+/* o rotulo numerado de uma seccao: "01 / THE DAY" */
+.rot{display:flex;align-items:center;gap:10px;margin:0 0 var(--e2);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600}
+.rot b{font-family:var(--mono);font-weight:600;color:var(--cor-escura);
+  font-size:11px;letter-spacing:.06em}
+.rot::after{content:'';flex:1;height:1px;background:var(--risco)}
+
+/* numeros sempre de largura fixa: precos, horas, coordenadas */
+.num,.preco,time,[data-num]{font-variant-numeric:tabular-nums}
+
+/* a moldura com os cantos marcados, para blocos que tem de pesar */
+.moldura{position:relative;border:1px solid var(--risco);
+  border-radius:var(--raio);background:var(--branco)}
+.moldura::before,.moldura::after{content:'';position:absolute;width:9px;
+  height:9px;border:2px solid var(--cor);pointer-events:none}
+.moldura::before{top:-1px;left:-1px;border-right:0;border-bottom:0;
+  border-radius:var(--raio) 0 0 0}
+.moldura::after{bottom:-1px;right:-1px;border-left:0;border-top:0;
+  border-radius:0 0 var(--raio) 0}
+
+/* um codigo: IATA, coordenada, referencia */
+.cod{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+  color:var(--mudo);background:var(--papel);border:1px solid var(--risco);
+  border-radius:4px;padding:2px 6px}
+
+/* a revelacao ao percorrer. Quem pediu para nao haver movimento nao tem
+   movimento nenhum — e a regra esta primeiro, para nunca ser esquecida. */
+@media (prefers-reduced-motion:no-preference){
+  [data-rev]{opacity:0;transform:translateY(14px);
+    transition:opacity .5s cubic-bezier(.2,.6,.2,1),
+               transform .5s cubic-bezier(.2,.6,.2,1)}
+  [data-rev].vis{opacity:1;transform:none}
+}
+
 /* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
    isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
    pagina de resultados os cartoes sairam como texto corrido. */
 /* tours */
-.tours{display:grid;gap:22px;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%%,300px),1fr))}
+/* mais cartoes por ecra: a 1440 cabem quatro, nao tres */
+.tours{display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%%,268px),1fr))}
 .tour{display:flex;flex-direction:column;text-decoration:none;
   border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden;
-  background:var(--branco)}
-.tour:hover{border-color:var(--tinta-f)}
-.tour-foto{position:relative;aspect-ratio:3/2;background:var(--uma-f);
-  display:block}
-.tour-foto img{width:100%%;height:100%%;object-fit:cover}
-.credito{position:absolute;right:8px;bottom:7px;z-index:2;font-size:10.5px;
-  color:#fff;background:rgba(11,43,42,.68);padding:3px 7px;border-radius:5px}
-.tour-corpo{display:flex;flex-direction:column;gap:9px;padding:18px 20px 20px;
+  background:var(--branco);transition:border-color .18s, transform .18s}
+.tour:hover{border-color:var(--tinta-f);transform:translateY(-2px)}
+.tour-foto{position:relative;aspect-ratio:16/10;background:var(--uma-f);
+  display:block;overflow:hidden}
+.tour-foto img{width:100%%;height:100%%;object-fit:cover;
+  transition:transform .5s ease}
+.tour:hover .tour-foto img{transform:scale(1.045)}
+.credito{position:absolute;right:7px;bottom:6px;z-index:2;font-size:10px;
+  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+/* a duracao em cima da fotografia: le-se antes do titulo, que e a ordem
+   por que as pessoas decidem */
+.tour-sel{position:absolute;left:7px;top:7px;z-index:2;font-family:var(--mono);
+  font-size:11px;letter-spacing:.03em;color:var(--tinta);background:var(--branco);
+  padding:3px 8px;border-radius:4px;font-variant-numeric:tabular-nums}
+.tour-corpo{display:flex;flex-direction:column;gap:7px;padding:14px 15px 15px;
   flex:1}
-.tour-onde{font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;
+.tour-onde{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
   color:var(--cor-escura);font-weight:600}
-.tour-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.13rem;
-  color:var(--tinta);line-height:1.22}
-.tour-linha{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
-.etiq{font-size:12.5px;color:var(--texto);background:var(--papel);
-  border:1px solid var(--risco);border-radius:999px;padding:3px 10px}
-.tour-preco{margin-top:auto;padding-top:13px;border-top:1px solid var(--risco);
-  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.tour-preco b{font-family:var(--tipo-titulo);font-size:1.3rem;
-  color:var(--tinta);font-variant-numeric:tabular-nums}
-.tour-preco-nota{font-size:13px;color:var(--mudo)}
+.tour-onde .pt{color:var(--risco)}
+.tour-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.02rem;
+  color:var(--tinta);line-height:1.2}
+.tour-linha{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+.etiq{font-size:11.5px;color:var(--texto);background:var(--papel);
+  border:1px solid var(--risco);border-radius:4px;padding:2px 7px}
+.tour-preco{margin-top:auto;padding-top:11px;border-top:1px solid var(--risco);
+  display:flex;align-items:flex-end;gap:9px;justify-content:space-between}
+.tour-preco b{font-family:var(--tipo-titulo);font-size:1.22rem;
+  color:var(--tinta);line-height:1}
+.tour-preco-nota{font-size:11.5px;color:var(--mudo);text-align:right;
+  line-height:1.35}
 
 /* rodape */
 .rodape{background:var(--papel);border-top:1px solid var(--risco);
-  padding:56px 0 44px;margin-top:0}
+  padding:var(--e5) 0 var(--e4);margin-top:0}
 .rodape-i{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
 .rodape .marca{color:var(--tinta)}
 .rodape-nota{color:var(--mudo);font-size:14px;max-width:40ch;margin:16px 0 0}
@@ -386,8 +447,31 @@ def envolver(titulo, descricao, css_pagina, corpo, js='', noindex=True):
         'robots': '<meta name="robots" content="noindex, nofollow">' if noindex else '',
         'fontes': FONTES, 'css': css_base(), 'css_pagina': css_pagina,
         'corpo': corpo,
-        'js': ('<script>%s</script>' % js) if js else '',
+        'js': '<script>%s</script>' % (js + REVELAR),
     }
+
+
+REVELAR = """
+(function () {
+  // A revelacao ao percorrer. Quem tem 'reduzir movimento' ligado no
+  // sistema nao ve nada disto: o conteudo aparece logo, inteiro.
+  var q = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var alvos = [].slice.call(document.querySelectorAll('[data-rev]'));
+  if (!alvos.length) return;
+  if (q.matches || !('IntersectionObserver' in window)) {
+    alvos.forEach(function (x) { x.classList.add('vis'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('vis');
+      obs.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+  alvos.forEach(function (x) { obs.observe(x); });
+})();
+"""
 
 
 def escrever(html, caminho):
