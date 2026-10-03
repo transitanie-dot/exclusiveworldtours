@@ -235,11 +235,75 @@ CSS = '''<style>
 .mapinha-pe b{color:var(--tinta)}
 .mapinha-pe .cod{white-space:nowrap;font-size:10.5px;padding:2px 5px}
 
+/* o stepper do grupo e o campo da data */
+.campo-g{margin:0 0 var(--e2)}
+.campo-g label{display:block;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mudo);font-weight:600;margin:0 0 6px}
+.stepper{display:flex;align-items:center;border:1px solid var(--risco);
+  border-radius:8px;overflow:hidden}
+.stepper button{flex:none;width:44px;height:42px;border:0;background:var(--papel);
+  color:var(--tinta);font-size:19px;line-height:1;cursor:pointer;
+  font-family:var(--tipo)}
+.stepper button:hover{background:var(--cor);color:#fff}
+.stepper output{flex:1;text-align:center;font-family:var(--tipo-titulo);
+  font-weight:600;font-size:1.05rem;color:var(--tinta);
+  font-variant-numeric:tabular-nums}
+.campo-g input[type=date]{width:100%;border:1px solid var(--risco);
+  border-radius:8px;padding:11px 12px;font:inherit;font-size:14.5px;
+  color:var(--tinta);background:var(--branco)}
+.veiculo{margin:0 0 var(--e2);font-size:13px;color:var(--mudo);
+  min-height:1.3em}
+.tabela-d{margin:0 0 var(--e2)}
+.tabela-d summary{cursor:pointer;font-size:12.5px;color:var(--cor-escura);
+  font-weight:600;list-style:none;padding:4px 0}
+.tabela-d summary::-webkit-details-marker{display:none}
+/* o triangulo e desenhado, nao um caractere: o \25B8 saia como caixa
+   vazia porque o tipo de letra nao tem esse glifo */
+.tabela-d summary::before{content:'';display:inline-block;width:0;height:0;
+  border-left:5px solid currentColor;border-top:4px solid transparent;
+  border-bottom:4px solid transparent;margin-right:7px;
+  transition:transform .15s;vertical-align:1px}
+.tabela-d[open] summary::before{transform:rotate(90deg)}
+
+/* a lupa no canto da fotografia */
+.tira figure{cursor:zoom-in}
+.tira figure:focus-visible{outline:3px solid var(--cor);outline-offset:2px}
+.lupa{position:absolute;left:8px;top:8px;width:26px;height:26px;
+  display:grid;place-items:center;border-radius:6px;font-size:14px;
+  background:rgba(255,255,255,.9);color:var(--tinta);opacity:0;
+  transition:opacity .18s}
+.tira figure:hover .lupa,.tira figure:focus-visible .lupa{opacity:1}
+
+/* a caixa de luz */
+.luz{position:fixed;inset:0;z-index:90;background:rgba(7,22,21,.94);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;
+  gap:var(--e2);padding:var(--e3)}
+.luz[hidden]{display:none}
+.luz figure{margin:0;display:grid;place-items:center;gap:10px;min-height:0}
+.luz img{max-width:100%;max-height:80vh;width:auto;height:auto;
+  border-radius:var(--raio)}
+.luz figcaption{color:rgba(255,255,255,.72);font-size:12.5px}
+.luz button{background:rgba(255,255,255,.1);color:#fff;border:0;
+  width:46px;height:46px;border-radius:50%;font-size:24px;line-height:1;
+  cursor:pointer}
+.luz button:hover{background:rgba(255,255,255,.22)}
+.luz-x{position:absolute;right:var(--e3);top:var(--e3);z-index:2}
+@media (max-width:620px){
+  .luz{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .luz-a{position:absolute;left:10px;top:50%}
+  .luz-p{position:absolute;right:10px;top:50%}
+}
+
 .reservar-bloco{padding:var(--e3)}
 .reservar-bloco h2{margin-bottom:6px}
 .relacionados{padding:var(--e5) 0}
 .relacionados h2{font-size:1.35rem;margin:0 0 var(--e3)}
 </style>'''
+
+
+def grande_url(fid):
+    return ('https://images.unsplash.com/photo-%s?auto=format&crop=entropy'
+            '&cs=tinysrgb&fit=max&fm=jpg&q=82&w=1800' % fid)
 
 
 def mapa_cidade(t):
@@ -343,35 +407,62 @@ def faq(t, tirados):
 def painel(t):
     d = t['durations'][0]
     menor = min(d['tiers'], key=lambda x: x['price'])
+    maior = max(d['tiers'], key=lambda x: x['max'])
     linhas = []
     for x in d['tiers']:
-        activo = ' class="activo"' if x is menor else ''
-        # o preco por pessoa e uma divisao dos numeros que ja estao na
-        # tabela, nao um preco novo: serve para comparar com quem vende
-        # por lugar, que e o que a concorrencia faz
-        linhas.append('<tr%s><td>Up to %d<span class="veic">%s</span></td>'
-                      '<td class="num">&euro;%s</td>'
-                      '<td class="num pp">&euro;%s</td></tr>'
-                      % (activo, x['max'],
-                         (' &middot; ' + e(x['vehicle'])) if x.get('vehicle') else '',
-                         euros(x['price']),
-                         euros(round(x['price'] / x['max']))))
-    return '''<aside class="painel">
-  <p class="desde">From</p>
-  <p class="preco">&euro;%(preco)s</p>
-  <p class="por">for the whole group, up to %(max)d people</p>
-  <table class="escaloes">
-    <thead><tr><th>Group</th><th>Total</th><th>Per person</th></tr></thead>
-    <tbody>%(linhas)s</tbody>
-  </table>
-  <a class="botao reservar" href="#book">Check this date</a>
+        linhas.append(
+            '<tr data-tier="%d"><td>Up to %d<span class="veic">%s</span></td>'
+            '<td class="num">&euro;%s</td>'
+            '<td class="num pp">&euro;%s</td></tr>'
+            % (x['max'], x['max'],
+               (' &middot; ' + e(x['vehicle'])) if x.get('vehicle') else '',
+               euros(x['price']), euros(round(x['price'] / x['max']))))
+
+    tiers_json = json.dumps([{'max': x['max'], 'price': x['price'],
+                             'vehicle': x.get('vehicle', '')}
+                            for x in d['tiers']])
+    horas = json.dumps(d.get('startTimes') or [])
+
+    return '''<aside class="painel" data-painel
+  data-tiers='%(tiers)s' data-horas='%(horas)s'>
+  <p class="desde">Your price</p>
+  <p class="preco"><span data-preco>&euro;%(preco)s</span></p>
+  <p class="por"><span data-por>for the whole group, up to %(min)d people</span></p>
+
+  <div class="campo-g">
+    <label for="pessoas">How many of you?</label>
+    <div class="stepper">
+      <button type="button" data-menos aria-label="One fewer person">&minus;</button>
+      <output id="pessoas" data-pessoas aria-live="polite">%(min)d</output>
+      <button type="button" data-mais aria-label="One more person">+</button>
+    </div>
+  </div>
+
+  <div class="campo-g">
+    <label for="quando">Which day?</label>
+    <input id="quando" type="date" data-data>
+  </div>
+
+  <p class="veiculo" data-veiculo></p>
+
+  <a class="botao reservar" href="#book" data-ir>Check this date</a>
+
+  <details class="tabela-d">
+    <summary>All group sizes</summary>
+    <table class="escaloes">
+      <thead><tr><th>Group</th><th>Total</th><th>Per person</th></tr></thead>
+      <tbody>%(linhas)s</tbody>
+    </table>
+  </details>
+
   <p class="nota">The price is for the <b>whole vehicle</b>, not per person.
     Four people pay the same as one.</p>
-</aside>''' % {'preco': euros(menor['price']), 'max': t['_max'],
-               'linhas': '\n'.join(linhas)}
+</aside>''' % {'preco': euros(menor['price']), 'min': menor['max'],
+                 'maximo': maior['max'], 'linhas': '\n'.join(linhas),
+                 'tiers': tiers_json, 'horas': horas}
 
 
-JS_FIXA = """
+JS_FIXA = r"""
 (function () {
   // A barra com o preco so aparece depois de o heroi sair do ecra: antes
   // disso o preco ja esta a vista no painel, e duas barras ao mesmo
@@ -382,6 +473,133 @@ JS_FIXA = """
   new IntersectionObserver(function (es) {
     barra.classList.toggle('vis', !es[0].isIntersecting);
   }, { rootMargin: '-60px 0px 0px 0px' }).observe(heroi);
+})();
+"""
+
+
+JS_PAINEL = r"""
+(function () {
+  // O painel responde: escolhe-se o tamanho do grupo e o preco muda para
+  // o escalao certo, com o veiculo que o leva. Nenhum dos dois grandes
+  // faz isto, porque vendem lugares e nao veiculos.
+  var p = document.querySelector('[data-painel]');
+  if (!p) return;
+  var tiers = JSON.parse(p.getAttribute('data-tiers'));
+  var horas = JSON.parse(p.getAttribute('data-horas') || '[]');
+  var saidaPreco = p.querySelector('[data-preco]');
+  var saidaPor = p.querySelector('[data-por]');
+  var saidaPes = p.querySelector('[data-pessoas]');
+  var saidaVeic = p.querySelector('[data-veiculo]');
+  var data = p.querySelector('[data-data]');
+  var minimo = 1;
+  var maximo = tiers[tiers.length - 1].max;
+  var n = tiers[0].max;
+
+  function dinheiro(v) {
+    var s = (Math.round(v * 100) / 100).toFixed(2).replace('.00', '');
+    var ps = s.split('.');
+    ps[0] = ps[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return ps.join('.');
+  }
+
+  function escalao(k) {
+    for (var i = 0; i < tiers.length; i++) if (k <= tiers[i].max) return tiers[i];
+    return tiers[tiers.length - 1];
+  }
+
+  function pintar() {
+    var t = escalao(n);
+    saidaPreco.textContent = '€' + dinheiro(t.price);
+    saidaPes.textContent = n;
+    saidaPor.textContent = 'for ' + n + (n === 1 ? ' person' : ' people')
+      + ' · €' + dinheiro(Math.round(t.price / n)) + ' each';
+    saidaVeic.textContent = t.vehicle
+      ? t.vehicle + (horas.length ? ' · departs ' + horas[0] : '')
+      : (horas.length ? 'Departs ' + horas[0] : '');
+    var trs = p.querySelectorAll('tr[data-tier]');
+    for (var j = 0; j < trs.length; j++) {
+      trs[j].classList.toggle('activo',
+        parseInt(trs[j].getAttribute('data-tier'), 10) === t.max);
+    }
+  }
+
+  p.querySelector('[data-menos]').addEventListener('click', function () {
+    if (n > minimo) { n--; pintar(); }
+  });
+  p.querySelector('[data-mais]').addEventListener('click', function () {
+    if (n < maximo) { n++; pintar(); }
+  });
+  // nao se aceitam datas passadas: um campo que deixa escolher ontem e um
+  // campo que ainda nao foi pensado
+  if (data) { data.min = new Date().toISOString().slice(0, 10); }
+  pintar();
+})();
+"""
+
+
+JS_GALERIA = r"""
+(function () {
+  // As fotografias abrem em grande. Setas, Escape, foco preso dentro da
+  // caixa e devolvido ao sitio de onde se saiu — senao quem navega por
+  // teclado fica perdido atras da imagem.
+  var figs = [].slice.call(document.querySelectorAll('[data-foto]'));
+  if (!figs.length) return;
+  var i = 0, antes = null;
+  var cx = document.createElement('div');
+  cx.className = 'luz';
+  cx.setAttribute('role', 'dialog');
+  cx.setAttribute('aria-modal', 'true');
+  cx.setAttribute('aria-label', 'Photograph');
+  cx.hidden = true;
+  cx.innerHTML = '<button class="luz-x" aria-label="Close">&times;</button>'
+    + '<button class="luz-a" aria-label="Previous">&#8249;</button>'
+    + '<figure><img alt=""><figcaption></figcaption></figure>'
+    + '<button class="luz-p" aria-label="Next">&#8250;</button>';
+  document.body.appendChild(cx);
+  var im = cx.querySelector('img');
+  var cap = cx.querySelector('figcaption');
+
+  function mostrar(k) {
+    i = (k + figs.length) % figs.length;
+    var f = figs[i];
+    im.src = f.getAttribute('data-grande');
+    im.alt = f.getAttribute('data-alt') || '';
+    cap.textContent = f.getAttribute('data-credito') || '';
+  }
+  function abrir(k) {
+    antes = document.activeElement;
+    mostrar(k);
+    cx.hidden = false;
+    document.body.style.overflow = 'hidden';
+    cx.querySelector('.luz-x').focus();
+  }
+  function fechar() {
+    cx.hidden = true;
+    document.body.style.overflow = '';
+    if (antes) antes.focus();
+  }
+  figs.forEach(function (f, k) {
+    f.addEventListener('click', function () { abrir(k); });
+    f.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); abrir(k); }
+    });
+  });
+  cx.querySelector('.luz-x').addEventListener('click', fechar);
+  cx.querySelector('.luz-a').addEventListener('click', function () { mostrar(i - 1); });
+  cx.querySelector('.luz-p').addEventListener('click', function () { mostrar(i + 1); });
+  cx.addEventListener('click', function (ev) { if (ev.target === cx) fechar(); });
+  document.addEventListener('keydown', function (ev) {
+    if (cx.hidden) return;
+    if (ev.key === 'Escape') fechar();
+    else if (ev.key === 'ArrowLeft') mostrar(i - 1);
+    else if (ev.key === 'ArrowRight') mostrar(i + 1);
+    else if (ev.key === 'Tab') {
+      var fs = cx.querySelectorAll('button');
+      var pri = fs[0], ult = fs[fs.length - 1];
+      if (ev.shiftKey && document.activeElement === pri) { ev.preventDefault(); ult.focus(); }
+      else if (!ev.shiftKey && document.activeElement === ult) { ev.preventDefault(); pri.focus(); }
+    }
+  });
 })();
 """
 
@@ -404,9 +622,16 @@ def main():
         if len(fotos) > 1:
             figs = []
             for f in fotos[1:4]:
-                figs.append('<figure>%s<figcaption>Photo %s</figcaption></figure>'
-                            % (img(f['id'], f['alt'], (500, 900),
-                                   '(min-width:700px) 33vw, 50vw'), e(f['by'])))
+                figs.append(
+                    '<figure data-foto tabindex="0" role="button" '
+                    'aria-label="Open photograph" data-grande="%s" '
+                    'data-alt="%s" data-credito="Photo %s">'
+                    '%s<figcaption>Photo %s</figcaption>'
+                    '<span class="lupa" aria-hidden="true">&#8599;</span>'
+                    '</figure>'
+                    % (e(grande_url(f['id'])), e(f['alt']), e(f['by']),
+                       img(f['id'], f['alt'], (500, 900),
+                           '(min-width:700px) 33vw, 50vw'), e(f['by'])))
             tira = ('<div class="folha"><div class="tira">%s</div></div>'
                     % '\n'.join(figs))
 
@@ -540,7 +765,7 @@ def main():
         html = envolver(
             '%s — Exclusive World Tours' % t['title'],
             t.get('metaDesc') or '',
-            CSS, corpo, js=procura.JS + JS_FIXA)
+            CSS, corpo, js=procura.JS + JS_FIXA + JS_PAINEL + JS_GALERIA)
         escrever(html, 'tours/%s/index.html' % t['slug'])
 
     print('%d paginas de tour' % len(tours))
