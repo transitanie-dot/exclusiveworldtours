@@ -539,6 +539,17 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .campo-g input[type=date]{width:100%;border:1px solid var(--risco);
   border-radius:8px;padding:11px 12px;font:inherit;font-size:14.5px;
   color:var(--tinta);background:var(--branco)}
+/* O que a base diz sobre o dia escolhido. Nunca inventa: ou sabe e diz,
+   ou nao sabe e diz que nao sabe. Um "disponivel" a adivinhar e uma
+   reserva que vai ter de ser cancelada. */
+.dia-estado{margin:0 0 var(--e2);padding:10px 12px;border-radius:6px;
+  font-size:13.5px;line-height:1.5;border-left:3px solid var(--risco);
+  background:var(--papel);color:var(--texto)}
+.dia-estado b{color:var(--tinta)}
+.dia-sim{border-left-color:#1B5E20;background:#EDF5EE;color:#14401A}
+.dia-nao{border-left-color:#8C1D18;background:#FCEEEC;color:#5F1512}
+.dia-talvez{border-left-color:var(--cor)}
+
 .veiculo{margin:0 0 var(--e2);font-size:13px;color:var(--mudo);
   min-height:1.3em}
 .tabela-d{margin:0 0 var(--e2)}
@@ -588,6 +599,8 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .relacionados h2{font-size:1.35rem;margin:0 0 var(--e3)}
 
 </style>
+<script src="/assets/lib/supabase.js"></script>
+<script src="/assets/ligacao.js"></script>
 </head>
 <body>
 <a class="saltar" href="#principal">Skip to content</a>
@@ -801,6 +814,8 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   </div>
 
   <p class="veiculo" data-veiculo></p>
+
+  <p class="dia-estado" data-dia role="status" hidden></p>
 
   <a class="botao reservar" href="#book" data-ir>Check this date</a>
 
@@ -1295,6 +1310,77 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     p.addEventListener('input', function () { ir.setAttribute('href', destino()); });
     p.addEventListener('click', function () { ir.setAttribute('href', destino()); });
   }
+
+  // ------------------------------------------------- o dia, ao vivo
+  //
+  // O calendario do operador e dado rapido: ele fecha amanha as onze da
+  // noite e tem de ser verdade imediatamente. A pagina e estatica e foi
+  // gerada ha dias, por isso a unica maneira honesta de responder
+  // "posso ir neste dia?" e perguntar a base no momento.
+  //
+  // Tres respostas possiveis, e a terceira e tao importante como as
+  // outras duas: quando o tour ainda nao esta ligado a um operador no
+  // sistema, a pagina NAO diz que esta disponivel. Diz que confirmamos.
+  var aviso = p.querySelector('[data-dia]');
+
+  async function verDia() {
+    if (!aviso || !data || !data.value) {
+      if (aviso) aviso.hidden = true;
+      return;
+    }
+    if (!window.ewt || window.ewt.avariado) return;
+
+    var d = data.value;
+    aviso.hidden = false;
+    aviso.className = 'dia-estado';
+    aviso.textContent = 'Checking that day\u2026';
+
+    var r = await ewt.sb.rpc('dias_abertos',
+      { p_slug: SLUG, p_de: d, p_ate: d });
+
+    if (r.error) {
+      // Nao se assusta ninguem com um erro de rede: o pedido por email
+      // continua a funcionar e e por ai que isto se resolve na mesma.
+      aviso.className = 'dia-estado dia-talvez';
+      aviso.innerHTML = 'We could not check that day automatically. '
+        + 'Ask us and we confirm it with the operator.';
+      return;
+    }
+
+    var linhas = r.data || [];
+    if (linhas.length) {
+      aviso.className = 'dia-estado dia-sim';
+      aviso.innerHTML = '<b>That day is open.</b> Ask us and we hold it '
+        + 'while you decide.'
+        + (linhas[0].price ? ' The operator prices that date at \u20ac'
+            + ewt.euros(linhas[0].price) + '.' : '');
+      return;
+    }
+
+    // Vazio quer dizer duas coisas diferentes, e confundi-las e o erro
+    // caro: ou o operador fechou o dia, ou este tour ainda nao tem
+    // calendario no sistema. Pergunta-se qual.
+    // Pergunta-se pelos 90 dias a seguir. Se o tour tem calendario no
+    // sistema, alguma coisa volta; se nao volta nada, o tour ainda nao
+    // esta ligado a um operador e nao ha nada a afirmar sobre o dia.
+    var fim = new Date(d);
+    fim.setDate(fim.getDate() + 90);
+    var existe = await ewt.sb.rpc('dias_abertos',
+      { p_slug: SLUG, p_de: d, p_ate: ewt.iso(fim) });
+    var temCalendario = existe.data && existe.data.length;
+
+    if (temCalendario) {
+      aviso.className = 'dia-estado dia-nao';
+      aviso.innerHTML = '<b>That day is taken.</b> Pick another and we '
+        + 'check it, or ask us and we suggest the nearest one that works.';
+    } else {
+      aviso.className = 'dia-estado dia-talvez';
+      aviso.innerHTML = 'We confirm this date with the operator and come '
+        + 'back within one working day.';
+    }
+  }
+
+  if (data) { data.addEventListener('change', verDia); }
 
   pintar();
 })();

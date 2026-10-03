@@ -43,7 +43,8 @@ COM_BASE = ['portal/index.html', 'portal/listing/index.html',
             'admin/index.html', 'admin/operators/index.html',
             'admin/searches/index.html', 'contact/index.html',
             'suppliers/apply/index.html', 'tours/index.html',
-            'search/index.html']
+            'search/index.html',
+            'tours/cliffs-of-moher-galway/index.html']
 
 # As paginas do portal e da administracao nunca podem sair sem noindex,
 # por outra razao que nao os precos: um painel de operador indexado nao
@@ -61,6 +62,7 @@ EXIGIDAS = ['botao', 'tour', 'tours', 'painel', 'paragem', 'galeria',
             'pt-topo', 'pt-nav', 'pt-corpo', 'pt-cab', 'cx', 'campo',
             'aviso', 'est', 'bt', 'vazio', 'tab', 'rep-l', 'rep-mais',
             'dia', 'grelha', 'aba', 'rv', 'dif-l', 'conta',
+            'dia-estado',
             # os formularios publicos
             'fcapa', 'fcorpo', 'fcx', 'fcampo', 'faviso', 'flado',
             'bgrande', 'sub-h',

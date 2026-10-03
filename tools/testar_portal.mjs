@@ -107,6 +107,16 @@ function responder(url, metodo, corpo) {
     if (q.includes('approved')) return base.filter(x => x.status === 'approved');
     return base;
   }
+  if (c === '/rest/v1/rpc/dias_abertos') {
+    var dd = corpo && corpo.p_de;
+    if (RESPOSTA_DIAS === 'livre') return [{ day: dd, price: 520 }];
+    if (RESPOSTA_DIAS === 'fechado') {
+      // o dia pedido nao volta, mas os 90 seguintes voltam: o tour tem
+      // calendario, aquele dia e que esta tomado
+      return (corpo.p_ate !== corpo.p_de) ? [{ day: corpo.p_ate, price: null }] : [];
+    }
+    return [];   // 'sem calendario': nunca volta nada
+  }
   if (c === '/rest/v1/availability') {
     return [{ day: dia(12), status: 'closed', price_override: null, seats_left: null },
             { day: dia(18), status: 'sold_out', price_override: null, seats_left: 0 },
@@ -135,6 +145,7 @@ function responder(url, metodo, corpo) {
 }
 
 // ---------------------------------------------------------------- correr
+let RESPOSTA_DIAS = 'livre';
 const erros = [];
 const avisos = [];
 
@@ -190,11 +201,18 @@ await ctx.route('**://*.supabase.co/**', async (rota) => {
 });
 
 const pag = await ctx.newPage();
+// O container nao chega ao Unsplash (politica de egresso), por isso as
+// fotografias falham sempre aqui e falham so aqui. Contar isso como erro
+// faria o teste reprovar toda a pagina que tem uma fotografia — e e
+// precisamente para esse caso que existe a cor cheia por baixo.
+const FORA = /unsplash|ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|favicon/i;
 pag.on('console', (m) => {
-  if (m.type() === 'error') erros.push(m.text());
+  if (m.type() === 'error' && !FORA.test(m.text())) erros.push(m.text());
   if (m.type() === 'warning') avisos.push(m.text());
 });
-pag.on('pageerror', (e) => erros.push('pageerror: ' + e.message));
+pag.on('pageerror', (e) => {
+  if (!FORA.test(e.message)) erros.push('pageerror: ' + e.message);
+});
 
 async function ver(nome, caminho, esperar, teste) {
   erros.length = 0;
@@ -388,6 +406,30 @@ await t('a candidatura exige a descricao do tour',
     return [['pede uma descricao a serio',
       (await p.locator('#av-cand').innerText()).toLowerCase().includes('describe')]];
   });
+
+// ------------------------------------------------- a data, na pagina do tour
+async function diaDiz(nome, modo, contem) {
+  RESPOSTA_DIAS = modo;
+  total++;
+  if (await ver(nome, '/tours/cliffs-of-moher-galway/', '[data-data]',
+    async (p) => {
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      await p.locator('[data-data]').fill(d.toISOString().slice(0, 10));
+      await p.waitForTimeout(700);
+      const t = await p.locator('[data-dia]').innerText();
+      return [
+        ['o aviso aparece', await p.locator('[data-dia]').isVisible()],
+        ['diz "' + contem + '" (disse: "' + t.slice(0, 70) + '")',
+          t.toLowerCase().includes(contem.toLowerCase())]
+      ];
+    })) bem++;
+}
+
+await diaDiz('a data livre diz que esta aberta', 'livre', 'that day is open');
+await diaDiz('a data fechada diz que esta tomada', 'fechado', 'that day is taken');
+await diaDiz('sem calendario nao afirma nada', 'sem', 'we confirm this date');
+RESPOSTA_DIAS = 'livre';
 
 // Em ecra pequeno, que e onde o operador vai mesmo usar isto.
 await pag.setViewportSize({ width: 390, height: 844 });
