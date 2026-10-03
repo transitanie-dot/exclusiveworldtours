@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review queue — Exclusive World Tours</title>
+<meta name="description" content="Operator area of Exclusive World Tours.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/inter-latin-400-normal.woff2">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url(/assets/fontes/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url(/assets/fontes/inter-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-700-normal.woff2) format('woff2')}
+
+
+:root{
+  --tinta:#0B2B2A; --cor:#CE7030; --cor-escura:#A85426;
+  --papel:#F6F4F1; --branco:#FFFFFF;
+  --tinta-f:#B0B8B5; --cor-f:#E1AF8D; --uma-f:#B9C0BD;
+  --texto:#354F4E; --mudo:#5B6F6E; --risco:#D5D8D5;
+  /* o ambar sobre fundo escuro: o normal da 4.30:1 e texto pequeno
+     precisa de 4.5. Este da 5.24:1 e le-se como a mesma cor. */
+  --cor-clara:#D5854F;
+  --tipo:'Inter',system-ui,-apple-system,sans-serif;
+  --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
+  --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
+  --raio:10px;
+  /* a escala de intervalos: tudo no site sai daqui */
+  --e1:6px; --e2:12px; --e3:20px; --e4:32px; --e5:52px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;
+    transition-duration:.01ms !important}}
+body{margin:0;background:var(--papel);color:var(--texto);
+  font-family:var(--tipo);font-size:15.5px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
+  letter-spacing:-.025em;line-height:1.08;margin:0}
+.folha{max-width:1320px;margin:0 auto;padding:0 clamp(16px,2.4vw,32px)}
+/* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
+   homepage e a pagina de resultados ficou com um botao cinzento do
+   browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
+.botao{display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
+  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
+  cursor:pointer;text-decoration:none;white-space:nowrap}
+.botao:hover{background:var(--cor-escura)}
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
+  border-radius:4px}
+/* So aparece a quem navega por teclado — mas aparece mesmo, que e o
+   ponto. Escondido com left:-9999px e sem regra de foco, este atalho
+   existe no HTML e nao serve a ninguem. */
+.saltar{position:absolute;left:16px;top:-60px;z-index:60;background:var(--tinta);
+  color:var(--branco);padding:12px 18px;border-radius:0 0 10px 10px;
+  text-decoration:none;font-weight:600;transition:top .15s ease}
+.saltar:focus{top:0}
+
+/* ------------------------------------------------------------ cabecalho */
+.topo{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--risco)}
+.topo-i{display:flex;align-items:center;gap:var(--e3);height:62px}
+.topo .marca{color:var(--tinta);flex:none}
+
+.nav{display:flex;align-items:center;gap:4px;margin-left:var(--e2);
+  font-size:14.5px;font-weight:500}
+.nav > a,.nav-b{display:inline-flex;align-items:center;gap:6px;
+  padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--texto);
+  background:transparent;border:0;font:inherit;font-weight:500;cursor:pointer}
+.nav > a:hover,.nav-b:hover{background:var(--branco);color:var(--tinta)}
+.nav-b svg{width:11px;height:8px;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;transition:transform .18s}
+.nav-b[aria-expanded="true"] svg{transform:rotate(180deg)}
+.nav-b[aria-expanded="true"]{background:var(--branco);color:var(--tinta)}
+
+/* a gaveta dos destinos */
+.nav-d{position:relative}
+.men{position:absolute;left:0;top:calc(100% + 10px);z-index:50;width:400px;
+  background:var(--branco);border:1px solid var(--risco);
+  border-radius:var(--raio);padding:14px;
+  box-shadow:0 26px 54px -28px rgba(11,43,42,.45)}
+.men[hidden]{display:none}
+.men-t{margin:0 0 10px;font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--mudo);font-weight:600}
+.men-g{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.men-g a{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:9px 11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-size:14.5px}
+.men-g a:hover{background:var(--papel)}
+.men-n{font-family:var(--mono);font-size:11.5px;color:var(--mudo)}
+.men-todos{display:block;margin-top:10px;padding:10px 11px;border-radius:7px;
+  background:var(--papel);text-decoration:none;color:var(--cor-escura);
+  font-weight:600;font-size:14px}
+.men-todos:hover{background:var(--tinta);color:var(--branco)}
+
+.topo-acoes{display:flex;align-items:center;gap:8px;margin-left:auto}
+.topo-proc{display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 12px;
+  border:1px solid var(--risco);border-radius:999px;text-decoration:none;
+  color:var(--mudo);font-size:14px;background:var(--branco)}
+.topo-proc:hover{border-color:var(--tinta-f);color:var(--tinta)}
+.topo-proc svg{width:15px;height:15px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.botao-p{min-height:38px;padding:0 16px;font-size:14px;border-radius:8px}
+
+/* a gaveta de ecra pequeno */
+.hamb{display:none;width:40px;height:38px;border:1px solid var(--risco);
+  border-radius:8px;background:var(--branco);cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.hamb span{display:block;width:17px;height:2px;background:var(--tinta);
+  border-radius:2px;transition:transform .2s, opacity .2s}
+.hamb[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] span:nth-child(2){opacity:0}
+.hamb[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.men-movel{display:none;border-top:1px solid var(--risco);
+  background:var(--branco);padding:var(--e3) 0}
+.men-movel[hidden]{display:none !important}
+.men-m-proc{display:flex;align-items:center;gap:10px;padding:13px 15px;
+  border:1px solid var(--risco);border-radius:10px;text-decoration:none;
+  color:var(--mudo);margin:0 0 var(--e3);font-size:15px}
+.men-m-proc svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.men-l{display:grid;gap:2px;margin-top:var(--e3);
+  border-top:1px solid var(--risco);padding-top:var(--e2)}
+.men-l a{padding:11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-weight:500}
+.men-l a:hover{background:var(--papel)}
+
+@media (max-width:980px){
+  .nav,.topo-proc{display:none}
+  .hamb{display:flex}
+  .men-movel{display:block}
+}
+@media (max-width:520px){
+  .botao-p{display:none}
+}
+
+/* ---------------------------------------------------------- as bandas
+   O site deixa de ser uma folha branca com coisas em cima. Alterna
+   bandas de cor a toda a largura, e e isso que da ritmo a pagina quando
+   se percorre. */
+.banda{background:var(--papel)}
+.banda-b{background:var(--branco);border-top:1px solid var(--risco);
+  border-bottom:1px solid var(--risco)}
+.banda-e{background:var(--tinta);color:rgba(255,255,255,.86)}
+.banda-e h1,.banda-e h2,.banda-e h3{color:var(--branco)}
+.banda-e .rot{color:rgba(255,255,255,.6)}
+.banda-e .rot b{color:var(--cor-clara)}
+.banda-e .rot::after{background:rgba(255,255,255,.18)}
+
+/* ------------------------------------------------------- o detalhe fino
+   O Ricardo pediu mais detalhe decorativo. Nao e enfeite solto: e um
+   sistema pequeno que se repete em todas as paginas e faz o site parecer
+   um instrumento em vez de uma brochura — rotulos numerados, filetes,
+   cantos marcados, numeros de largura fixa. */
+
+/* o rotulo numerado de uma seccao: "01 / THE DAY" */
+.rot{display:flex;align-items:center;gap:10px;margin:0 0 var(--e2);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600}
+.rot b{font-family:var(--mono);font-weight:600;color:var(--cor-escura);
+  font-size:11px;letter-spacing:.06em}
+.rot::after{content:'';flex:1;height:1px;background:var(--risco)}
+
+/* numeros sempre de largura fixa: precos, horas, coordenadas */
+.num,.preco,time,[data-num]{font-variant-numeric:tabular-nums}
+
+/* a moldura com os cantos marcados, para blocos que tem de pesar */
+.moldura{position:relative;border:1px solid var(--risco);
+  border-radius:var(--raio);background:var(--branco)}
+.moldura::before,.moldura::after{content:'';position:absolute;width:9px;
+  height:9px;border:2px solid var(--cor);pointer-events:none}
+.moldura::before{top:-1px;left:-1px;border-right:0;border-bottom:0;
+  border-radius:var(--raio) 0 0 0}
+.moldura::after{bottom:-1px;right:-1px;border-left:0;border-top:0;
+  border-radius:0 0 var(--raio) 0}
+
+/* um codigo: IATA, coordenada, referencia */
+.cod{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+  color:var(--mudo);background:var(--papel);border:1px solid var(--risco);
+  border-radius:4px;padding:2px 6px}
+
+/* a revelacao ao percorrer. Quem pediu para nao haver movimento nao tem
+   movimento nenhum — e a regra esta primeiro, para nunca ser esquecida. */
+@media (prefers-reduced-motion:no-preference){
+  [data-rev]{opacity:0;transform:translateY(14px);
+    transition:opacity .5s cubic-bezier(.2,.6,.2,1),
+               transform .5s cubic-bezier(.2,.6,.2,1)}
+  [data-rev].vis{opacity:1;transform:none}
+}
+
+/* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
+   isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
+   pagina de resultados os cartoes sairam como texto corrido. */
+/* tours */
+/* mais cartoes por ecra: a 1440 cabem quatro, nao tres */
+.tours{display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,268px),1fr))}
+.tour{display:flex;flex-direction:column;text-decoration:none;
+  border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden;
+  background:var(--branco);transition:border-color .18s, transform .18s}
+.tour:hover{border-color:var(--tinta-f);transform:translateY(-2px)}
+.tour-foto{position:relative;aspect-ratio:16/10;background:var(--uma-f);
+  display:block;overflow:hidden}
+.tour-foto img{width:100%;height:100%;object-fit:cover;
+  transition:transform .5s ease}
+.tour:hover .tour-foto img{transform:scale(1.045)}
+.credito{position:absolute;right:7px;bottom:6px;z-index:2;font-size:10px;
+  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+/* a duracao em cima da fotografia: le-se antes do titulo, que e a ordem
+   por que as pessoas decidem */
+.tour-sel{position:absolute;left:7px;top:7px;z-index:2;font-family:var(--mono);
+  font-size:11px;letter-spacing:.03em;color:var(--tinta);background:var(--branco);
+  padding:3px 8px;border-radius:4px;font-variant-numeric:tabular-nums}
+.tour-corpo{display:flex;flex-direction:column;gap:7px;padding:14px 15px 15px;
+  flex:1}
+.tour-onde{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--cor-escura);font-weight:600}
+.tour-onde .pt{color:var(--risco)}
+.tour-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.02rem;
+  color:var(--tinta);line-height:1.2}
+.tour-linha{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+.etiq{font-size:11.5px;color:var(--texto);background:var(--papel);
+  border:1px solid var(--risco);border-radius:4px;padding:2px 7px}
+.tour-preco{margin-top:auto;padding-top:11px;border-top:1px solid var(--risco);
+  display:flex;align-items:flex-end;gap:9px;justify-content:space-between}
+.tour-preco b{font-family:var(--tipo-titulo);font-size:1.22rem;
+  color:var(--tinta);line-height:1}
+.tour-preco-nota{font-size:11.5px;color:var(--mudo);text-align:right;
+  line-height:1.35}
+
+/* rodape */
+.rodape{background:var(--papel);border-top:1px solid var(--risco);
+  padding:var(--e5) 0 var(--e4);margin-top:0}
+.rodape-i{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
+.rodape .marca{color:var(--tinta)}
+.rodape-nota{color:var(--mudo);font-size:14px;max-width:40ch;margin:16px 0 0}
+.rodape-cols{display:flex;gap:56px;flex-wrap:wrap}
+.rodape-col h3{font-size:13px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mudo);font-family:var(--tipo);font-weight:600;margin:0 0 12px}
+.rodape-col a{display:block;text-decoration:none;color:var(--texto);
+  font-size:15px;padding:4px 0}
+.rodape-col a:hover{color:var(--cor-escura)}
+.rodape-fim{margin-top:40px;padding-top:22px;border-top:1px solid var(--risco);
+  font-size:13.5px;color:var(--mudo);display:flex;gap:18px;flex-wrap:wrap;
+  justify-content:space-between}
+
+.marca{font-size:var(--t);line-height:1;display:inline-flex;align-items:center;
+  gap:.6em;text-decoration:none}
+.marca .sim{width:1em;height:1em;flex:none;display:block}
+.marca-nome{display:inline-flex;flex-direction:column;align-items:flex-start;
+  font-family:var(--tipo-titulo);font-weight:600;text-transform:uppercase;
+  color:var(--tinta);line-height:1;white-space:nowrap;margin:0}
+.marca-nome-h1{font-size:inherit}
+.marca-l1{font-size:.268em;letter-spacing:.075em;margin-right:-.075em}
+.marca-l2{font-size:.268em;letter-spacing:.2165em;margin-right:-.2165em;
+  margin-top:.19em}
+/* os planos: nenhum gradiente, so cores cheias que tapam o que esta atras */
+.sim .papel{fill:var(--papel)}
+.sim .p{fill:var(--tinta)}
+.sim .pf{fill:var(--tinta-f)}
+.sim .c{fill:var(--cor)}
+.sim .u{fill:var(--tinta)}
+.sim .u-f{fill:var(--uma-f)}
+
+.pc{position:relative;width:100%}
+.pc-caixa{display:flex;align-items:center;gap:12px;background:var(--branco);
+  border-radius:14px;padding:8px 8px 8px 20px;
+  box-shadow:0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-lupa{width:21px;height:21px;flex:none;fill:none;stroke:var(--mudo);
+  stroke-width:2;stroke-linecap:round}
+.pc-caixa input{flex:1;min-width:0;border:0;padding:16px 0;font:inherit;
+  font-size:17px;color:var(--tinta);background:transparent}
+.pc-caixa input::placeholder{color:var(--mudo)}
+.pc-caixa input:focus{outline:0}
+.pc-caixa:focus-within{box-shadow:0 0 0 3px var(--cor),
+  0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-botao{min-height:52px}
+.pc-oculto{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0}
+
+.pc-lista{position:absolute;z-index:50;left:0;right:0;top:calc(100% + 10px);
+  padding:8px;background:var(--branco);border:1px solid var(--risco);
+  border-radius:14px;max-height:400px;overflow:auto;
+  box-shadow:0 24px 54px -26px rgba(11,43,42,.5);text-align:left}
+.pc-lista[hidden]{display:none}
+.pc-grupo{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600;padding:12px 12px 6px}
+.pc-grupo:first-child{padding-top:6px}
+.pc-op{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  border-radius:9px;cursor:pointer;color:var(--texto);font-size:15px}
+.pc-op[aria-selected="true"],.pc-op:hover{background:var(--papel)}
+.pc-icone{width:34px;height:34px;flex:none;border-radius:9px;
+  background:var(--papel);display:grid;place-items:center;color:var(--tinta)}
+.pc-op[aria-selected="true"] .pc-icone{background:var(--branco)}
+.pc-icone svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pc-txt{min-width:0;flex:1}
+.pc-t1{display:block;color:var(--tinta);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-t2{display:block;color:var(--mudo);font-size:13px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-n{flex:none;font-size:12px;font-weight:600;color:var(--branco);
+  background:var(--cor-escura);border-radius:999px;padding:3px 10px}
+.pc-nada{flex:none;font-size:12.5px;color:var(--mudo)}
+.pc-vazio{padding:16px 12px 18px;color:var(--mudo);font-size:14.5px}
+.pc-vazio b{color:var(--tinta)}
+@media (max-width:700px){
+  .pc-caixa{flex-wrap:wrap;padding:8px}
+  .pc-caixa input{flex:1 1 100%;padding:12px 8px}
+  .pc-lupa{display:none}
+  .pc-botao{flex:1 1 100%}
+}
+
+
+/* ------------------------------------------------------------ portal */
+body.pt { background: #F6F4F1; }
+
+.pt-topo {
+  background: #0B2B2A; color: #F6F4F1;
+  border-bottom: 3px solid #CE7030;
+  position: sticky; top: 0; z-index: 40;
+}
+.pt-topo-i {
+  display: flex; align-items: center; gap: .6rem 1rem;
+  min-height: 60px; padding: .5rem 0;
+  /* Dobra. Sem isto, a marca mais a etiqueta mais o email mais o botao
+     de sair somavam 525px num ecra de 390 e a pagina toda rolava para o
+     lado — no sitio onde o operador a vai mesmo abrir. */
+  flex-wrap: wrap;
+}
+.pt-topo .marca { flex: 0 0 auto; }
+.pt-etiq {
+  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #D5854F; padding: .3rem .5rem;
+  border: 1px solid #D5854F; border-radius: 3px;
+  white-space: nowrap;
+}
+.pt-topo-fim {
+  margin-left: auto; display: flex; align-items: center; gap: .9rem;
+  min-width: 0;
+}
+.pt-quem {
+  font: 400 .8rem/1.3 'Inter', system-ui, sans-serif;
+  color: #F6F4F1; opacity: .85; text-align: right;
+  max-width: 14rem; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; min-width: 0;
+}
+/* Em ecra estreito o email e a primeira coisa a sair: quem esta a usar o
+   telemovel sabe de quem e o telemovel. O botao de sair fica. */
+@media (max-width: 560px) {
+  .pt-quem { display: none; }
+  .pt-topo-i { min-height: 54px; }
+  .pt-etiq { font-size: .62rem; padding: .26rem .4rem; }
+}
+.pt-sair {
+  font: 500 .82rem/1 'Inter', system-ui, sans-serif;
+  color: #F6F4F1; background: none;
+  border: 1px solid rgba(255,255,255,.4); border-radius: 4px;
+  padding: .5rem .8rem; cursor: pointer;
+}
+.pt-sair:hover { border-color: #F6F4F1; }
+
+.pt-nav {
+  background: #FFFFFF; border-bottom: 1px solid #D5D8D5;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.pt-nav-i { display: flex; gap: 0; }
+.pt-nav a {
+  font: 500 .88rem/1 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; text-decoration: none;
+  padding: .95rem 1.1rem; border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+.pt-nav a:hover { color: #0B2B2A; background: #F6F4F1; }
+.pt-nav a[aria-current="page"] {
+  color: #0B2B2A; border-bottom-color: #CE7030; font-weight: 600;
+}
+
+.pt-corpo { padding: 1.6rem 0 4rem; }
+.pt-cab { margin-bottom: 1.4rem; }
+.pt-cab h1 {
+  font: 700 clamp(1.4rem, 3vw, 1.9rem)/1.15 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin: 0 0 .3rem;
+}
+.pt-cab p {
+  font: 400 .95rem/1.5 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; margin: 0; max-width: 56ch;
+}
+
+/* ------------------------------------------------------------- cartoes */
+.cx {
+  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
+  padding: 1.2rem; margin-bottom: 1.1rem;
+}
+.cx-t {
+  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: #5B6F6E; margin: 0 0 .9rem;
+  padding-bottom: .6rem; border-bottom: 1px solid #D5D8D5;
+}
+.cx-v { display: grid; gap: 1.1rem; }
+@media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
+
+/* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
+   onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
+   rotulo nenhum e um campo que ninguem consegue usar as cegas. */
+.so-leitor {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ formulario */
+.campo { margin-bottom: 1rem; }
+.campo > label, .campo > .rot {
+  display: block; margin-bottom: .35rem;
+  font: 600 .82rem/1.3 'Inter', system-ui, sans-serif; color: #0B2B2A;
+}
+.campo .ajuda {
+  display: block; margin-top: .3rem;
+  font: 400 .78rem/1.45 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+input[type=text], input[type=email], input[type=tel], input[type=url],
+input[type=number], input[type=date], input[type=time], select, textarea {
+  width: 100%; box-sizing: border-box;
+  font: 400 .95rem/1.4 'Inter', system-ui, sans-serif; color: #0B2B2A;
+  background: #FFFFFF; border: 1px solid #5B6F6E; border-radius: 4px;
+  padding: .66rem .7rem;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #CE7030; outline-offset: 1px; border-color: #0B2B2A;
+}
+input[aria-invalid="true"], textarea[aria-invalid="true"] {
+  border-color: #B3261E; border-width: 2px;
+}
+textarea { min-height: 6.5rem; resize: vertical; }
+.linha2 { display: grid; gap: 1rem; }
+@media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
+fieldset { border: 0; padding: 0; margin: 0 0 1rem; }
+legend {
+  padding: 0; margin-bottom: .6rem;
+  font: 700 1.02rem/1.2 'Archivo', system-ui, sans-serif; color: #0B2B2A;
+}
+.obrig { color: #8C1D18; }
+
+/* --------------------------------------------------------------- avisos */
+.aviso {
+  margin: .9rem 0; padding: .8rem .9rem; border-radius: 4px;
+  font: 400 .9rem/1.5 'Inter', system-ui, sans-serif;
+  border-left: 4px solid #5B6F6E; background: #F6F4F1; color: #354F4E;
+}
+.aviso-mal { border-left-color: #8C1D18; background: #FCEEEC; color: #5F1512; }
+.aviso-bem { border-left-color: #1B5E20; background: #EDF5EE; color: #14401A; }
+.aviso-nota { border-left-color: #CE7030; background: #FBF2EB; color: #354F4E; }
+
+/* --------------------------------------------------------------- estados */
+.est {
+  display: inline-block; vertical-align: middle;
+  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .32rem .5rem; border-radius: 3px; white-space: nowrap;
+}
+.est-pending  { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
+.est-approved { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
+.est-live     { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
+.est-rejected { background: #FCEEEC; color: #5F1512; border: 1px solid #D79C96; }
+.est-draft    { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
+.est-paused   { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
+.est-new      { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
+
+/* --------------------------------------------------------------- tabelas */
+.tab-rolo { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tab-rolo:focus-visible { outline: 3px solid #CE7030; outline-offset: 2px; }
+table.tab { width: 100%; border-collapse: collapse; }
+table.tab th, table.tab td {
+  text-align: left; padding: .7rem .8rem;
+  border-bottom: 1px solid #D5D8D5; vertical-align: top;
+  font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
+}
+table.tab th {
+  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase; color: #5B6F6E;
+  border-bottom: 2px solid #D5D8D5; white-space: nowrap;
+}
+table.tab tr:last-child td { border-bottom: 0; }
+table.tab a { color: #A85426; font-weight: 500; }
+
+/* ---------------------------------------------------------------- vazio */
+.vazio {
+  padding: 2.2rem 1.2rem; text-align: center;
+  border: 2px dashed #D5D8D5; border-radius: 6px; background: #FFFFFF;
+}
+.vazio h3 {
+  font: 700 1.05rem/1.25 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin: 0 0 .4rem;
+}
+.vazio p {
+  font: 400 .92rem/1.55 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; margin: 0 auto 1rem; max-width: 42ch;
+}
+
+/* --------------------------------------------------------------- acoes */
+.acoes { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.bt {
+  font: 600 .92rem/1 'Inter', system-ui, sans-serif;
+  padding: .75rem 1.15rem; border-radius: 4px; border: 1px solid transparent;
+  cursor: pointer; text-decoration: none; display: inline-block;
+}
+.bt-p { background: #0B2B2A; color: #F6F4F1; }
+.bt-p:hover { background: #354F4E; }
+.bt-s { background: #FFFFFF; color: #0B2B2A; border-color: #5B6F6E; }
+.bt-s:hover { border-color: #0B2B2A; background: #F6F4F1; }
+.bt-mal { background: #FFFFFF; color: #8C1D18; border-color: #B3261E; }
+.bt-mal:hover { background: #FCEEEC; }
+.bt[disabled] { opacity: .55; cursor: not-allowed; }
+.bt-pq { font-size: .82rem; padding: .5rem .7rem; }
+
+/* --------------------------------------------------------- a carregar */
+.carrega {
+  padding: 2rem 0; text-align: center;
+  font: 400 .92rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+
+.abas {
+  display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;
+  border-bottom: 2px solid #D5D8D5;
+}
+.aba {
+  font: 600 .9rem/1 'Inter', system-ui, sans-serif;
+  background: none; border: 0; border-bottom: 3px solid transparent;
+  color: #5B6F6E; padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px;
+  display: flex; align-items: center; gap: .45rem;
+}
+.aba:hover { color: #0B2B2A; }
+.aba[aria-selected="true"] { color: #0B2B2A; border-bottom-color: #CE7030; }
+.aba .n {
+  font: 700 .72rem/1 'Archivo', system-ui, sans-serif;
+  background: #CE7030; color: #FFF; border-radius: 10px;
+  padding: .22rem .42rem; min-width: 1.1rem; text-align: center;
+}
+.aba .n-0 { background: #D5D8D5; color: #5B6F6E; }
+
+/* ------------------------------------------------------------- revisao */
+.rv {
+  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
+  margin-bottom: 1.2rem; overflow: hidden;
+}
+.rv-t {
+  padding: 1rem 1.1rem; border-bottom: 1px solid #D5D8D5;
+  display: grid; gap: .5rem;
+}
+@media (min-width: 820px) {
+  .rv-t { grid-template-columns: 1fr auto; align-items: center; }
+}
+.rv-n {
+  font: 700 1.1rem/1.25 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin: 0 0 .25rem;
+}
+.rv-m {
+  font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
+  margin: 0; display: flex; flex-wrap: wrap; gap: .4rem .9rem;
+}
+.rv-c { padding: 1.1rem; }
+
+/* O que mudou. Verde entra, vermelho sai — e com sinal, nao so cor. */
+.dif { display: grid; gap: .6rem; }
+.dif-l {
+  border-left: 4px solid #D5D8D5; padding: .5rem .8rem;
+  background: #F6F4F1; border-radius: 0 4px 4px 0;
+}
+.dif-campo {
+  font: 600 .7rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase; color: #5B6F6E;
+  margin: 0 0 .4rem;
+}
+.dif-v {
+  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif;
+  margin: 0; white-space: pre-wrap; word-break: break-word;
+}
+.dif-fora { color: #5F1512; background: #FCEEEC; }
+.dif-dentro { color: #14401A; background: #EDF5EE; }
+.dif-fora::before  { content: '\2212  '; font-weight: 700; }
+.dif-dentro::before { content: '+  '; font-weight: 700; }
+.dif-novo { border-left-color: #1B5E20; }
+.dif-ido  { border-left-color: #B3261E; }
+.dif-mud  { border-left-color: #CE7030; }
+.dif-igual { color: #5B6F6E; font-style: italic; }
+
+.rv-acoes {
+  padding: 1rem 1.1rem; border-top: 1px solid #D5D8D5; background: #F6F4F1;
+  display: grid; gap: .8rem;
+}
+.rv-acoes .campo { margin: 0; }
+
+.dobra {
+  font: 500 .86rem/1 'Inter', system-ui, sans-serif; color: #A85426;
+  background: none; border: 0; padding: .5rem 0; cursor: pointer;
+  text-decoration: underline;
+}
+.todo {
+  margin-top: .8rem; padding: .8rem; border: 1px solid #D5D8D5;
+  border-radius: 4px; background: #F6F4F1;
+  font: 400 .82rem/1.5 'Inter', ui-monospace, monospace;
+  white-space: pre-wrap; word-break: break-word; max-height: 24rem;
+  overflow: auto; color: #354F4E;
+}
+
+</style>
+<script src="/assets/lib/supabase.js"></script>
+<script src="/assets/ligacao.js"></script>
+</head>
+<body class="pt">
+<a class="saltar" href="#principal">Skip to content</a>
+<header class="pt-topo">
+  <div class="folha pt-topo-i">
+    <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
+    <span class="pt-etiq">Administration</span>
+    <div class="pt-topo-fim">
+      <span class="pt-quem" id="quem"></span>
+      <button type="button" class="pt-sair" id="sair" hidden>Sign out</button>
+    </div>
+  </div>
+</header>
+  <nav class="pt-nav" aria-label="Portal">
+    <div class="folha pt-nav-i"><a href="/admin/" aria-current="page">Review queue</a>
+<a href="/admin/operators/">Operators</a>
+<a href="/admin/searches/">Searches</a></div>
+  </nav><main id="principal" class="pt-corpo">
+  <div class="folha" id="conteudo">
+    <p class="carrega" id="carrega">Loading the queue&hellip;</p>
+
+    <div id="ad" hidden>
+      <div class="pt-cab">
+        <h1>Review queue</h1>
+        <p>Nothing an operator writes reaches the site until it passes
+          through here. Every submission is shown against the version
+          already online, so you read what changed and not the whole
+          thing again.</p>
+      </div>
+
+      <div class="abas" id="abas" role="tablist">
+        <button type="button" class="aba" id="aba-tours" data-aba="tours"
+                role="tab" aria-selected="true">
+          Tours <span class="n n-0" id="n-tours">0</span>
+        </button>
+        <button type="button" class="aba" id="aba-ops" data-aba="ops"
+                role="tab" aria-selected="false">
+          Operators <span class="n n-0" id="n-ops">0</span>
+        </button>
+        <button type="button" class="aba" id="aba-peds" data-aba="peds"
+                role="tab" aria-selected="false">
+          Enquiries <span class="n n-0" id="n-peds">0</span>
+        </button>
+      </div>
+
+      <div id="fila"></div>
+    </div>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  if (!window.ewt || window.ewt.avariado) return;
+
+  var E = { aba: 'tours' };
+
+  // ----------------------------------------------------------- o que mudou
+  //
+  // Comparam-se os campos que interessam, e nao o jsonb inteiro: a
+  // ordem das chaves num objecto nao e informacao, e um diff que a
+  // conta diz que mudou tudo quando nao mudou nada.
+  var CAMPOS = [
+    ['title', 'Title'], ['slug', 'Web address'], ['kicker', 'Kicker'],
+    ['lede', 'Opening paragraph'], ['city', 'City'],
+    ['countryName', 'Country'], ['ticketTo', 'Main attraction'],
+    ['metaDesc', 'Search description'],
+    ['stopsIntro', 'Intro to the stops'],
+    ['includedIntro', 'Intro to what is included'],
+    ['notIncluded', 'Not included'], ['practical', 'Practical notes']
+  ];
+
+  function texto(x) {
+    if (x === null || x === undefined) return '';
+    return typeof x === 'string' ? x : JSON.stringify(x, null, 1);
+  }
+
+  function precos(p) {
+    var d = (p.durations && p.durations[0]) || {};
+    var t = (d.tiers || []).map(function (x) {
+      return 'up to ' + x.max + (x.vehicle ? ' (' + x.vehicle + ')' : '')
+        + ': €' + ewt.euros(x.price);
+    });
+    return (d.h ? d.h + '\n' : '') + t.join('\n')
+      + ((d.startTimes || []).length ? '\ndeparts ' + d.startTimes.join(', ') : '');
+  }
+
+  function listas(p) {
+    return {
+      'Stops': (p.stops || []).map(function (s) {
+        return (s.when ? s.when + ' — ' : '') + (s.h || '')
+          + (s.p ? '\n    ' + s.p : '');
+      }).join('\n'),
+      'Included': (p.included || []).join('\n'),
+      'Questions': (p.faq || []).map(function (f) {
+        return f[0] + '\n    ' + f[1];
+      }).join('\n'),
+      'Photographs': (p.photos || []).map(function (f) {
+        return (f.url || f.id || '') + (f.alt ? ' — ' + f.alt : '');
+      }).join('\n')
+    };
+  }
+
+  function diferenca(velho, novo) {
+    var linhas = [];
+
+    function par(rotulo, a, b) {
+      a = texto(a); b = texto(b);
+      if (a === b) return;
+      var tipo = !a ? 'novo' : (!b ? 'ido' : 'mud');
+      var h = '<div class="dif-l dif-' + tipo + '">'
+        + '<p class="dif-campo">' + rotulo + '</p>';
+      if (a) h += '<p class="dif-v dif-fora">' + ewt.escapar(a) + '</p>';
+      if (b) h += '<p class="dif-v dif-dentro">' + ewt.escapar(b) + '</p>';
+      linhas.push(h + '</div>');
+    }
+
+    if (!velho) {
+      // Primeira versao: nao ha nada com que comparar, mostra-se tudo.
+      CAMPOS.forEach(function (c) {
+        if (novo[c[0]]) par(c[1], '', novo[c[0]]);
+      });
+      par('Prices', '', precos(novo));
+      var l = listas(novo);
+      Object.keys(l).forEach(function (k) { if (l[k]) par(k, '', l[k]); });
+      return '<div class="dif">' + linhas.join('') + '</div>';
+    }
+
+    CAMPOS.forEach(function (c) { par(c[1], velho[c[0]], novo[c[0]]); });
+    par('Prices', precos(velho), precos(novo));
+    var lv = listas(velho), ln = listas(novo);
+    Object.keys(ln).forEach(function (k) { par(k, lv[k], ln[k]); });
+
+    if (!linhas.length) {
+      return '<p class="dif-v dif-igual">Nothing changed from the version '
+        + 'already on the site. Approving this only moves the version '
+        + 'number forward.</p>';
+    }
+    return '<div class="dif">' + linhas.join('') + '</div>';
+  }
+
+  // ----------------------------------------------------------- as filas
+  async function filaTours() {
+    var r = await ewt.sb.from('listing_versions')
+      .select('id, listing_id, version, payload, submitted_at, '
+            + 'listings(id, slug, status, city, country, '
+            + 'operators(id, name, status, commission_rate))')
+      .eq('status', 'pending')
+      .order('submitted_at', { ascending: true });
+
+    if (r.error) return '<div class="aviso aviso-mal">'
+      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
+
+    var vs = r.data || [];
+    if (!vs.length) {
+      return '<div class="vazio"><h3>Nothing waiting</h3>'
+        + '<p>No operator has submitted anything since you last looked.</p></div>';
+    }
+
+    // A versao que esta no ar, para cada um dos anuncios desta fila.
+    var noAr = {};
+    var ids = vs.map(function (v) { return v.listing_id; });
+    var a = await ewt.sb.from('listing_versions')
+      .select('listing_id, version, payload')
+      .in('listing_id', ids).eq('status', 'approved')
+      .order('version', { ascending: false });
+    (a.data || []).forEach(function (x) {
+      if (!noAr[x.listing_id]) noAr[x.listing_id] = x;
+    });
+
+    return vs.map(function (v) {
+      var l = v.listings || {};
+      var o = l.operators || {};
+      var velho = noAr[v.listing_id];
+      var p = v.payload || {};
+      var d = new Date(v.submitted_at);
+      return '<article class="rv" data-v="' + v.id + '">'
+        + '<div class="rv-t"><div>'
+        + '<h3 class="rv-n">' + ewt.escapar(p.title || l.slug) + '</h3>'
+        + '<p class="rv-m">'
+        + '<span><b>' + ewt.escapar(o.name || 'unknown operator') + '</b></span>'
+        + '<span class="est est-' + (o.status || 'pending') + '">'
+        + (o.status || 'pending') + '</span>'
+        + '<span>' + ewt.escapar(l.city || '') + ', '
+        + ewt.escapar(l.country || '') + '</span>'
+        + '<span>version ' + v.version
+        + (velho ? ' — replacing v' + velho.version : ' — first version')
+        + '</span>'
+        + '<span>sent ' + d.toLocaleDateString(undefined,
+            { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        + '</span></p></div>'
+        + '<div class="acoes">'
+        + '<a class="bt bt-s bt-pq" href="/tours/' + ewt.escapar(l.slug)
+        + '/" target="_blank" rel="noopener">See it live</a>'
+        + '</div></div>'
+        + '<div class="rv-c">' + diferenca(velho ? velho.payload : null, p)
+        + '<button type="button" class="dobra" data-todo="' + v.id
+        + '">Show everything that was submitted</button>'
+        + '<pre class="todo" id="todo-' + v.id + '" hidden>'
+        + ewt.escapar(JSON.stringify(p, null, 2)) + '</pre>'
+        + '</div>'
+        + '<div class="rv-acoes">'
+        + '<div class="campo"><label for="nota-' + v.id + '">Why, if you '
+        + 'are sending it back</label>'
+        + '<input type="text" id="nota-' + v.id + '" maxlength="300" '
+        + 'placeholder="The operator reads this exactly as you write it."></div>'
+        + '<div class="acoes">'
+        + '<button type="button" class="bt bt-p" data-sim="' + v.id
+        + '">Approve and publish</button>'
+        + '<button type="button" class="bt bt-mal" data-nao="' + v.id
+        + '">Send back</button>'
+        + '</div>'
+        + '<p class="aviso" id="av-' + v.id + '" role="status" hidden></p>'
+        + '</div></article>';
+    }).join('');
+  }
+
+  async function filaOperadores() {
+    var r = await ewt.sb.from('operator_applications')
+      .select('*').eq('status', 'new').order('created_at', { ascending: true });
+    if (r.error) return '<div class="aviso aviso-mal">'
+      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
+    var cs = r.data || [];
+    if (!cs.length) {
+      return '<div class="vazio"><h3>No new applications</h3>'
+        + '<p>When an operator applies through <a href="/suppliers/">the '
+        + 'operators page</a>, it lands here.</p></div>';
+    }
+    return cs.map(function (c) {
+      var d = new Date(c.created_at);
+      function l(r, v) {
+        return v ? '<p class="rv-m"><span><b>' + r + ':</b> '
+          + ewt.escapar(v) + '</span></p>' : '';
+      }
+      return '<article class="rv" data-c="' + c.id + '">'
+        + '<div class="rv-t"><div>'
+        + '<h3 class="rv-n">' + ewt.escapar(c.company) + '</h3>'
+        + '<p class="rv-m"><span>' + ewt.escapar(c.city) + ', '
+        + ewt.escapar(c.country) + '</span>'
+        + '<span>applied ' + d.toLocaleDateString(undefined,
+            { day: 'numeric', month: 'short' }) + '</span></p>'
+        + '</div></div>'
+        + '<div class="rv-c">'
+        + l('Contact', c.contact_name) + l('Email', c.email)
+        + l('Phone', c.phone) + l('Website', c.website)
+        + l('Years operating', c.years) + l('Licence', c.licence_ref)
+        + (c.fleet ? '<div class="dif-l dif-mud"><p class="dif-campo">Fleet'
+            + '</p><p class="dif-v">' + ewt.escapar(c.fleet) + '</p></div>' : '')
+        + (c.tours_text ? '<div class="dif-l dif-mud"><p class="dif-campo">'
+            + 'Tours they run today</p><p class="dif-v">'
+            + ewt.escapar(c.tours_text) + '</p></div>' : '')
+        + '</div>'
+        + '<div class="rv-acoes"><div class="acoes">'
+        + '<button type="button" class="bt bt-p" data-cand="' + c.id
+        + '">Approve as an operator</button>'
+        + '<button type="button" class="bt bt-s" data-cont="' + c.id
+        + '">Mark as contacted</button>'
+        + '<button type="button" class="bt bt-mal" data-rec="' + c.id
+        + '">Decline</button>'
+        + '</div>'
+        + '<p class="aviso" id="av-' + c.id + '" role="status" hidden></p>'
+        + '<p class="lado-nota">Approving creates the company in the system '
+        + 'with a 20% commission. It does not give anyone a login yet — '
+        + 'you link their email to the company afterwards.</p>'
+        + '</div></article>';
+    }).join('');
+  }
+
+  async function filaPedidos() {
+    var r = await ewt.sb.from('enquiries')
+      .select('*').eq('status', 'new').order('created_at', { ascending: false });
+    if (r.error) return '<div class="aviso aviso-mal">'
+      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
+    var ps = r.data || [];
+    if (!ps.length) {
+      return '<div class="vazio"><h3>No unanswered enquiries</h3>'
+        + '<p>Everything anyone asked has been dealt with.</p></div>';
+    }
+    return '<div class="tab-rolo" tabindex="0" role="region" '
+      + 'aria-label="Table, scrolls sideways"><table class="tab">'
+      + '<thead><tr><th>When</th><th>Who</th><th>Wants</th><th>Message</th>'
+      + '<th></th></tr></thead><tbody>'
+      + ps.map(function (p) {
+        var d = new Date(p.created_at);
+        return '<tr><td>' + d.toLocaleDateString(undefined,
+            { day: 'numeric', month: 'short' }) + '</td>'
+          + '<td><b>' + ewt.escapar(p.name) + '</b><br>'
+          + '<a href="mailto:' + ewt.escapar(p.email) + '">'
+          + ewt.escapar(p.email) + '</a>'
+          + (p.phone ? '<br>' + ewt.escapar(p.phone) : '') + '</td>'
+          + '<td>' + (p.listing_slug
+              ? '<a href="/tours/' + ewt.escapar(p.listing_slug) + '/">'
+                + ewt.escapar(p.listing_slug) + '</a><br>' : '')
+          + (p.wanted_on ? ewt.escapar(p.wanted_on) : '')
+          + (p.party ? '<br>' + p.party + ' people' : '') + '</td>'
+          + '<td>' + ewt.escapar(p.message || '') + '</td>'
+          + '<td><button type="button" class="bt bt-s bt-pq" data-ped="'
+          + p.id + '">Done</button></td></tr>';
+      }).join('')
+      + '</tbody></table></div>';
+  }
+
+  // ---------------------------------------------------------- as acoes
+  async function decidir(id, aprovar) {
+    var nota = document.getElementById('nota-' + id);
+    var texto = nota ? nota.value.trim() : '';
+    if (!aprovar && texto.length < 5) {
+      ewt.dizer('av-' + id, 'Write why you are sending it back. The '
+        + 'operator sees this sentence and nothing else — without it '
+        + 'they do not know what to change.', 'mal');
+      if (nota) nota.focus();
+      return;
+    }
+    travar(id, true);
+    var r = await ewt.sb.rpc('rever_versao', {
+      p_version: id, p_aprovar: aprovar, p_nota: texto || null
+    });
+    travar(id, false);
+    if (r.error) {
+      ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal');
+      return;
+    }
+    var art = document.querySelector('[data-v="' + id + '"]');
+    if (art) {
+      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
+        + (aprovar ? '<b>Approved.</b> It is live in the database. The site '
+            + 'picks it up the next time the pages are generated.'
+          : '<b>Sent back.</b> The operator sees your note in their portal.')
+        + '</p></div>';
+    }
+    contar();
+  }
+
+  function travar(id, sim) {
+    var art = document.querySelector('[data-v="' + id + '"], [data-c="' + id + '"]');
+    if (!art) return;
+    [].slice.call(art.querySelectorAll('.bt')).forEach(function (b) {
+      b.disabled = sim;
+    });
+  }
+
+  async function candidatura(id, acao) {
+    travar(id, true);
+    var r;
+    if (acao === 'aprovar') {
+      r = await ewt.sb.rpc('aprovar_candidatura', { p_cand: id });
+    } else {
+      r = await ewt.sb.from('operator_applications')
+        .update({ status: acao === 'contactar' ? 'contacted' : 'declined' })
+        .eq('id', id);
+    }
+    travar(id, false);
+    if (r.error) { ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal'); return; }
+    var art = document.querySelector('[data-c="' + id + '"]');
+    if (art) {
+      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
+        + (acao === 'aprovar'
+            ? '<b>Approved.</b> The company exists in the system. Next: link '
+              + 'their email to it so they can sign in to the portal.'
+            : acao === 'contactar'
+              ? '<b>Marked as contacted.</b> It leaves this queue.'
+              : '<b>Declined.</b> Nothing was sent to them automatically.')
+        + '</p></div>';
+    }
+    contar();
+  }
+
+  async function pedidoFeito(id) {
+    var r = await ewt.sb.from('enquiries')
+      .update({ status: 'answered' }).eq('id', id);
+    if (r.error) { alert(ewt.legivel(r.error)); return; }
+    var tr = document.querySelector('[data-ped="' + id + '"]');
+    if (tr) {
+      var l = tr.closest('tr');
+      if (l) l.remove();
+    }
+    contar();
+  }
+
+  // --------------------------------------------------------- as contagens
+  async function contar() {
+    var a = await ewt.sb.from('listing_versions')
+      .select('id', { count: 'exact', head: true }).eq('status', 'pending');
+    var b = await ewt.sb.from('operator_applications')
+      .select('id', { count: 'exact', head: true }).eq('status', 'new');
+    var c = await ewt.sb.from('enquiries')
+      .select('id', { count: 'exact', head: true }).eq('status', 'new');
+    pintar('n-tours', a.count); pintar('n-ops', b.count); pintar('n-peds', c.count);
+  }
+  function pintar(id, n) {
+    var e = document.getElementById(id);
+    if (!e) return;
+    n = n || 0;
+    e.textContent = n;
+    e.className = 'n' + (n ? '' : ' n-0');
+  }
+
+  // ------------------------------------------------------------- abas
+  async function mostrar(qual) {
+    E.aba = qual;
+    ['tours','ops','peds'].forEach(function (k) {
+      var b = document.getElementById('aba-' + k);
+      if (b) b.setAttribute('aria-selected', k === qual ? 'true' : 'false');
+    });
+    var c = document.getElementById('fila');
+    c.innerHTML = '<p class="carrega">Loading…</p>';
+    c.innerHTML = qual === 'tours' ? await filaTours()
+                : qual === 'ops'   ? await filaOperadores()
+                :                    await filaPedidos();
+  }
+
+  // ----------------------------------------------------------- arranque
+  (async function () {
+    var p = await ewt.exigir_entrada();
+    if (!p) return;
+
+    document.getElementById('carrega').hidden = true;
+
+    if (!p.admin) {
+      // Nao e um erro tecnico: e alguem num sitio que nao e o dele.
+      document.getElementById('conteudo').innerHTML =
+        '<div class="vazio"><h3>This area is not yours</h3>'
+        + '<p>You are signed in as ' + ewt.escapar(p.email)
+        + ', which is not an administrator account.</p>'
+        + '<a class="bt bt-p" href="/portal/">Go to the operator portal</a></div>';
+      return;
+    }
+
+    document.getElementById('ad').hidden = false;
+
+    document.getElementById('abas').addEventListener('click', function (ev) {
+      var b = ev.target.closest('.aba');
+      if (b) mostrar(b.getAttribute('data-aba'));
+    });
+
+    document.getElementById('fila').addEventListener('click', function (ev) {
+      var t = ev.target;
+      var b = t.closest('button');
+      if (!b) return;
+      if (b.hasAttribute('data-sim'))  return decidir(b.getAttribute('data-sim'), true);
+      if (b.hasAttribute('data-nao'))  return decidir(b.getAttribute('data-nao'), false);
+      if (b.hasAttribute('data-cand')) return candidatura(b.getAttribute('data-cand'), 'aprovar');
+      if (b.hasAttribute('data-cont')) return candidatura(b.getAttribute('data-cont'), 'contactar');
+      if (b.hasAttribute('data-rec'))  return candidatura(b.getAttribute('data-rec'), 'recusar');
+      if (b.hasAttribute('data-ped'))  return pedidoFeito(b.getAttribute('data-ped'));
+      if (b.hasAttribute('data-todo')) {
+        var pre = document.getElementById('todo-' + b.getAttribute('data-todo'));
+        if (pre) {
+          pre.hidden = !pre.hidden;
+          b.textContent = pre.hidden ? 'Show everything that was submitted'
+                                     : 'Hide the full submission';
+        }
+      }
+    });
+
+    await contar();
+    await mostrar('tours');
+  })();
+})();
+
+(function () {
+  // O email e o botao de sair, iguais em todas as paginas do portal.
+  if (!window.ewt || window.ewt.avariado) {
+    var c = document.getElementById('conteudo');
+    if (c) {
+      c.innerHTML = '<div class="aviso aviso-mal">The portal could not '
+        + 'load. Reload the page; if it keeps happening, write to us.</div>';
+    }
+    return;
+  }
+  var b = document.getElementById('sair');
+  if (b) {
+    b.addEventListener('click', function () { ewt.sair(); });
+  }
+  ewt.utilizador().then(function (u) {
+    var q = document.getElementById('quem');
+    if (u && q) { q.textContent = u.email; }
+    if (u && b) { b.hidden = false; }
+    // A navegacao do portal leva a paginas que exigem sessao. Mostra-la
+    // a quem ainda nao entrou era oferecer quatro ligacoes que todas
+    // devolvem a pessoa a esta mesma pagina.
+    var nav = document.querySelector('.pt-nav');
+    if (nav && !u) { nav.hidden = true; }
+  });
+})();
+
+(function () {
+  // Os menus: um botao, um painel, e o estado todo no aria-expanded — que
+  // e o que um leitor de ecra le. Escape fecha, clicar fora fecha, e o
+  // foco volta ao botao, senao quem navega por teclado fica no limbo.
+  var bs = [].slice.call(document.querySelectorAll('[data-menu]'));
+  if (!bs.length) return;
+
+  function fechar(b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    p.hidden = true;
+    b.setAttribute('aria-expanded', 'false');
+  }
+  function fecharTodos(excepto) {
+    bs.forEach(function (b) { if (b !== excepto) fechar(b); });
+  }
+
+  bs.forEach(function (b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    b.addEventListener('click', function () {
+      var aberto = b.getAttribute('aria-expanded') === 'true';
+      fecharTodos(b);
+      p.hidden = aberto;
+      b.setAttribute('aria-expanded', aberto ? 'false' : 'true');
+    });
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape') return;
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') === 'true') { fechar(b); b.focus(); }
+    });
+  });
+
+  document.addEventListener('click', function (ev) {
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') !== 'true') return;
+      var p = document.getElementById(b.getAttribute('data-menu'));
+      if (!b.contains(ev.target) && p && !p.contains(ev.target)) fechar(b);
+    });
+  });
+})();
+
+(function () {
+  // A revelacao ao percorrer. Quem tem 'reduzir movimento' ligado no
+  // sistema nao ve nada disto: o conteudo aparece logo, inteiro.
+  var q = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var alvos = [].slice.call(document.querySelectorAll('[data-rev]'));
+  if (!alvos.length) return;
+  if (q.matches || !('IntersectionObserver' in window)) {
+    alvos.forEach(function (x) { x.classList.add('vis'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('vis');
+      obs.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+  alvos.forEach(function (x) { obs.observe(x); });
+})();
+</script>
+</body>
+</html>

@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from marca import CSS as CSS_MARCA, lockup  # noqa: E402
 from marca_base import PALETA, contraste, misturar  # noqa: E402
+import politica  # noqa: E402
 import procura  # noqa: E402
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -496,6 +497,7 @@ def cabecalho(marca_titulo=False, paises=None, compacto=False):
         </div>
       </div>
       <a href="/#how">How it works</a>
+      <a href="/journal/">Journal</a>
       <a href="/suppliers/">For operators</a>
     </nav>
 
@@ -528,6 +530,7 @@ def cabecalho(marca_titulo=False, paises=None, compacto=False):
       <div class="men-l">
         <a href="/tours/">All tours</a>
         <a href="/#how">How it works</a>
+        <a href="/journal/">Journal</a>
         <a href="/suppliers/">For operators</a>
         <a href="/contact/">Help</a>
       </div>
@@ -553,12 +556,15 @@ def rodape(paises):
         <div class="rodape-col">
           <h3>Company</h3>
           <a href="/tours/">All tours</a>
+          <a href="/journal/">Journal</a>
+          <a href="/suppliers/">For operators</a>
           <a href="/contact/">Contact</a>
         </div>
       </div>
     </div>
     <div class="rodape-fim">
       <span>&copy; 2026 Exclusive World Tours</span>
+      <span>%(cancelamento)s</span>
       <span>Photographs by their authors on Unsplash</span>
     </div>
   </div>
@@ -566,6 +572,7 @@ def rodape(paises):
         'marca': lockup(40),
         'links': '\n'.join('<a href="/tours/?country=%s">%s</a>'
                            % (e(p['cod']), e(p['nome'])) for p in paises),
+        'cancelamento': politica.CURTA,
     }
 
 

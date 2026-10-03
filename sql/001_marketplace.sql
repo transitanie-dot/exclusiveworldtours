@@ -56,7 +56,11 @@ $$;
 -- ---------------------------------------------------------------------
 -- OPERADORES — as empresas que vendem no marketplace
 -- ---------------------------------------------------------------------
-create type operator_status as enum ('pending', 'approved', 'suspended');
+do $$ begin
+  create type operator_status as enum ('pending', 'approved', 'suspended');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists operators (
   id              uuid primary key default gen_random_uuid(),
@@ -105,7 +109,11 @@ $$;
 -- ---------------------------------------------------------------------
 -- ANUNCIOS — o anuncio e a identidade; o conteudo vive nas versoes
 -- ---------------------------------------------------------------------
-create type listing_status as enum ('draft', 'live', 'paused', 'withdrawn');
+do $$ begin
+  create type listing_status as enum ('draft', 'live', 'paused', 'withdrawn');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists listings (
   id          uuid primary key default gen_random_uuid(),
@@ -124,7 +132,11 @@ create index if not exists listings_status_idx on listings(status);
 -- ---------------------------------------------------------------------
 -- VERSOES — e aqui que a revisao acontece
 -- ---------------------------------------------------------------------
-create type review_status as enum ('pending', 'approved', 'rejected');
+do $$ begin
+  create type review_status as enum ('pending', 'approved', 'rejected');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists listing_versions (
   id            uuid primary key default gen_random_uuid(),
@@ -171,7 +183,11 @@ where  l.status = 'live' and o.status = 'approved';
 -- ---------------------------------------------------------------------
 -- CALENDARIO — dados rapidos, sem revisao
 -- ---------------------------------------------------------------------
-create type day_status as enum ('open', 'closed', 'sold_out');
+do $$ begin
+  create type day_status as enum ('open', 'closed', 'sold_out');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists availability (
   listing_id     uuid not null references listings(id) on delete cascade,

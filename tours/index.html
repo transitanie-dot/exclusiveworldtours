@@ -359,6 +359,8 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .sugestao{margin:30px 0 14px;font-size:1.1rem}
 
 </style>
+<script src="/assets/lib/supabase.js"></script>
+<script src="/assets/ligacao.js"></script>
 </head>
 <body>
 <a class="saltar" href="#principal">Skip to content</a>
@@ -386,6 +388,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
         </div>
       </div>
       <a href="/#how">How it works</a>
+      <a href="/journal/">Journal</a>
       <a href="/suppliers/">For operators</a>
     </nav>
 
@@ -423,6 +426,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       <div class="men-l">
         <a href="/tours/">All tours</a>
         <a href="/#how">How it works</a>
+        <a href="/journal/">Journal</a>
         <a href="/suppliers/">For operators</a>
         <a href="/contact/">Help</a>
       </div>
@@ -1176,12 +1180,15 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
         <div class="rodape-col">
           <h3>Company</h3>
           <a href="/tours/">All tours</a>
+          <a href="/journal/">Journal</a>
+          <a href="/suppliers/">For operators</a>
           <a href="/contact/">Contact</a>
         </div>
       </div>
     </div>
     <div class="rodape-fim">
       <span>&copy; 2026 Exclusive World Tours</span>
+      <span>Free cancellation up to 24 hours before departure</span>
       <span>Photographs by their authors on Unsplash</span>
     </div>
   </div>
@@ -1539,6 +1546,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       + ' — Exclusive World Tours';
 
     mostrarVazio(n, termo);
+    registarDepois(termo, n);
   }
 
   function mostrarVazio(n, termo) {
@@ -1603,6 +1611,42 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     if (campo) campo.value = '';
     aplicar();
   });
+
+  // ------------------------------------------------------------ registo
+  //
+  // O que as pessoas procuram e nao encontram e a informacao mais
+  // valiosa que este site produz: diz em que cidade falta um operador.
+  // Mas registar tem de ser invisivel e tem de ser honesto:
+  //
+  //  - espera-se 1,2 s depois da ultima mudanca, senao uma pessoa a
+  //    escrever "dublin" gravava d, du, dub, dubl...
+  //  - a mesma procura nao conta duas vezes na mesma sessao, senao uma
+  //    recarga da pagina inventa procuras que ninguem fez;
+  //  - se a base nao responder, nao acontece nada. Isto nao vale uma
+  //    unica mensagem de erro na cara de quem esta a procurar.
+  var jaRegistado = {};
+  var temporizador = null;
+
+  function registar(termo, n) {
+    if (!window.ewt || window.ewt.avariado) return;
+    if (!termo) return;
+    var k = chave(termo);
+    if (!k || jaRegistado[k]) return;
+    jaRegistado[k] = true;
+
+    var p = params();
+    ewt.sb.rpc('registar_procura', {
+      p_q: termo,
+      p_resultados: n,
+      p_cidade: p.get('city') || null,
+      p_pais: p.get('country') || null
+    }).then(function () {}, function () {});
+  }
+
+  function registarDepois(termo, n) {
+    if (temporizador) clearTimeout(temporizador);
+    temporizador = setTimeout(function () { registar(termo, n); }, 1200);
+  }
 
   aplicar();
 })();

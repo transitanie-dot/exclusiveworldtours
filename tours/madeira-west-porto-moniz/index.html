@@ -329,6 +329,10 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
    A fotografia a sangrar com o titulo por cima. A Viator e a
    GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
    por baixo; isto poe o sitio primeiro, que e o que se esta a comprar. */
+.sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
+  color:var(--tinta);margin:var(--e3) 0 var(--e2);
+  padding-top:var(--e3);border-top:1px solid var(--risco)}
+
 .heroi-t{position:relative;min-height:clamp(380px,48vw,560px);
   display:flex;align-items:flex-end;background:var(--tinta);overflow:hidden}
 .heroi-t .foto{position:absolute;inset:0;overflow:hidden}
@@ -610,6 +614,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
         </div>
       </div>
       <a href="/#how">How it works</a>
+      <a href="/journal/">Journal</a>
       <a href="/suppliers/">For operators</a>
     </nav>
 
@@ -647,6 +652,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       <div class="men-l">
         <a href="/tours/">All tours</a>
         <a href="/#how">How it works</a>
+        <a href="/journal/">Journal</a>
         <a href="/suppliers/">For operators</a>
         <a href="/contact/">Help</a>
       </div>
@@ -770,19 +776,27 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       <section class="sec faq" data-rev><p class="rot"><b>04</b> Questions</p><h2>Before you ask</h2><details><summary>Does the price depend on the size of the group?</summary><p>Yes. The tour is private, and the price depends on how many of you travel, starting from €190. Choose the number of people when you book.</p></details>
 <details><summary>Can we do a levada walk?</summary><p>Yes. Many of the levada paths start on this route. Tell us how long you want to walk and we will build it in.</p></details>
 <details><summary>Do you collect from the cruise port?</summary><p>Yes, at Funchal. Message us with the ship.</p></details>
-<details><summary>Are there more than 16 of us?</summary><p>Two vehicles travelling together, on one booking. Message us and we will price it.</p></details></section>
+<details><summary>Are there more than 16 of us?</summary><p>Two vehicles travelling together, on one booking. Message us and we will price it.</p></details>
+<details><summary>Can we cancel?</summary><p>Free up to 24 hours before departure, at no cost. After that we cannot refund the day. If we cancel because conditions are unsafe, you are refunded in full.</p></details></section>
 
       <section class="sec moldura reservar-bloco" id="book" data-rev>
         <p class="rot"><b>05</b> Booking</p>
         <h2>How to book</h2>
-        <p class="intro">Online booking opens shortly. Until then, tell us the
-          date and the size of your group and we will come back to you with the
-          exact price and a hold on the day.</p>
+        <p class="intro">Tell us the day and how many of you there are.
+          We check it with the operator who runs that date and come back
+          within one working day with the exact price for your group and
+          a hold on the day. Nothing is charged until you say yes.</p>
+        <p class="intro"><a class="botao" href="/contact/?tour=madeira-west-porto-moniz">Ask
+          about a date</a></p>
+        <h3 class="sub-h">Cancellation</h3>
+        <p class="intro">Cancel up to 24 hours before your departure time and you pay nothing. Inside 24 hours the vehicle and the driver are already committed to your day, so we cannot refund it.</p>
+        <p class="intro">Weather is not a cancellation. These are private days: if a stop is genuinely unsafe or a road is closed, your driver changes the route and tells you why, and you still get a full day out. That is the thing a coach tour cannot do.</p>
+        <p class="intro">If we have to cancel &mdash; conditions that make the roads unsafe, a vehicle that fails its check &mdash; you are refunded in full, whenever it happens.</p>
       </section>
     </div>
 
     <div class="lado">
-      <aside class="painel" data-painel
+      <aside class="painel" data-painel data-slug="madeira-west-porto-moniz"
   data-tiers='[{"max": 4, "price": 190, "vehicle": "Sedan"}, {"max": 8, "price": 310, "vehicle": "Van"}, {"max": 12, "price": 500, "vehicle": "Van + Sedan"}, {"max": 16, "price": 620, "vehicle": "2 Vans"}]' data-horas='["07:00"]'>
   <p class="desde">Your price</p>
   <p class="preco"><span data-preco>&euro;190</span></p>
@@ -915,12 +929,15 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
         <div class="rodape-col">
           <h3>Company</h3>
           <a href="/tours/">All tours</a>
+          <a href="/journal/">Journal</a>
+          <a href="/suppliers/">For operators</a>
           <a href="/contact/">Contact</a>
         </div>
       </div>
     </div>
     <div class="rodape-fim">
       <span>&copy; 2026 Exclusive World Tours</span>
+      <span>Free cancellation up to 24 hours before departure</span>
       <span>Photographs by their authors on Unsplash</span>
     </div>
   </div>
@@ -1226,6 +1243,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   // faz isto, porque vendem lugares e nao veiculos.
   var p = document.querySelector('[data-painel]');
   if (!p) return;
+  var SLUG = p.getAttribute('data-slug') || '';
   var tiers = JSON.parse(p.getAttribute('data-tiers'));
   var horas = JSON.parse(p.getAttribute('data-horas') || '[]');
   var saidaPreco = p.querySelector('[data-preco]');
@@ -1274,6 +1292,25 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   // nao se aceitam datas passadas: um campo que deixa escolher ontem e um
   // campo que ainda nao foi pensado
   if (data) { data.min = new Date().toISOString().slice(0, 10); }
+
+  // O botao leva o que a pessoa escolheu — o dia e quantos sao — para o
+  // pedido. Obrigar a escrever outra vez na pagina seguinte o que se
+  // acabou de escolher e a maneira mais simples de perder um cliente.
+  var ir = p.querySelector('[data-ir]');
+  if (ir) {
+    function destino() {
+      var q = '?tour=' + encodeURIComponent(SLUG);
+      if (data && data.value) q += '&date=' + encodeURIComponent(data.value);
+      q += '&people=' + n;
+      return '/contact/' + q;
+    }
+    ir.setAttribute('href', destino());
+    // Atualiza-se a cada mexida, e nao so no clique: assim quem abre num
+    // separador novo, ou copia a ligacao, leva a mesma escolha.
+    p.addEventListener('input', function () { ir.setAttribute('href', destino()); });
+    p.addEventListener('click', function () { ir.setAttribute('href', destino()); });
+  }
+
   pintar();
 })();
 

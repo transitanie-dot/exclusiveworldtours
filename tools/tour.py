@@ -29,12 +29,21 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import politica  # noqa: E402
 import procura  # noqa: E402
 from pagina import (CORES, cabecalho, carregar, cartao_tour, e, envolver,  # noqa: E402
                     escrever, euros, img, por_pais, rodape)
 
-# Assuntos que nao se publicam enquanto o Ricardo nao definir a politica.
-# Nao e censura: e nao prometer o que ainda nao existe.
+# Houve um tempo em que estas palavras eram retiradas das FAQ, porque a
+# marca ainda nao tinha politica de cancelamento e prometer uma que nao
+# existe e pior do que nao dizer nada. A politica foi decidida a 2 de
+# outubro de 2026 (24 horas, em tools/politica.py), por isso o filtro
+# saiu e o problema inverteu-se: agora garante-se que NENHUMA pagina de
+# tour fica sem a regra — ver faq(), que a acrescenta quando falta.
+#
+# O padrao fica, porque e ele que deteta se um operador escreve na sua
+# propria FAQ uma regra diferente da da casa. Isso nao se publica em
+# silencio: aparece no fim da geracao, para ser lido.
 POLITICA = re.compile(
     r'\b(refund|refunded|cancel|cancelled|cancellation|deposit|insurance|'
     r'insured|reschedul)\w*\b', re.I)
@@ -45,6 +54,10 @@ CSS = '''
    A fotografia a sangrar com o titulo por cima. A Viator e a
    GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
    por baixo; isto poe o sitio primeiro, que e o que se esta a comprar. */
+.sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
+  color:var(--tinta);margin:var(--e3) 0 var(--e2);
+  padding-top:var(--e3);border-top:1px solid var(--risco)}
+
 .heroi-t{position:relative;min-height:clamp(380px,48vw,560px);
   display:flex;align-items:flex-end;background:var(--tinta);overflow:hidden}
 .heroi-t .foto{position:absolute;inset:0;overflow:hidden}
@@ -388,16 +401,29 @@ VISTO = ('<svg viewBox="0 0 24 24" aria-hidden="true">'
          '<path d="M4 12.5 L9.5 18 L20 6.5"/></svg>')
 
 
-def faq(t, tirados):
+def faq(t, assinalados):
+    """As perguntas do tour, mais a do cancelamento se faltar.
+
+    Nenhuma pagina sai daqui sem dizer o que acontece se o cliente
+    desistir. Quando o tour ja responde a isso pelas suas palavras,
+    usa-se a dele — e a pergunta fica assinalada para ser lida no fim da
+    geracao, porque um texto de operador que diga 48 horas quando a casa
+    diz 24 e uma contradicao que nao se publica sem alguem ver."""
     linhas = []
+    tem_cancelamento = False
+
     for q, a in t.get('faq', []):
         if POLITICA.search(q) or POLITICA.search(a):
-            tirados.append((t['slug'], q))
-            continue
+            tem_cancelamento = True
+            assinalados.append((t['slug'], q, a))
         linhas.append('<details><summary>%s</summary><p>%s</p></details>'
                       % (e(q), e(a)))
-    if not linhas:
-        return ''
+
+    if not tem_cancelamento:
+        q, a = politica.PERGUNTA
+        linhas.append('<details><summary>%s</summary><p>%s</p></details>'
+                      % (e(q), e(a)))
+
     return ('<section class="sec faq" data-rev>'
             '<p class="rot"><b>04</b> Questions</p>'
             '<h2>Before you ask</h2>%s</section>'
@@ -423,7 +449,7 @@ def painel(t):
                             for x in d['tiers']])
     horas = json.dumps(d.get('startTimes') or [])
 
-    return '''<aside class="painel" data-painel
+    return '''<aside class="painel" data-painel data-slug="%(slug)s"
   data-tiers='%(tiers)s' data-horas='%(horas)s'>
   <p class="desde">Your price</p>
   <p class="preco"><span data-preco>&euro;%(preco)s</span></p>
@@ -457,7 +483,8 @@ def painel(t):
 
   <p class="nota">The price is for the <b>whole vehicle</b>, not per person.
     Four people pay the same as one.</p>
-</aside>''' % {'preco': euros(menor['price']), 'min': menor['max'],
+</aside>''' % {'slug': e(t['slug']),
+                 'preco': euros(menor['price']), 'min': menor['max'],
                  'maximo': maior['max'], 'linhas': '\n'.join(linhas),
                  'tiers': tiers_json, 'horas': horas}
 
@@ -484,6 +511,7 @@ JS_PAINEL = r"""
   // faz isto, porque vendem lugares e nao veiculos.
   var p = document.querySelector('[data-painel]');
   if (!p) return;
+  var SLUG = p.getAttribute('data-slug') || '';
   var tiers = JSON.parse(p.getAttribute('data-tiers'));
   var horas = JSON.parse(p.getAttribute('data-horas') || '[]');
   var saidaPreco = p.querySelector('[data-preco]');
@@ -532,6 +560,25 @@ JS_PAINEL = r"""
   // nao se aceitam datas passadas: um campo que deixa escolher ontem e um
   // campo que ainda nao foi pensado
   if (data) { data.min = new Date().toISOString().slice(0, 10); }
+
+  // O botao leva o que a pessoa escolheu — o dia e quantos sao — para o
+  // pedido. Obrigar a escrever outra vez na pagina seguinte o que se
+  // acabou de escolher e a maneira mais simples de perder um cliente.
+  var ir = p.querySelector('[data-ir]');
+  if (ir) {
+    function destino() {
+      var q = '?tour=' + encodeURIComponent(SLUG);
+      if (data && data.value) q += '&date=' + encodeURIComponent(data.value);
+      q += '&people=' + n;
+      return '/contact/' + q;
+    }
+    ir.setAttribute('href', destino());
+    // Atualiza-se a cada mexida, e nao so no clique: assim quem abre num
+    // separador novo, ou copia a ligacao, leva a mesma escolha.
+    p.addEventListener('input', function () { ir.setAttribute('href', destino()); });
+    p.addEventListener('click', function () { ir.setAttribute('href', destino()); });
+  }
+
   pintar();
 })();
 """
@@ -608,7 +655,7 @@ def main():
     tours = carregar()
     paises = por_pais(tours)
     por_slug = {t['slug']: t for t in tours}
-    tirados = []
+    assinalados = []
 
     for t in tours:
         d = t['durations'][0]
@@ -709,9 +756,14 @@ def main():
       <section class="sec moldura reservar-bloco" id="book" data-rev>
         <p class="rot"><b>05</b> Booking</p>
         <h2>How to book</h2>
-        <p class="intro">Online booking opens shortly. Until then, tell us the
-          date and the size of your group and we will come back to you with the
-          exact price and a hold on the day.</p>
+        <p class="intro">Tell us the day and how many of you there are.
+          We check it with the operator who runs that date and come back
+          within one working day with the exact price for your group and
+          a hold on the day. Nothing is charged until you say yes.</p>
+        <p class="intro"><a class="botao" href="/contact/?tour=%(slug_b)s">Ask
+          about a date</a></p>
+        <h3 class="sub-h">Cancellation</h3>
+        %(politica)s
       </section>
     </div>
 
@@ -750,7 +802,10 @@ def main():
             'naoInclui': e(t.get('notIncluded') or ''),
             'pratico': '\n'.join('<tr><th>%s</th><td>%s</td></tr>'
                                  % (e(a), e(b)) for a, b in t.get('practical', [])),
-            'faq': faq(t, tirados), 'mapa': mapa_cidade(t),
+            'faq': faq(t, assinalados), 'mapa': mapa_cidade(t),
+            'slug_b': e(t['slug']),
+            'politica': '\n        '.join(
+                '<p class="intro">%s</p>' % x for x in politica.PARAGRAFOS),
             'painel': painel(t),
             'relacionados': ('''<section class="relacionados">
   <div class="folha">
@@ -769,15 +824,20 @@ def main():
         escrever(html, 'tours/%s/index.html' % t['slug'])
 
     print('%d paginas de tour' % len(tours))
-    if tirados:
-        print('\nPerguntas retiradas por falarem de politica que a marca '
-              'ainda nao tem (%d):' % len(tirados))
+
+    # As respostas que falam de cancelamento pelas palavras do tour. Nao
+    # sao um erro: sao para ler uma vez e confirmar que nao contradizem
+    # as %d horas da casa.
+    if assinalados:
+        print('\nRespostas que falam de cancelamento ou reembolso pelas '
+              'palavras do tour (%d) — confirmar que batem com as %d horas '
+              'da politica da casa:' % (len(assinalados), politica.HORAS))
         vistos = set()
-        for slug, q in tirados:
+        for slug, q, a in assinalados:
             if q in vistos:
                 continue
             vistos.add(q)
-            print('  %s' % q)
+            print('  %-34s %s' % (q, a[:96] + ('...' if len(a) > 96 else '')))
 
 
 if __name__ == '__main__':

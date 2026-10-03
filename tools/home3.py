@@ -137,7 +137,7 @@ def mosaico(nome, i, chave=None, alt=None, larguras=(500, 900)):
 
 
 def cartao_destino(cidade, ts, i, pais, menor, coord):
-    return '''<a class="destino" href="/tours/#%s">
+    return '''<a class="destino" href="/tours/?country=%s">
   %s
   <span class="destino-txt">
     <span class="d-meta">%s &middot; %d %s</span>
@@ -202,7 +202,7 @@ def main():
         <h2 id="h-%s">Private day tours from %s</h2>
         <p>%d %s, all leaving from your hotel door.</p>
       </div>
-      <a class="ligacao" href="/tours/#%s">See all %s tours</a>
+      <a class="ligacao" href="/tours/?country=%s">See all %s tours</a>
     </div>
     <div class="produtos">%s</div>
   </div>
@@ -219,7 +219,7 @@ def main():
             continue
         cidades = sorted({x['city'] for x in ts})
         paises.append(
-            '<a class="pais" href="/tours/#%s">%s<span class="pais-txt">'
+            '<a class="pais" href="/tours/?country=%s">%s<span class="pais-txt">'
             '<span class="pa-nome">%s</span>'
             '<span class="pa-meta">%d tours &middot; %d %s</span>'
             '<span class="pa-preco">%s</span></span></a>'
@@ -611,9 +611,10 @@ a{color:inherit;text-decoration:none}
     </form>
     <nav class="menu" aria-label="Main">
       <a href="/tours/">All tours</a>
-      <a href="/operators/">Operators</a>
-      <a href="/airporttransfers/">Airport transfers</a>
-      <a href="/magazine/">Magazine</a>
+      <a href="/suppliers/">For operators</a>
+      <!-- TRANSFERES: a decidir se aponta para airportlink.app ou para
+           uma pagina propria. Ver a nota no fim deste ficheiro. -->
+      <a href="/journal/">Journal</a>
       <a href="/contact/">Help</a>
     </nav>
   </div>
@@ -653,11 +654,11 @@ a{color:inherit;text-decoration:none}
 
     <ul class="atalhos">
       <li><span>Popular:</span></li>
-      <li><a href="/tours/#ireland">Dublin</a></li>
-      <li><a href="/tours/#uk">London</a></li>
-      <li><a href="/tours/#france">Paris</a></li>
-      <li><a href="/tours/#italy">Rome</a></li>
-      <li><a href="/tours/#portugal">Lisbon</a></li>
+      <li><a href="/tours/?country=ireland">Dublin</a></li>
+      <li><a href="/tours/?country=uk">London</a></li>
+      <li><a href="/tours/?country=france">Paris</a></li>
+      <li><a href="/tours/?country=italy">Rome</a></li>
+      <li><a href="/tours/?country=portugal">Lisbon</a></li>
     </ul>
   </div>
   <p class="heroi-credito">Photograph by
@@ -767,15 +768,15 @@ a{color:inherit;text-decoration:none}
         <ul class="pagamentos"><li>Visa</li><li>Mastercard</li><li>PayPal</li><li>Apple Pay</li><li>Google Pay</li></ul>
       </div>
       <div><h4>Travellers</h4><ul><li><a href="/tours/">All tours</a></li>
-        <li><a href="/airporttransfers/">Airport transfers</a></li>
         <li><a href="/cancellation/">Cancellation policy</a></li>
+        <li><a href="/journal/">Journal</a></li>
         <li><a href="/contact/">Help</a></li></ul></div>
-      <div><h4>Operators</h4><ul><li><a href="/operators/">Our operators</a></li>
-        <li><a href="/operators/join/">List your tours</a></li></ul></div>
-      <div><h4>Destinations</h4><ul><li><a href="/tours/#ireland">Ireland</a></li>
-        <li><a href="/tours/#uk">United Kingdom</a></li><li><a href="/tours/#france">France</a></li>
-        <li><a href="/tours/#italy">Italy</a></li><li><a href="/tours/#spain">Spain</a></li>
-        <li><a href="/tours/#portugal">Portugal</a></li></ul></div>
+      <div><h4>Operators</h4><ul><li><a href="/suppliers/">How selling here works</a></li>
+        <li><a href="/suppliers/apply/">List your tours</a></li></ul></div>
+      <div><h4>Destinations</h4><ul><li><a href="/tours/?country=ireland">Ireland</a></li>
+        <li><a href="/tours/?country=uk">United Kingdom</a></li><li><a href="/tours/?country=france">France</a></li>
+        <li><a href="/tours/?country=italy">Italy</a></li><li><a href="/tours/?country=spain">Spain</a></li>
+        <li><a href="/tours/?country=portugal">Portugal</a></li></ul></div>
     </div>
     <div class="rodape-fim">
       <span>&copy; 2026 Exclusive World Tours</span>
@@ -838,3 +839,23 @@ document.querySelectorAll('.revisao button').forEach(function (b) {
 
 if __name__ == '__main__':
     main()
+
+# ---------------------------------------------------------------------
+# NOTA SOBRE OS TRANSFERES DE AEROPORTO
+#
+# A homepage tinha "Airport transfers" no menu e no rodape, a apontar
+# para /airporttransfers/, que nunca existiu — eram dois 404 na pagina
+# mais vista do site.
+#
+# Para onde deve apontar e uma decisao do Ricardo e nao minha:
+#
+#   a) para https://www.airportlink.app/ — e a empresa dele que faz
+#      transferes, e o cliente que acaba um tour precisa do aeroporto.
+#      Manda trafego para fora deste dominio.
+#   b) para uma pagina /airporttransfers/ neste site, com o widget da
+#      Airportlink (data-src="exclusiveworldtours") la dentro. Fica tudo
+#      no mesmo dominio, mas e uma pagina que ainda nao esta escrita.
+#
+# Enquanto nao decidir, as duas ligacoes estao desligadas e marcadas
+# com TRANSFERES aqui em cima. Voltam numa linha.
+# ---------------------------------------------------------------------

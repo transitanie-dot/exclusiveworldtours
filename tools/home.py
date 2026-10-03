@@ -78,7 +78,7 @@ def cartao_pais(p, i):
     media = (img(foto['id'], foto['alt'], (400, 800),
                  '(min-width:1100px) 25vw, (min-width:700px) 33vw, 50vw')
              if foto else '')
-    return '''<a class="pais" href="/tours/#%(cod)s">
+    return '''<a class="pais" href="/tours/?country=%(cod)s">
   <span class="pais-foto">%(media)s</span>
   <span class="pais-txt">
     <span class="pais-nome">%(nome)s</span>
