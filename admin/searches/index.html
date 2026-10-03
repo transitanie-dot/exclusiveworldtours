@@ -332,7 +332,18 @@ body.pt { background: #F6F4F1; }
   background: #0B2B2A; color: #F6F4F1;
   border-bottom: 3px solid #CE7030;
   position: sticky; top: 0; z-index: 40;
+  /* as tintas de fundo escuro, para a marca aqui dentro */
+  --papel: #0B1715; --tinta: #F3F1EE; --cor: #CE7030;
+  --tinta-f: #515856; --cor-f: #704523; --uma-f: #47504D;
 }
+/* O fundo do topo e o verde da marca e nao o quase-preto do palco
+   escuro, por isso a capa do passaporte leva a cor do papel claro: e
+   assim que ela se destaca, como se destaca no papel. */
+.pt-topo .sim .p { fill: #F6F4F1; }
+.pt-topo .sim .pf { fill: #E1AF8D; }
+.pt-topo .sim .papel { fill: #0B2B2A; }
+.pt-topo .sim .u { fill: #F6F4F1; }
+.pt-topo .marca-nome { color: #F6F4F1; }
 .pt-topo-i {
   display: flex; align-items: center; gap: .6rem 1rem;
   min-height: 60px; padding: .5rem 0;

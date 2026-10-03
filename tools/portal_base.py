@@ -20,8 +20,19 @@ sys.path.insert(0, AQUI)
 import pagina
 import ligacao
 from marca import lockup
+from marca_base import TINTAS
 
 CORES = pagina.CORES
+
+# O topo do portal e escuro, e a marca foi desenhada com a tinta a fazer
+# de cor escura. Sobre fundo escuro isso da escuro sobre escuro: o nome
+# desaparecia e a capa do passaporte ficava um quadrado quase invisivel.
+#
+# A solucao nao e pintar o logotipo a mao: e usar o conjunto de tintas
+# que ja existe para fundo escuro, onde a "tinta" passa a ser o claro. As
+# variaveis vao no proprio topo, e nao na .marca, porque as da .marca
+# ganhariam as herdadas e o palco escuro nao teria efeito nenhum.
+ESCURO = TINTAS['escuro']
 
 
 CSS = """
@@ -32,7 +43,18 @@ body.pt { background: %(papel)s; }
   background: %(tinta)s; color: %(papel)s;
   border-bottom: 3px solid %(cor)s;
   position: sticky; top: 0; z-index: 40;
+  /* as tintas de fundo escuro, para a marca aqui dentro */
+  --papel: %(m_papel)s; --tinta: %(m_tinta)s; --cor: %(m_cor)s;
+  --tinta-f: %(m_tinta_f)s; --cor-f: %(m_cor_f)s; --uma-f: %(m_uma_f)s;
 }
+/* O fundo do topo e o verde da marca e nao o quase-preto do palco
+   escuro, por isso a capa do passaporte leva a cor do papel claro: e
+   assim que ela se destaca, como se destaca no papel. */
+.pt-topo .sim .p { fill: %(papel)s; }
+.pt-topo .sim .pf { fill: %(cor_f)s; }
+.pt-topo .sim .papel { fill: %(tinta)s; }
+.pt-topo .sim .u { fill: %(papel)s; }
+.pt-topo .marca-nome { color: %(papel)s; }
 .pt-topo-i {
   display: flex; align-items: center; gap: .6rem 1rem;
   min-height: 60px; padding: .5rem 0;
@@ -237,7 +259,9 @@ table.tab a { color: %(cor_escura)s; font-weight: 500; }
 
 
 def css():
-    return CSS % CORES
+    v = dict(CORES)
+    v.update({'m_' + k: x for k, x in ESCURO.items()})
+    return CSS % v
 
 
 def topo(etiqueta, nav=None, atual=''):

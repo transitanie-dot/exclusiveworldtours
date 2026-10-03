@@ -56,15 +56,25 @@ CSS = """
 }
 .dia {
   position: relative; background: %(branco)s; border: 0; cursor: pointer;
+  /* Quadrado no telemovel, onde o alvo do dedo manda; num ecra de 1366
+     px um quadrado dava celulas de 180 px de altura e o mes nao cabia no
+     ecra. Em ecra largo fixa-se a altura. */
   aspect-ratio: 1 / 1; min-height: 2.9rem; padding: .25rem;
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: .1rem;
   font: 500 .95rem/1 'Inter', system-ui, sans-serif; color: %(tinta)s;
   font-variant-numeric: tabular-nums;
 }
+@media (min-width: 720px) {
+  .dia { aspect-ratio: auto; height: 4.6rem; }
+}
 .dia:hover:not([disabled]) { outline: 2px solid %(cor)s; outline-offset: -2px; }
 .dia:focus-visible { outline: 3px solid %(cor)s; outline-offset: -3px; z-index: 2; }
-.dia-v { visibility: hidden; cursor: default; }
+/* Os dias antes do dia 1. Nao se escondem com visibility:hidden: um
+   elemento escondido nao pinta, e o que aparecia no lugar deles era a
+   cor das linhas da grelha num bloco cinzento de tres colunas. Pintam-se
+   com o fundo da pagina e ficam invisiveis por serem iguais a ela. */
+.dia-v { background: %(papel)s; cursor: default; }
 .dia[disabled] { background: %(papel)s; color: %(mudo)s; cursor: not-allowed; }
 .dia-fora { opacity: .45; }
 .dia .p {
@@ -164,6 +174,16 @@ JS = r"""
         + (r.price_override ? '<span class="p">€' + ewt.euros(r.price_override) + '</span>' : '')
         + '</button>';
     }
+    // E os que sobram no fim. Sem eles, o ultimo lugar da ultima semana
+    // fica vazio e o que se ve la e a cor das linhas da grelha — um
+    // quadrado cinzento solto que parece um dia estragado.
+    var ocupados = (desvio + ultimo) % 7;
+    if (ocupados) {
+      for (var f = ocupados; f < 7; f++) {
+        html += '<span class="dia dia-v" aria-hidden="true"></span>';
+      }
+    }
+
     g.innerHTML = html;
 
     var anterior = primeiro(new Date());
