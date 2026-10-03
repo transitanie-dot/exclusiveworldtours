@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Exclusive World Tours &mdash; private day tours, priced by the group</title>
-<meta name="description" content="36 private day tours in 6 countries. One vehicle for your group, a price for the whole group instead of per person, and departure times set before the coaches arrive.">
+<title>Exclusive World Tours — private day tours, priced by the group</title>
+<meta name="description" content="36 private day tours in 6 countries. One vehicle for your group, a price for the whole group instead of per person.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/inter-latin-400-normal.woff2">
@@ -19,6 +19,7 @@
   src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
 @font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
   src:url(/assets/fontes/archivo-latin-700-normal.woff2) format('woff2')}
+
 
 :root{
   --tinta:#0B2B2A; --cor:#CE7030; --cor-escura:#A85426;
@@ -42,6 +43,17 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
   letter-spacing:-.025em;line-height:1.08;margin:0}
 .folha{max-width:1240px;margin:0 auto;padding:0 24px}
+/* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
+   homepage e a pagina de resultados ficou com um botao cinzento do
+   browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
+.botao{display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
+  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
+  cursor:pointer;text-decoration:none;white-space:nowrap}
+.botao:hover{background:var(--cor-escura)}
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
+  border-radius:4px}
 /* So aparece a quem navega por teclado — mas aparece mesmo, que e o
    ponto. Escondido com left:-9999px e sem regra de foco, este atalho
    existe no HTML e nao serve a ninguem. */
@@ -61,70 +73,9 @@ h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
 .nav a:hover{color:var(--tinta);border-bottom-color:var(--cor)}
 .topo .marca{color:var(--tinta)}
 @media (max-width:760px){.nav{display:none}}
-
-/* ----------------------------------------------------------------- heroi */
-.heroi{position:relative;background:var(--tinta);color:var(--branco)}
-/* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
-   procura. Quem recorta a fotografia e a camada da fotografia. */
-.heroi-foto{position:absolute;inset:0;overflow:hidden}
-.heroi-foto img{width:100%;height:100%;object-fit:cover}
-.heroi::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(100deg,
-    rgba(11,43,42,.93) 0%, rgba(11,43,42,.82) 46%,
-    rgba(11,43,42,.46) 76%, rgba(11,43,42,.30) 100%)}
-.heroi-i{position:relative;z-index:2;padding:84px 0 92px;max-width:720px}
-.heroi h2{color:var(--branco);
-  font-size:clamp(2.3rem, 1.3rem + 3.4vw, 4rem);margin:0 0 18px}
-.heroi p{font-size:clamp(1.05rem, .98rem + .4vw, 1.3rem);
-  color:rgba(255,255,255,.88);margin:0 0 34px;max-width:33em}
-
-/* a barra de procura: o CSS dela vive em tools/procura.py, junto com o
-   comportamento, porque as duas coisas so fazem sentido juntas */
-.procura{max-width:620px}
-.botao{display:inline-flex;align-items:center;justify-content:center;
-  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
-  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
-  cursor:pointer;text-decoration:none;white-space:nowrap}
-.botao:hover{background:var(--cor-escura)}
-a:focus-visible,button:focus-visible,input:focus-visible,
-select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
-  border-radius:4px}
-/* a linha de numeros, toda contada a partir dos dados */
-.numeros{display:flex;flex-wrap:wrap;gap:14px 40px;margin-top:40px;
-  padding-top:26px;border-top:1px solid rgba(255,255,255,.22)}
-.numero b{display:block;font-family:var(--tipo-titulo);font-weight:700;
-  font-size:1.6rem;color:var(--branco);line-height:1.1}
-.numero span{font-size:14px;color:rgba(255,255,255,.78)}
-
-/* ---------------------------------------------------------------- blocos */
-.bloco{padding:84px 0}
-.bloco-cab{display:flex;align-items:flex-end;justify-content:space-between;
-  gap:24px;margin-bottom:34px;flex-wrap:wrap}
-.bloco h2{font-size:clamp(1.7rem, 1.2rem + 1.6vw, 2.5rem)}
-.bloco-cab p{margin:10px 0 0;color:var(--mudo);max-width:52ch}
-.ligacao{color:var(--cor-escura);font-weight:600;text-decoration:none;
-  white-space:nowrap}
-.ligacao:hover{text-decoration:underline}
-
-/* paises */
-.paises{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
-@media (max-width:860px){.paises{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:460px){.paises{grid-template-columns:1fr}}
-.pais{position:relative;display:block;border-radius:var(--raio);
-  overflow:hidden;text-decoration:none;aspect-ratio:4/3;background:var(--tinta)}
-.pais-foto{position:absolute;inset:0}
-.pais-foto img{width:100%;height:100%;object-fit:cover}
-.pais::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(to top, rgba(11,43,42,.92) 8%,
-    rgba(11,43,42,.22) 58%, rgba(11,43,42,.08) 100%)}
-.pais-txt{position:absolute;left:18px;right:18px;bottom:16px;z-index:2;
-  display:flex;flex-direction:column;gap:3px}
-.pais-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.15rem;
-  color:var(--branco)}
-.pais-meta{font-size:13.5px;color:rgba(255,255,255,.86)}
-.pais:hover .pais-foto img{transform:scale(1.04)}
-.pais-foto img{transition:transform .5s ease}
-
+/* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
+   isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
+   pagina de resultados os cartoes sairam como texto corrido. */
 /* tours */
 .tours{display:grid;gap:22px;
   grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
@@ -151,36 +102,6 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .tour-preco b{font-family:var(--tipo-titulo);font-size:1.3rem;
   color:var(--tinta);font-variant-numeric:tabular-nums}
 .tour-preco-nota{font-size:13px;color:var(--mudo)}
-
-/* o mapa dos destinos */
-.atlas{background:var(--tinta);color:var(--branco)}
-.atlas h2{color:var(--branco)}
-.atlas p{color:rgba(255,255,255,.82);max-width:46ch}
-.atlas-i{display:grid;grid-template-columns:1fr 1fr;gap:56px;
-  align-items:center}
-@media (max-width:900px){.atlas-i{grid-template-columns:1fr;gap:34px}}
-/* O mapa inteiro, nao um recorte. Estava em `slice` por tras da seccao e
-   via-se so o meio da Europa — um mapa que corta os destinos que e
-   suposto mostrar nao esta a mostrar nada. */
-.mapa{width:100%;height:auto;max-height:440px;display:block}
-.mapa-contexto path{fill:none;stroke:rgba(255,255,255,.14);stroke-width:1.2}
-.mapa-paises path{fill:rgba(255,255,255,.07);stroke:rgba(255,255,255,.3);
-  stroke-width:1.4}
-.mapa-pontos circle{fill:#CE7030}
-.coords{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:26px;
-  font-variant-numeric:tabular-nums;font-size:13px}
-.coord{border:1px solid rgba(255,255,255,.28);border-radius:999px;
-  padding:4px 12px;color:rgba(255,255,255,.92)}
-
-/* como funciona */
-.passos{display:grid;gap:26px;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
-.passo{display:flex;flex-direction:column;gap:9px}
-.passo-n{width:34px;height:34px;border-radius:50%;background:var(--cor);
-  color:var(--branco);display:grid;place-items:center;font-weight:700;
-  font-family:var(--tipo-titulo);font-size:15px}
-.passo h3{font-size:1.1rem}
-.passo p{margin:0;color:var(--mudo);font-size:15.5px}
 
 /* rodape */
 .rodape{background:var(--papel);border-top:1px solid var(--risco);
@@ -265,24 +186,107 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   .pc-botao{flex:1 1 100%}
 }
 
+<style>
+/* ----------------------------------------------------------------- heroi */
+.heroi{position:relative;background:var(--tinta);color:var(--branco)}
+/* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
+   procura. Quem recorta a fotografia e a camada da fotografia. */
+.heroi-foto{position:absolute;inset:0;overflow:hidden}
+.heroi-foto img{width:100%;height:100%;object-fit:cover}
+.heroi::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,
+    rgba(11,43,42,.93) 0%, rgba(11,43,42,.82) 46%,
+    rgba(11,43,42,.46) 76%, rgba(11,43,42,.30) 100%)}
+.heroi-i{position:relative;z-index:2;padding:84px 0 92px;max-width:720px}
+.heroi h2{color:var(--branco);
+  font-size:clamp(2.3rem, 1.3rem + 3.4vw, 4rem);margin:0 0 18px}
+.heroi p{font-size:clamp(1.05rem, .98rem + .4vw, 1.3rem);
+  color:rgba(255,255,255,.88);margin:0 0 34px;max-width:33em}
+
+/* a barra de procura: o CSS dela vive em tools/procura.py, junto com o
+   comportamento, porque as duas coisas so fazem sentido juntas */
+.procura{max-width:620px}
+/* a linha de numeros, toda contada a partir dos dados */
+.numeros{display:flex;flex-wrap:wrap;gap:14px 40px;margin-top:40px;
+  padding-top:26px;border-top:1px solid rgba(255,255,255,.22)}
+.numero b{display:block;font-family:var(--tipo-titulo);font-weight:700;
+  font-size:1.6rem;color:var(--branco);line-height:1.1}
+.numero span{font-size:14px;color:rgba(255,255,255,.78)}
+
+/* ---------------------------------------------------------------- blocos */
+.bloco{padding:84px 0}
+.bloco-cab{display:flex;align-items:flex-end;justify-content:space-between;
+  gap:24px;margin-bottom:34px;flex-wrap:wrap}
+.bloco h2{font-size:clamp(1.7rem, 1.2rem + 1.6vw, 2.5rem)}
+.bloco-cab p{margin:10px 0 0;color:var(--mudo);max-width:52ch}
+.ligacao{color:var(--cor-escura);font-weight:600;text-decoration:none;
+  white-space:nowrap}
+.ligacao:hover{text-decoration:underline}
+
+/* paises */
+.paises{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:860px){.paises{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:460px){.paises{grid-template-columns:1fr}}
+.pais{position:relative;display:block;border-radius:var(--raio);
+  overflow:hidden;text-decoration:none;aspect-ratio:4/3;background:var(--tinta)}
+.pais-foto{position:absolute;inset:0}
+.pais-foto img{width:100%;height:100%;object-fit:cover}
+.pais::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(11,43,42,.92) 8%,
+    rgba(11,43,42,.22) 58%, rgba(11,43,42,.08) 100%)}
+.pais-txt{position:absolute;left:18px;right:18px;bottom:16px;z-index:2;
+  display:flex;flex-direction:column;gap:3px}
+.pais-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.15rem;
+  color:var(--branco)}
+.pais-meta{font-size:13.5px;color:rgba(255,255,255,.86)}
+.pais:hover .pais-foto img{transform:scale(1.04)}
+.pais-foto img{transition:transform .5s ease}
+
+/* o mapa dos destinos */
+.atlas{background:var(--tinta);color:var(--branco)}
+.atlas h2{color:var(--branco)}
+.atlas p{color:rgba(255,255,255,.82);max-width:46ch}
+.atlas-i{display:grid;grid-template-columns:1fr 1fr;gap:56px;
+  align-items:center}
+@media (max-width:900px){.atlas-i{grid-template-columns:1fr;gap:34px}}
+/* O mapa inteiro, nao um recorte. Estava em `slice` por tras da seccao e
+   via-se so o meio da Europa — um mapa que corta os destinos que e
+   suposto mostrar nao esta a mostrar nada. */
+.mapa{width:100%;height:auto;max-height:440px;display:block}
+.mapa-contexto path{fill:none;stroke:rgba(255,255,255,.14);stroke-width:1.2}
+.mapa-paises path{fill:rgba(255,255,255,.07);stroke:rgba(255,255,255,.3);
+  stroke-width:1.4}
+.mapa-pontos circle{fill:#CE7030}
+.coords{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:26px;
+  font-variant-numeric:tabular-nums;font-size:13px}
+.coord{border:1px solid rgba(255,255,255,.28);border-radius:999px;
+  padding:4px 12px;color:rgba(255,255,255,.92)}
+
+/* como funciona */
+.passos{display:grid;gap:26px;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.passo{display:flex;flex-direction:column;gap:9px}
+.passo-n{width:34px;height:34px;border-radius:50%;background:var(--cor);
+  color:var(--branco);display:grid;place-items:center;font-weight:700;
+  font-family:var(--tipo-titulo);font-size:15px}
+.passo h3{font-size:1.1rem}
+.passo p{margin:0;color:var(--mudo);font-size:15.5px}
+</style>
 </style>
 </head>
 <body>
-
 <a class="saltar" href="#principal">Skip to content</a>
-
 <header class="topo">
   <div class="folha topo-i">
     <span class="marca" style="--t:44px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><h1 class="marca-nome marca-nome-h1"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></h1></span>
     <nav class="nav" aria-label="Main">
       <a href="/tours/">All tours</a>
-      <a href="#destinations">Destinations</a>
-      <a href="#how">How it works</a>
+      <a href="/#destinations">Destinations</a>
+      <a href="/#how">How it works</a>
       <a href="/contact/">Help</a>
     </nav>
   </div>
 </header>
-
 <main id="principal">
 
 <section class="heroi">
@@ -293,7 +297,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       a price for the whole group instead of per person, and a start time
       set early enough to reach the place before the coaches do.</p>
 
-    <form class="procura" action="/tours/" method="get" role="search">
+    <form class="procura" action="/search/" method="get" role="search">
       <div class="pc" data-pc>
   <div class="pc-caixa">
     <svg class="pc-lupa" viewBox="0 0 24 24" aria-hidden="true">
@@ -583,12 +587,12 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
       <div class="rodape-cols">
         <div class="rodape-col">
           <h3>Tours</h3>
-          <a href="/tours/#italy">Italy</a>
-<a href="/tours/#portugal">Portugal</a>
-<a href="/tours/#uk">United Kingdom</a>
-<a href="/tours/#ireland">Ireland</a>
-<a href="/tours/#france">France</a>
-<a href="/tours/#spain">Spain</a>
+          <a href="/tours/?country=italy">Italy</a>
+<a href="/tours/?country=portugal">Portugal</a>
+<a href="/tours/?country=uk">United Kingdom</a>
+<a href="/tours/?country=ireland">Ireland</a>
+<a href="/tours/?country=france">France</a>
+<a href="/tours/?country=spain">Spain</a>
         </div>
         <div class="rodape-col">
           <h3>Company</h3>
@@ -603,7 +607,6 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     </div>
   </div>
 </footer>
-
 <script>
 (function () {
   var raiz = document.querySelector('[data-pc]');
