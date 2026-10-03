@@ -12,3 +12,18 @@ create or replace function auth.uid() returns uuid language sql stable as $$
 do $$ begin create role anon nologin;          exception when duplicate_object then null; end $$;
 do $$ begin create role authenticated nologin; exception when duplicate_object then null; end $$;
 grant usage on schema public to anon, authenticated;
+
+-- O Supabase da aos papeis `anon` e `authenticated` privilegios de tabela
+-- por omissao; quem decide o que eles veem e o RLS, nao o GRANT. Sem isto
+-- o teste media a falta de um GRANT e nao a politica — e dava "permission
+-- denied" onde devia dar zero linhas, que sao coisas diferentes.
+--
+-- Corre-se no fim, depois de as tabelas existirem; para tabelas criadas a
+-- seguir ha os default privileges.
+grant select, insert, update, delete on all tables in schema public
+  to anon, authenticated;
+grant usage, select on all sequences in schema public to anon, authenticated;
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to anon, authenticated;
+alter default privileges in schema public
+  grant usage, select on sequences to anon, authenticated;

@@ -53,7 +53,8 @@ CSS = """
 }
 .rep-mais:hover { border-style: solid; border-color: %(tinta)s; }
 @media (min-width: 700px) {
-  .rep-escalao { grid-template-columns: 7rem 1fr 9rem auto; align-items: end; }
+  .rep-escalao { grid-template-columns: 5.5rem 5.5rem 1fr 8rem auto;
+                 align-items: end; }
   .rep-paragem { grid-template-columns: 7rem 1fr; }
   .rep-paragem .rep-p-t, .rep-paragem .rep-x { grid-column: 1 / -1; }
   .rep-faq { grid-template-columns: 1fr; }
@@ -106,7 +107,10 @@ JS = r"""
     d.className = 'rep-l rep-' + tipo;
     if (tipo === 'escalao') {
       d.innerHTML =
-        '<div class="campo"><label for="' + k + '-1">Up to</label>'
+        '<div class="campo"><label for="' + k + '-0">From</label>'
+        + '<input id="' + k + '-0" type="number" data-c="min" min="1" '
+        + 'max="199" value="' + (v.min || 1) + '"></div>'
+        + '<div class="campo"><label for="' + k + '-1">Up to</label>'
         + '<input id="' + k + '-1" type="number" data-c="max" min="1" max="199" value="'
         + (v.max || '') + '" required></div>'
         + '<div class="campo"><label for="' + k + '-2">Vehicle</label>'
@@ -191,6 +195,16 @@ JS = r"""
     });
   }
 
+  // O aviso minimo. E um numero inteiro de horas e nao faz parte do
+  // conteudo: mudar de 24 para 48 horas nao e uma alteracao que alguem
+  // precise de ler, e esperar por revisao para a aplicar seria o mesmo
+  // erro que esperar por revisao para fechar um dia.
+  function aviso() {
+    var e = document.getElementById('aviso');
+    var n = e ? parseInt(e.value, 10) : 24;
+    return isFinite(n) ? n : 24;
+  }
+
   function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
   function pv(id, x) { var e = document.getElementById(id); if (e) e.value = x == null ? '' : x; }
 
@@ -203,6 +217,11 @@ JS = r"""
       .filter(function (x) { return x.max && x.price !== ''; })
       .map(function (x) {
         var o = { max: parseInt(x.max, 10), price: Number(x.price) };
+        // O minimo so vai para o conteudo quando nao e 1: um escalao que
+        // comeca em 1 e o caso normal, e escrever "min: 1" em todos os
+        // escaloes de todos os tours e ruido no payload.
+        var mn = parseInt(x.min, 10);
+        if (mn > 1) o.min = mn;
         if (x.vehicle) o.vehicle = x.vehicle;
         return o;
       })
@@ -359,14 +378,16 @@ JS = r"""
         // estar no site sao duas coisas diferentes.
         var r = await ewt.sb.from('listings').insert({
           operator_id: ESTADO.operador.id,
-          slug: p.slug, city: p.city, country: p.countryName, status: 'draft'
-        }).select('id, slug, status, city, country').single();
+          slug: p.slug, city: p.city, country: p.countryName,
+          status: 'draft', lead_time_hours: aviso()
+        }).select('id, slug, status, city, country, lead_time_hours').single();
         if (r.error) throw r.error;
         ESTADO.anuncio = r.data;
         history.replaceState({}, '', '/portal/listing/?id=' + r.data.id);
       } else {
         var u = await ewt.sb.from('listings').update({
-          slug: p.slug, city: p.city, country: p.countryName
+          slug: p.slug, city: p.city, country: p.countryName,
+          lead_time_hours: aviso()
         }).eq('id', ESTADO.anuncio.id);
         if (u.error) throw u.error;
       }
@@ -476,13 +497,29 @@ JS = r"""
 
     if (ID) {
       var r = await ewt.sb.from('listings')
-        .select('id, slug, status, city, country').eq('id', ID).single();
+        .select('id, slug, status, city, country, lead_time_hours')
+        .eq('id', ID).single();
       if (r.error || !r.data) {
         ewt.dizer('av-ed', 'That tour could not be opened. It may belong to '
           + 'another account.', 'mal');
         return;
       }
       ESTADO.anuncio = r.data;
+      if (r.data.lead_time_hours != null) {
+        var sel = document.getElementById('aviso');
+        var tem = [].slice.call(sel.options).some(function (o) {
+          return o.value === String(r.data.lead_time_hours);
+        });
+        // Um valor posto pela administracao que nao esteja na lista nao
+        // se perde nem se arredonda em silencio: entra na lista.
+        if (!tem) {
+          var o = document.createElement('option');
+          o.value = String(r.data.lead_time_hours);
+          o.textContent = r.data.lead_time_hours + ' hours';
+          sel.appendChild(o);
+        }
+        sel.value = String(r.data.lead_time_hours);
+      }
       document.getElementById('t-ed').textContent = 'Edit tour';
       document.getElementById('est-ed').innerHTML =
         '<span class="est est-' + r.data.status + '">' + r.data.status + '</span>';
@@ -577,6 +614,23 @@ def corpo():
                 <input type="text" id="partidas" maxlength="120" placeholder="07:00, 09:00">
                 <span class="ajuda">Separated by commas.</span>
               </div>
+            </div>
+            <div class="campo">
+              <label for="aviso">How much notice you need</label>
+              <select id="aviso">
+                <option value="0">Same day is fine</option>
+                <option value="12">12 hours</option>
+                <option value="24" selected>24 hours</option>
+                <option value="48">2 days</option>
+                <option value="72">3 days</option>
+                <option value="120">5 days</option>
+                <option value="168">A week</option>
+              </select>
+              <span class="ajuda">Days inside this window stop being
+                offered, and a request for one is refused before it
+                reaches you. Put the real number: the big marketplaces cap
+                this at ten hours, which is not enough time to find a
+                driver, and we are not going to pretend otherwise.</span>
             </div>
             <div class="linha2">
               <div class="campo">

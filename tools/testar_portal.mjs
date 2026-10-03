@@ -110,6 +110,36 @@ function responder(url, metodo, corpo) {
     if (q.includes('approved')) return base.filter(x => x.status === 'approved');
     return base;
   }
+  if (c === '/rest/v1/vehicles') {
+    if (metodo !== 'GET') return [{ id: 'vv1' }];
+    return [
+      { id: 'vv1', name: 'Mercedes V-Class', max_pax: 6, plate: '191-D-1234',
+        active: true, listing_vehicles: [{ listing_id: AN }] },
+      { id: 'vv2', name: 'Skoda Superb', max_pax: 3, plate: null,
+        active: true, listing_vehicles: [] }
+    ];
+  }
+  if (c === '/rest/v1/vehicle_days') {
+    return [{ day: dia(14), status: 'booked', note: null },
+            { day: dia(21), status: 'closed', note: 'oficina' }];
+  }
+  if (c === '/rest/v1/listing_vehicles') return [];
+  if (c === '/rest/v1/rpc/marcar_veiculo') return 1;
+  if (c === '/rest/v1/rpc/frota_no_dia') {
+    if (RESPOSTA_DIAS === 'livre') {
+      return [{ disponivel: true, veiculos: 2, max_pax: 6, price: 520,
+                lead_time_hours: 24 }];
+    }
+    if (RESPOSTA_DIAS === 'fechado') {
+      return [{ disponivel: false, veiculos: 0, max_pax: null, price: null,
+                lead_time_hours: 24 }];
+    }
+    if (RESPOSTA_DIAS === 'cedo') {
+      return [{ disponivel: false, veiculos: 2, max_pax: 6, price: null,
+                lead_time_hours: 72 }];
+    }
+    return [];   // 'sem': o tour nao esta ligado a um operador
+  }
   if (c === '/rest/v1/rpc/dias_abertos') {
     var dd = corpo && corpo.p_de;
     if (RESPOSTA_DIAS === 'livre') return [{ day: dd, price: 520 }];
@@ -476,13 +506,13 @@ await semSessao('a entrada pede o email antes de mandar a ligacao',
   });
 
 // ------------------------------------------------- a data, na pagina do tour
-async function diaDiz(nome, modo, contem) {
+async function diaDiz(nome, modo, contem, daquiADias) {
   RESPOSTA_DIAS = modo;
   total++;
   if (await ver(nome, '/tours/cliffs-of-moher-galway/', '[data-data]',
     async (p) => {
       const d = new Date();
-      d.setDate(d.getDate() + 30);
+      d.setDate(d.getDate() + (daquiADias || 30));
       await p.locator('[data-data]').fill(d.toISOString().slice(0, 10));
       await p.waitForTimeout(700);
       const t = await p.locator('[data-dia]').innerText();
@@ -495,9 +525,59 @@ async function diaDiz(nome, modo, contem) {
 }
 
 await diaDiz('a data livre diz que esta aberta', 'livre', 'that day is open');
+await diaDiz('a data livre diz quantos cabem nesse dia', 'livre', 'up to 6 people');
+await diaDiz('a data cedo demais explica o aviso que falta', 'cedo', '3 days', 1);
 await diaDiz('a data fechada diz que esta tomada', 'fechado', 'that day is taken');
 await diaDiz('sem calendario nao afirma nada', 'sem', 'we confirm this date');
 RESPOSTA_DIAS = 'livre';
+
+// ------------------------------------------------------------- a frota
+await t('a frota lista os veiculos e o calendario do escolhido',
+  '/portal/fleet/', '.v[data-v]', async (p) => [
+    ['lista os dois veiculos', await p.locator('.v[data-v]').count() === 2],
+    ['mostra os lugares',
+      (await p.locator('.v-pax').first().innerText()).indexOf('6') > -1],
+    ['o primeiro vem escolhido',
+      await p.locator('.v[aria-pressed="true"]').count() === 1],
+    ['desenha o mes', await p.locator('.vd[data-d]').count() >= 28],
+    ['um dia ocupado', await p.locator('.vd-booked').count() === 1],
+    ['um dia indisponivel', await p.locator('.vd-closed').count() === 1],
+    ['o estado vai no aria-label e nao so na cor',
+      (await p.locator('.vd-booked').getAttribute('aria-label'))
+        .indexOf('out on a job') > -1],
+    ['diz a que tours o veiculo serve',
+      (await p.locator('#vc-quem').innerText()).indexOf('tour') > -1]
+  ]);
+
+await t('a frota deixa ligar um veiculo a um tour',
+  '/portal/fleet/', '.v-t input', async (p) => [
+    ['ha uma caixa por tour', await p.locator('.v-t input').count() === 1],
+    ['vem ligada, porque o v-class ja serve esse tour',
+      await p.locator('.v-t input').first().isChecked() === true]
+  ]);
+
+await t('a frota recusa um veiculo sem lugares',
+  '/portal/fleet/', '#f-novo', async (p) => {
+    await p.locator('#v-nome').fill('Carrinha nova');
+    await p.locator('#bt-novo').click();
+    await p.waitForTimeout(300);
+    return [['diz o que falta',
+      (await p.locator('#av-novo').innerText()).toLowerCase()
+        .indexOf('passengers') > -1]];
+  });
+
+await t('o editor tem o aviso minimo e deixa pedir mais de 10 horas',
+  '/portal/listing/?id=' + AN, '#aviso', async (p) => {
+    const opts = await p.locator('#aviso option').allTextContents();
+    return [
+      ['o campo existe', await p.locator('#aviso').count() === 1],
+      ['tem opcoes acima das 10 horas da GetYourGuide',
+        opts.some(x => x.indexOf('week') > -1 || x.indexOf('days') > -1)],
+      ['os escaloes tem minimo e maximo',
+        await p.locator('#escaloes [data-c="min"]').count() === 3 &&
+        await p.locator('#escaloes [data-c="max"]').count() === 3]
+    ];
+  });
 
 // Em ecra pequeno, que e onde o operador vai mesmo usar isto.
 await pag.setViewportSize({ width: 390, height: 844 });
