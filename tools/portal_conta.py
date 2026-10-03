@@ -49,6 +49,41 @@ JS = r"""
       + ewt.escapar(v) + '</b></div>' : '';
   }
 
+  // A mudanca de palavra-passe. Nao pede a antiga porque a sessao ja
+  // prova quem e: quem esta aqui dentro ja entrou. Pede duas vezes a
+  // nova, que e o erro que realmente acontece.
+  function ligarPalavraPasse() {
+    var f = document.getElementById('f-pw');
+    if (!f) return;
+    f.addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var a = document.getElementById('pw1').value;
+      var b = document.getElementById('pw2').value;
+      ewt.dizer('av-pw', '', '');
+
+      if (a.length < 10) {
+        ewt.dizer('av-pw', 'Make it at least 10 characters.', 'mal');
+        document.getElementById('pw1').focus();
+        return;
+      }
+      if (a !== b) {
+        ewt.dizer('av-pw', 'The two do not match.', 'mal');
+        document.getElementById('pw2').focus();
+        return;
+      }
+
+      var bt = document.getElementById('bt-pw');
+      bt.disabled = true; bt.textContent = 'Changing\u2026';
+      var r = await ewt.sb.auth.updateUser({ password: a });
+      bt.disabled = false; bt.textContent = 'Change my password';
+
+      if (r.error) { ewt.dizer('av-pw', ewt.legivel(r.error), 'mal'); return; }
+      f.reset();
+      ewt.dizer('av-pw', 'Done. Use the new one next time you sign in \u2014 '
+        + 'this session stays open.', 'bem');
+    });
+  }
+
   (async function () {
     var p = await ewt.exigir_entrada();
     if (!p) return;
@@ -120,7 +155,25 @@ JS = r"""
       + 'with their email. We do not let an account add its own members '
       + 'yet &mdash; it is the kind of thing that is easy to get wrong '
       + 'once and hard to notice.</p>'
-      + '</div>';
+      + '</div>'
+
+      + '<div class="cx"><p class="cx-t">Password</p>'
+      + '<form id="f-pw" novalidate>'
+      + '<div class="campo"><label for="pw1">New password</label>'
+      + '<input type="password" id="pw1" autocomplete="new-password" '
+      + 'minlength="10">'
+      + '<span class="ajuda">At least 10 characters. A short phrase you '
+      + 'will remember beats a short word you will not.</span></div>'
+      + '<div class="campo"><label for="pw2">Type it again</label>'
+      + '<input type="password" id="pw2" autocomplete="new-password">'
+      + '<span class="ajuda">Because a password you cannot retype is a '
+      + 'password you have already lost.</span></div>'
+      + '<button type="submit" class="bt bt-p" id="bt-pw">Change my '
+      + 'password</button>'
+      + '<p class="aviso" id="av-pw" role="status" hidden></p>'
+      + '</form></div>';
+
+    ligarPalavraPasse();
   })();
 })();
 """

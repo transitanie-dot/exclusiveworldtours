@@ -39,6 +39,15 @@ CSS = """
   font: 400 .93rem/1.55 'Inter', system-ui, sans-serif;
   color: %(mudo)s; margin: 0 0 1.3rem;
 }
+.ou {
+  display: flex; align-items: center; gap: .8rem;
+  margin: 1.2rem 0 1rem; color: %(mudo)s;
+  font: 400 .8rem/1 'Inter', system-ui, sans-serif;
+}
+.ou::before, .ou::after {
+  content: ''; flex: 1; height: 1px; background: %(risco)s;
+}
+
 .entrada .rodape-l {
   margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px solid %(risco)s;
   font: 400 .86rem/1.55 'Inter', system-ui, sans-serif; color: %(mudo)s;
@@ -100,38 +109,108 @@ JS = r"""
   var elCarrega = document.getElementById('carrega');
 
   // ------------------------------------------------------------- entrada
+  //
+  // Duas maneiras de entrar, e as duas existem por razoes diferentes:
+  //
+  //   PALAVRA-PASSE  para quem entra aqui todos os dias. Nao depende de
+  //                  email nenhum chegar, e e por isso que esta primeiro.
+  //   LIGACAO        para o operador que entra tres vezes por mes e ia
+  //                  esquecer a palavra-passe. Depende de o email sair.
+  //
+  // A ligacao so funciona quando o projeto tiver servidor de email
+  // proprio; ate la o Supabase so entrega a membros da organizacao. Por
+  // isso o erro dessa via tem de dizer isso por palavras, e nao deixar a
+  // pessoa a olhar para um ecra que nao aconteceu nada.
   var f = document.getElementById('f-entrar');
+
+  function volta() {
+    return new URLSearchParams(location.search).get('volta') || '/portal/';
+  }
+
+  function travar(sim, botao, texto) {
+    var bs = [document.getElementById('bt-entrar'),
+              document.getElementById('bt-ligacao')];
+    bs.forEach(function (b) { if (b) b.disabled = sim; });
+    if (botao) botao.textContent = texto;
+  }
+
+  // --------------------------------------------------- palavra-passe
   f.addEventListener('submit', async function (ev) {
     ev.preventDefault();
     var email = document.getElementById('email').value.trim();
+    var pw = document.getElementById('pw').value;
     var bt = document.getElementById('bt-entrar');
-    if (!email) { return; }
-
-    bt.disabled = true;
-    bt.textContent = 'Sending…';
     ewt.dizer('av-entrada', '', '');
 
-    // Volta para onde a pessoa estava a tentar ir, nao para a raiz.
-    var volta = new URLSearchParams(location.search).get('volta') || '/portal/';
-    var r = await ewt.sb.auth.signInWithOtp({
-      email: email,
-      options: { emailRedirectTo: location.origin + volta }
-    });
-
-    bt.disabled = false;
-    bt.textContent = 'Email me a sign-in link';
-
-    if (r.error) {
-      ewt.dizer('av-entrada', ewt.legivel(r.error), 'mal');
+    if (!email) {
+      ewt.dizer('av-entrada', 'Type the email you sign in with.', 'mal');
+      document.getElementById('email').focus();
       return;
     }
-    // Nao se diz "if that address is registered": o operador precisa de
-    // saber se escreveu o email certo, e esta e uma area fechada onde
-    // nao ha nada a esconder de quem ja esta de fora.
+    if (!pw) {
+      // Sem palavra-passe nao se tenta entrar e falhar: oferece-se a
+      // outra via, que e o que a pessoa provavelmente queria.
+      ewt.dizer('av-entrada', 'Type your password, or use the sign-in '
+        + 'link below if you do not have one.', 'mal');
+      document.getElementById('pw').focus();
+      return;
+    }
+
+    travar(true, bt, 'Signing in…');
+    var r = await ewt.sb.auth.signInWithPassword({ email: email, password: pw });
+    travar(false, bt, 'Sign in');
+
+    if (r.error) {
+      var m = (r.error.message || '').toLowerCase();
+      ewt.dizer('av-entrada',
+        m.indexOf('invalid') > -1
+          ? 'That email and password do not match. Check both, or use the '
+            + 'sign-in link below.'
+          : ewt.legivel(r.error), 'mal');
+      return;
+    }
+    location.href = volta();
+  });
+
+  // ---------------------------------------------------------- ligacao
+  document.getElementById('bt-ligacao').addEventListener('click', async function () {
+    var email = document.getElementById('email').value.trim();
+    var bt = this;
+    ewt.dizer('av-entrada', '', '');
+
+    if (!email) {
+      ewt.dizer('av-entrada', 'Type your email first and we send the link '
+        + 'there.', 'mal');
+      document.getElementById('email').focus();
+      return;
+    }
+
+    travar(true, bt, 'Sending…');
+    var r = await ewt.sb.auth.signInWithOtp({
+      email: email,
+      options: { emailRedirectTo: location.origin + volta() }
+    });
+    travar(false, bt, 'Email me a sign-in link instead');
+
+    if (r.error) {
+      var m = (r.error.message || '').toLowerCase();
+      if (m.indexOf('not authorized') > -1 || m.indexOf('not allowed') > -1) {
+        // O erro verdadeiro, dito por palavras: nao e um problema do
+        // endereco da pessoa, e do servidor de email ainda nao estar
+        // montado. Deixa-la a adivinhar isso seria indecente.
+        ewt.dizer('av-entrada', 'We cannot email that address yet — our '
+          + 'mail service is still being set up. Sign in with your '
+          + 'password, or write to us and we will sort it out.', 'mal');
+      } else {
+        ewt.dizer('av-entrada', ewt.legivel(r.error), 'mal');
+      }
+      return;
+    }
+    // Nao se diz "if that address is registered": esta e uma area
+    // fechada, e quem esta de fora nao ganha nada com a duvida.
     ewt.dizer('av-entrada',
       'Check ' + email + '. The link we sent is valid for one hour and '
-      + 'opens the portal straight away — no password needed.', 'bem');
-    document.getElementById('f-entrar').reset();
+      + 'opens the portal straight away.', 'bem');
   });
 
   // -------------------------------------------------------------- painel
@@ -300,8 +379,8 @@ def corpo():
     <div class="entrada" id="entrada" hidden>
       <div class="cx">
         <h1>Operator sign-in</h1>
-        <p class="sub">We email you a link. No password to remember, and
-          nothing to reset when you have not been here for a month.</p>
+        <p class="sub">Sign in with your password, or have us email you a
+          link if you would rather not remember one.</p>
 
         <form id="f-entrar" novalidate>
           <div class="campo">
@@ -309,13 +388,26 @@ def corpo():
             <input type="email" id="email" name="email" required
                    autocomplete="email" inputmode="email"
                    placeholder="you@yourcompany.com">
-            <span class="ajuda">Use the address you applied with. A link
-              to a different address will not find your tours.</span>
           </div>
+
+          <div class="campo" id="campo-pw">
+            <label for="pw">Password</label>
+            <input type="password" id="pw" name="password"
+                   autocomplete="current-password">
+          </div>
+
           <button type="submit" class="bt bt-p" id="bt-entrar"
-                  style="width:100%%">Email me a sign-in link</button>
+                  style="width:100%%">Sign in</button>
           <p class="aviso" id="av-entrada" role="status" hidden></p>
         </form>
+
+        <div class="ou"><span>or</span></div>
+
+        <button type="button" class="bt bt-s" id="bt-ligacao"
+                style="width:100%%">Email me a sign-in link instead</button>
+        <p class="ajuda" style="margin-top:.6rem">The link signs you in
+          without a password. It works only if your address can receive
+          our mail &mdash; if nothing arrives, use the password.</p>
 
         <p class="rodape-l">Not selling with us yet?
           <a href="/suppliers/">See how it works</a> and apply &mdash; it

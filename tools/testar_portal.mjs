@@ -68,7 +68,10 @@ function responder(url, metodo, corpo) {
   const u = new URL(url);
   const c = u.pathname;
 
-  if (c === '/auth/v1/token' || c.startsWith('/auth/v1/otp')) return {};
+  if (c === '/auth/v1/token') return { access_token: 'x', token_type: 'bearer',
+    expires_in: 3600, refresh_token: 'y',
+    user: { id: UID, email: 'ricardo@example.invalid', aud: 'authenticated' } };
+  if (c.startsWith('/auth/v1/otp')) return {};
   if (c === '/auth/v1/user') {
     return { id: UID, email: 'ricardo@example.invalid', aud: 'authenticated' };
   }
@@ -405,6 +408,71 @@ await t('a candidatura exige a descricao do tour',
     await p.waitForTimeout(300);
     return [['pede uma descricao a serio',
       (await p.locator('#av-cand').innerText()).toLowerCase().includes('describe')]];
+  });
+
+// ------------------------------------------------------------- a entrada
+//
+// Estes correm sem sessao: com sessao a pagina mostra o painel e o ecra
+// de entrada nunca aparece. E uma janela separada, nao um apagar a meio.
+async function semSessao(nome, teste) {
+  total++;
+  const c2 = await navegador.newContext({ viewport: { width: 1280, height: 1000 } });
+  await c2.route('**://*.supabase.co/**', async (rota) => {
+    const req = rota.request();
+    let corpo = null;
+    try { corpo = req.postDataJSON(); } catch (e) {}
+    const dados = responder(req.url(), req.method(), corpo);
+    const n = Array.isArray(dados) ? dados.length : 1;
+    await rota.fulfill({ status: 200, contentType: 'application/json',
+      headers: { 'access-control-allow-origin': '*',
+                 'access-control-allow-headers': '*',
+                 'access-control-expose-headers': 'content-range',
+                 'content-range': n ? '0-' + (n - 1) + '/' + n : '*/0' },
+      body: JSON.stringify(dados) });
+  });
+  const p2 = await c2.newPage();
+  await p2.goto('http://localhost:' + PORTA + '/portal/', { waitUntil: 'networkidle' });
+  try {
+    await p2.waitForSelector('#entrada', { timeout: 6000 });
+  } catch (e) {
+    console.log('  FALHOU  ' + nome + ' — o ecra de entrada nao apareceu');
+    await c2.close();
+    return;
+  }
+  const r = await teste(p2);
+  const maus = (r || []).filter(x => x && x[1] === false).map(x => x[0]);
+  if (maus.length) {
+    console.log('  FALHOU  ' + nome);
+    maus.forEach(m => console.log('          ' + m));
+  } else {
+    console.log('  ok      ' + nome);
+    bem++;
+  }
+  await c2.close();
+}
+
+await semSessao('a entrada pede a palavra-passe antes de tentar',
+  async (p) => {
+    await p.locator('#email').fill('ricardo@example.invalid');
+    await p.locator('#bt-entrar').click();
+    await p.waitForTimeout(300);
+    const a = await p.locator('#av-entrada').innerText();
+    return [
+      ['explica que falta a palavra-passe', a.toLowerCase().includes('password')],
+      ['oferece a outra via', a.toLowerCase().includes('link')],
+      ['o campo da palavra-passe existe',
+        await p.locator('#pw').count() === 1],
+      ['o botao de ligacao existe',
+        await p.locator('#bt-ligacao').count() === 1]
+    ];
+  });
+
+await semSessao('a entrada pede o email antes de mandar a ligacao',
+  async (p) => {
+    await p.locator('#bt-ligacao').click();
+    await p.waitForTimeout(300);
+    return [['pede o email',
+      (await p.locator('#av-entrada').innerText()).toLowerCase().includes('email')]];
   });
 
 // ------------------------------------------------- a data, na pagina do tour
