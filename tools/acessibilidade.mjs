@@ -73,6 +73,18 @@ function responder(url) {
         country: 'Portugal',
         operators: { id: OP, name: 'Atlantic Private Tours', status: 'approved', commission_rate: 0.2 } } }];
   }
+  if (c === '/rest/v1/vehicles') {
+    return [{ id: 'vv1', name: 'Mercedes V-Class', max_pax: 6,
+      plate: '191-D-1234', active: true, listing_vehicles: [{ listing_id: AN }] },
+      { id: 'vv2', name: 'Skoda Superb', max_pax: 3, plate: null,
+        active: true, listing_vehicles: [] }];
+  }
+  if (c === '/rest/v1/vehicle_days') {
+    const d = new Date();
+    const dia = (n) => new Date(d.getFullYear(), d.getMonth(), n).toISOString().slice(0, 10);
+    return [{ day: dia(14), status: 'booked' }, { day: dia(21), status: 'closed' }];
+  }
+  if (c === '/rest/v1/listing_vehicles') return [];
   if (c === '/rest/v1/availability') {
     const d = new Date();
     const dia = (n) => new Date(d.getFullYear(), d.getMonth(), n).toISOString().slice(0, 10);
@@ -108,6 +120,7 @@ const PAGINAS = [
   ['editor de anuncio', '/portal/listing/?id=' + AN, '#titulo'],
   ['calendario', '/portal/calendar/?tour=' + AN, '.dia[data-d]'],
   ['conta do operador', '/portal/account/', '.ct .cx'],
+  ['frota', '/portal/fleet/', '.vd[data-d]'],
   ['fila de revisao', '/admin/', '.rv'],
   ['operadores', '/admin/operators/', 'table.tab'],
   ['procuras', '/admin/searches/', '.cx']

@@ -1340,49 +1340,72 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     aviso.className = 'dia-estado';
     aviso.textContent = 'Checking that day\u2026';
 
-    var r = await ewt.sb.rpc('dias_abertos',
-      { p_slug: SLUG, p_de: d, p_ate: d });
+    // Uma pergunta so, sobre um dia so. Devolve se esta disponivel,
+    // quantos veiculos ha livres, qual o maior, o preco desse dia se o
+    // operador tiver posto um, e quantas horas de aviso o tour precisa —
+    // que e o que permite dizer PORQUE e que um dia nao da, em vez de
+    // dizer so que nao da.
+    var r = await ewt.sb.rpc('frota_no_dia', { p_slug: SLUG, p_day: d });
 
     if (r.error) {
-      // Nao se assusta ninguem com um erro de rede: o pedido por email
-      // continua a funcionar e e por ai que isto se resolve na mesma.
       aviso.className = 'dia-estado dia-talvez';
       aviso.innerHTML = 'We could not check that day automatically. '
         + 'Ask us and we confirm it with the operator.';
       return;
     }
 
-    var linhas = r.data || [];
-    if (linhas.length) {
-      aviso.className = 'dia-estado dia-sim';
-      aviso.innerHTML = '<b>That day is open.</b> Ask us and we hold it '
-        + 'while you decide.'
-        + (linhas[0].price ? ' The operator prices that date at \u20ac'
-            + ewt.euros(linhas[0].price) + '.' : '');
-      return;
-    }
+    var f = (r.data && r.data.length) ? r.data[0] : null;
 
-    // Vazio quer dizer duas coisas diferentes, e confundi-las e o erro
-    // caro: ou o operador fechou o dia, ou este tour ainda nao tem
-    // calendario no sistema. Pergunta-se qual.
-    // Pergunta-se pelos 90 dias a seguir. Se o tour tem calendario no
-    // sistema, alguma coisa volta; se nao volta nada, o tour ainda nao
-    // esta ligado a um operador e nao ha nada a afirmar sobre o dia.
-    var fim = new Date(d);
-    fim.setDate(fim.getDate() + 90);
-    var existe = await ewt.sb.rpc('dias_abertos',
-      { p_slug: SLUG, p_de: d, p_ate: ewt.iso(fim) });
-    var temCalendario = existe.data && existe.data.length;
-
-    if (temCalendario) {
-      aviso.className = 'dia-estado dia-nao';
-      aviso.innerHTML = '<b>That day is taken.</b> Pick another and we '
-        + 'check it, or ask us and we suggest the nearest one that works.';
-    } else {
+    // Sem linha nenhuma, este tour ainda nao esta ligado a um operador no
+    // sistema. Nao se afirma nada sobre o dia: confirma-se.
+    if (!f) {
       aviso.className = 'dia-estado dia-talvez';
       aviso.innerHTML = 'We confirm this date with the operator and come '
         + 'back within one working day.';
+      return;
     }
+
+    if (f.disponivel) {
+      var cabe = '';
+      if (f.max_pax) {
+        // Diz-se quantos cabem HOJE, que pode ser menos do que o maximo
+        // do tour: se a carrinha esta ocupada e so sobrou o sedan, o
+        // numero que conta e tres e nao seis.
+        cabe = ' Up to <b>' + f.max_pax + ' people</b> on that date'
+          + (f.veiculos > 1 ? ', across ' + f.veiculos + ' vehicles' : '')
+          + '.';
+      }
+      aviso.className = 'dia-estado dia-sim';
+      aviso.innerHTML = '<b>That day is open.</b>' + cabe
+        + ' Ask us and we hold it while you decide.'
+        + (f.price ? ' The operator prices that date at \u20ac'
+            + ewt.euros(f.price) + '.' : '');
+      return;
+    }
+
+    // Nao esta disponivel. Ha tres razoes diferentes e a pessoa merece
+    // saber qual: com aviso insuficiente escolhe outra data e compra na
+    // mesma; com o dia tomado, idem; sem saber, desiste.
+    var hoje = new Date();
+    var pedido = new Date(d + 'T00:00:00');
+    var horas = (pedido - hoje) / 36e5;
+
+    if (f.lead_time_hours && horas < f.lead_time_hours) {
+      var dias = Math.ceil(f.lead_time_hours / 24);
+      aviso.className = 'dia-estado dia-nao';
+      aviso.innerHTML = '<b>That is too soon.</b> This tour needs '
+        + (f.lead_time_hours >= 48
+            ? dias + ' days\u2019 notice'
+            : f.lead_time_hours + ' hours\u2019 notice')
+        + ' \u2014 a private day means a driver and a vehicle held for you '
+        + 'alone, and that is arranged, not switched on. Pick a later '
+        + 'date and we check it.';
+      return;
+    }
+
+    aviso.className = 'dia-estado dia-nao';
+    aviso.innerHTML = '<b>That day is taken.</b> Pick another and we '
+      + 'check it, or ask us and we suggest the nearest one that works.';
   }
 
   if (data) { data.addEventListener('change', verDia); }

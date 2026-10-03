@@ -32,6 +32,13 @@ grant  execute on function repartir(uuid, numeric) to authenticated;
 
 -- Os dias abertos de um anuncio, num intervalo. Devolve o dia e, se
 -- houver, o preco desse dia. Nao devolve lugares vendidos nem notas.
+--
+-- NOTA: a 006 reescreve o CORPO desta funcao — passa a respeitar o lead
+-- time do anuncio e a frota do operador. A assinatura e o tipo de
+-- retorno ficam exatamente como estao, de proposito: mudar o tipo de
+-- retorno obrigava a um `drop`, e um `drop` numa base de producao e uma
+-- janela em que a pagina do tour fica sem resposta. O detalhe da frota
+-- vive numa funcao propria, `frota_no_dia`.
 create or replace function dias_abertos(p_slug text, p_de date, p_ate date)
 returns table (day date, price numeric)
 language sql stable security definer set search_path = public as $$
@@ -55,20 +62,12 @@ language sql stable security definer set search_path = public as $$
              and d::date between b.starts_on and b.ends_on);
 $$;
 
--- Limite de 400 dias: pouco mais de um ano. Sem isto, um pedido com um
--- intervalo de cem anos obrigava a base a gerar milhoes de linhas.
-create or replace function dias_abertos(p_slug text, p_de date, p_ate date, p_limite integer)
-returns table (day date, price numeric)
-language sql stable security definer set search_path = public as $$
-  select * from dias_abertos(p_de := p_de,
-                             p_ate := least(p_ate, p_de + coalesce(p_limite, 400)),
-                             p_slug := p_slug);
-$$;
-
-revoke execute on function dias_abertos(text, date, date)          from public;
-revoke execute on function dias_abertos(text, date, date, integer) from public;
-grant  execute on function dias_abertos(text, date, date)          to anon, authenticated;
-grant  execute on function dias_abertos(text, date, date, integer) to anon, authenticated;
+-- O limite de 400 dias vive dentro da propria consulta desde a 006. Havia
+-- aqui uma segunda versao da funcao, com um argumento de limite; foi
+-- retirada porque duas versoes da mesma pergunta e como se perde a
+-- resposta certa.
+revoke execute on function dias_abertos(text, date, date) from public;
+grant  execute on function dias_abertos(text, date, date) to anon, authenticated;
 
 -- O visitante escreve e nao encontra nada. Essa linha e a lista de
 -- compras do marketplace: diz em que cidade falta um operador. Mas o

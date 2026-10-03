@@ -65,7 +65,8 @@ cp node_modules/@supabase/supabase-js/dist/umd/supabase.js assets/lib/supabase.j
 | `/suppliers/apply/`, `/contact/` | os formularios | `formularios.py` |
 | `/portal/` | entrada e painel do operador | `portal.py` |
 | `/portal/listing/` | o editor de anuncios | `portal_anuncio.py` |
-| `/portal/calendar/` | o calendario | `portal_calendario.py` |
+| `/portal/calendar/` | o calendario dos tours | `portal_calendario.py` |
+| `/portal/fleet/` | a frota e o calendario de cada veiculo | `portal_frota.py` |
 | `/portal/account/` | a conta do operador | `portal_conta.py` |
 | `/admin/` | a fila de revisao | `admin.py` |
 | `/admin/operators/`, `/admin/searches/` | as listas | `admin_listas.py` |
@@ -91,6 +92,59 @@ vivo. Um calendario que esperasse por aprovacao mostrava disponibilidade
 falsa durante horas, e isso nao e um atraso — e uma reserva que vai ter
 de ser cancelada.
 
+### A frota: capacidade partilhada de verdade
+
+E aqui que este marketplace faz uma coisa que a GetYourGuide **avisa
+expressamente para nao se tentar**. Vale a pena perceber porque.
+
+A disponibilidade da GYG e lida de cache e sondada por intervalos (uma
+vez por dia nos proximos 30 dias). Por isso a documentacao deles diz que
+partilhar capacidade entre produtos "can lead to inconsistencies" e que
+"cached availability won't reflect bookings made for other options". Um
+operador deles com uma carrinha e tres tours tem de fingir que tem tres
+carrinhas, ou fechar os outros dois a mao sempre que vende um.
+
+Aqui a disponibilidade e lida **ao vivo**, no momento em que o cliente
+escolhe a data. Por isso o recurso pode ser partilhado a serio:
+
+```
+vehicles          a frota do operador: nome, lugares, matricula
+listing_vehicles  que veiculos servem que anuncio (muitos para muitos)
+vehicle_days      o veiculo esta livre, ocupado ou indisponivel nesse dia
+```
+
+Fecha-se a carrinha no dia 12 e ela sai dos tres tours ao mesmo tempo,
+sozinha. Se so sobrar o sedan, o tour continua a vender mas **ate tres
+pessoas em vez de seis** — e e isso que a pagina do tour diz ao cliente.
+
+Sao duas perguntas diferentes e por isso duas tabelas:
+
+| Tabela | Pergunta | Afeta |
+|---|---|---|
+| `vehicle_days` | o veiculo esta ocupado? | todos os anuncios que o usam |
+| `availability` | este tour corre neste dia? | so esse anuncio |
+
+Um operador que ainda nao registou frota nenhuma continua a vender pelo
+calendario do anuncio: uma funcionalidade nova nao pode tirar vendas a
+quem ainda nao a usa.
+
+### O lead time nao tem tecto
+
+`listings.lead_time_hours`, por omissao 24. A GYG impoe que o cut-off
+**nao pode exceder 10 horas**, porque vive de reservas de ultima hora.
+Um motorista nao se arranja em 10 horas. Aqui o operador poe 24, 48 ou
+168 e ninguem lhe diz que nao pode.
+
+A conta arredonda para cima, ao dia inteiro, e isso e deliberado: um
+anuncio ainda nao guarda a hora de partida. Aceitar amanha as 13h de
+hoje com 24 horas de aviso seria aceitar uma partida que pode ser as 8h
+— 19 horas, nao 24. Entre prometer a mais e prometer a menos, prometer a
+mais custa um cancelamento.
+
+A regra esta nos dois sitios onde tem de estar: `dias_abertos()` esconde
+o dia, e `registar_pedido()` recusa o pedido. Se so estivesse na pagina,
+bastava abrir as ferramentas do browser para a saltar.
+
 ### O caminho publico
 
 Com RLS ligado, o visitante nao le nenhuma tabela. O que ele pode fazer
@@ -98,7 +152,8 @@ sao quatro funcoes, e nada mais:
 
 | Funcao | Para que serve |
 |---|---|
-| `dias_abertos` | os dias livres de um tour, para a pagina do tour |
+| `dias_abertos` | que dias posso ir — a consulta do calendario |
+| `frota_no_dia` | o que ha neste dia: veiculos livres, maior lotacao, preco |
 | `registar_procura` | regista o que foi procurado (escreve, nao le) |
 | `registar_pedido` | o formulario de contacto |
 | `candidatar_operador` | a candidatura de um operador |
