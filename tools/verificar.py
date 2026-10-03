@@ -18,12 +18,17 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 
-PAGINAS = ['index.html', 'tours/index.html', 'search/index.html']
+import glob
+
+PAGINAS = (['index.html', 'tours/index.html', 'search/index.html']
+           + sorted(os.path.relpath(x, RAIZ)
+                    for x in glob.glob(os.path.join(RAIZ, 'tours', '*',
+                                                    'index.html'))))
 
 # Classes que aparecem no HTML e tem mesmo de ter regra no CSS da propria
 # pagina. Nao e a lista toda: sao as que ja falharam ou que, se
 # faltarem, estragam a pagina sem dar erro.
-EXIGIDAS = ['botao', 'tour', 'tours', 'tour-foto', 'tour-corpo', 'tour-preco',
+EXIGIDAS = ['botao', 'tour', 'tours', 'painel', 'paragem', 'galeria', 'tour-foto', 'tour-corpo', 'tour-preco',
             'etiq', 'marca', 'topo', 'rodape', 'folha', 'pc-caixa', 'pc-lista']
 
 

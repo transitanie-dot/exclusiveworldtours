@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Private Day Tour: Stonehenge &amp; Oxford — Exclusive World Tours</title>
+<meta name="description" content="A private 12-hour day from London to Stonehenge and Oxford, with skip-the-line entry to both and Christ Church College. Up to 16 people, from €1,390.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/inter-latin-400-normal.woff2">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url(/assets/fontes/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url(/assets/fontes/inter-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-700-normal.woff2) format('woff2')}
+
+
+:root{
+  --tinta:#0B2B2A; --cor:#CE7030; --cor-escura:#A85426;
+  --papel:#F6F4F1; --branco:#FFFFFF;
+  --tinta-f:#B0B8B5; --cor-f:#E1AF8D; --uma-f:#B9C0BD;
+  --texto:#354F4E; --mudo:#5B6F6E; --risco:#D5D8D5;
+  --tipo:'Inter',system-ui,-apple-system,sans-serif;
+  --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
+  --raio:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;
+    transition-duration:.01ms !important}}
+body{margin:0;background:var(--branco);color:var(--texto);
+  font-family:var(--tipo);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
+  letter-spacing:-.025em;line-height:1.08;margin:0}
+.folha{max-width:1240px;margin:0 auto;padding:0 24px}
+/* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
+   homepage e a pagina de resultados ficou com um botao cinzento do
+   browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
+.botao{display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
+  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
+  cursor:pointer;text-decoration:none;white-space:nowrap}
+.botao:hover{background:var(--cor-escura)}
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
+  border-radius:4px}
+/* So aparece a quem navega por teclado — mas aparece mesmo, que e o
+   ponto. Escondido com left:-9999px e sem regra de foco, este atalho
+   existe no HTML e nao serve a ninguem. */
+.saltar{position:absolute;left:16px;top:-60px;z-index:60;background:var(--tinta);
+  color:var(--branco);padding:12px 18px;border-radius:0 0 10px 10px;
+  text-decoration:none;font-weight:600;transition:top .15s ease}
+.saltar:focus{top:0}
+
+/* ------------------------------------------------------------ cabecalho */
+.topo{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--risco)}
+.topo-i{display:flex;align-items:center;gap:28px;height:74px}
+.nav{display:flex;gap:26px;margin-left:auto;font-size:15px;font-weight:500}
+.nav a{text-decoration:none;color:var(--texto);padding:6px 0;
+  border-bottom:2px solid transparent}
+.nav a:hover{color:var(--tinta);border-bottom-color:var(--cor)}
+.topo .marca{color:var(--tinta)}
+@media (max-width:760px){.nav{display:none}}
+/* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
+   isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
+   pagina de resultados os cartoes sairam como texto corrido. */
+/* tours */
+.tours{display:grid;gap:22px;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.tour{display:flex;flex-direction:column;text-decoration:none;
+  border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden;
+  background:var(--branco)}
+.tour:hover{border-color:var(--tinta-f)}
+.tour-foto{position:relative;aspect-ratio:3/2;background:var(--uma-f);
+  display:block}
+.tour-foto img{width:100%;height:100%;object-fit:cover}
+.credito{position:absolute;right:8px;bottom:7px;z-index:2;font-size:10.5px;
+  color:#fff;background:rgba(11,43,42,.68);padding:3px 7px;border-radius:5px}
+.tour-corpo{display:flex;flex-direction:column;gap:9px;padding:18px 20px 20px;
+  flex:1}
+.tour-onde{font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--cor-escura);font-weight:600}
+.tour-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.13rem;
+  color:var(--tinta);line-height:1.22}
+.tour-linha{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+.etiq{font-size:12.5px;color:var(--texto);background:var(--papel);
+  border:1px solid var(--risco);border-radius:999px;padding:3px 10px}
+.tour-preco{margin-top:auto;padding-top:13px;border-top:1px solid var(--risco);
+  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.tour-preco b{font-family:var(--tipo-titulo);font-size:1.3rem;
+  color:var(--tinta);font-variant-numeric:tabular-nums}
+.tour-preco-nota{font-size:13px;color:var(--mudo)}
+
+/* rodape */
+.rodape{background:var(--papel);border-top:1px solid var(--risco);
+  padding:56px 0 44px;margin-top:0}
+.rodape-i{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
+.rodape .marca{color:var(--tinta)}
+.rodape-nota{color:var(--mudo);font-size:14px;max-width:40ch;margin:16px 0 0}
+.rodape-cols{display:flex;gap:56px;flex-wrap:wrap}
+.rodape-col h3{font-size:13px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mudo);font-family:var(--tipo);font-weight:600;margin:0 0 12px}
+.rodape-col a{display:block;text-decoration:none;color:var(--texto);
+  font-size:15px;padding:4px 0}
+.rodape-col a:hover{color:var(--cor-escura)}
+.rodape-fim{margin-top:40px;padding-top:22px;border-top:1px solid var(--risco);
+  font-size:13.5px;color:var(--mudo);display:flex;gap:18px;flex-wrap:wrap;
+  justify-content:space-between}
+
+.marca{font-size:var(--t);line-height:1;display:inline-flex;align-items:center;
+  gap:.6em;text-decoration:none}
+.marca .sim{width:1em;height:1em;flex:none;display:block}
+.marca-nome{display:inline-flex;flex-direction:column;align-items:flex-start;
+  font-family:var(--tipo-titulo);font-weight:600;text-transform:uppercase;
+  color:var(--tinta);line-height:1;white-space:nowrap;margin:0}
+.marca-nome-h1{font-size:inherit}
+.marca-l1{font-size:.268em;letter-spacing:.075em;margin-right:-.075em}
+.marca-l2{font-size:.268em;letter-spacing:.2165em;margin-right:-.2165em;
+  margin-top:.19em}
+/* os planos: nenhum gradiente, so cores cheias que tapam o que esta atras */
+.sim .papel{fill:var(--papel)}
+.sim .p{fill:var(--tinta)}
+.sim .pf{fill:var(--tinta-f)}
+.sim .c{fill:var(--cor)}
+.sim .u{fill:var(--tinta)}
+.sim .u-f{fill:var(--uma-f)}
+
+.pc{position:relative;width:100%}
+.pc-caixa{display:flex;align-items:center;gap:12px;background:var(--branco);
+  border-radius:14px;padding:8px 8px 8px 20px;
+  box-shadow:0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-lupa{width:21px;height:21px;flex:none;fill:none;stroke:var(--mudo);
+  stroke-width:2;stroke-linecap:round}
+.pc-caixa input{flex:1;min-width:0;border:0;padding:16px 0;font:inherit;
+  font-size:17px;color:var(--tinta);background:transparent}
+.pc-caixa input::placeholder{color:var(--mudo)}
+.pc-caixa input:focus{outline:0}
+.pc-caixa:focus-within{box-shadow:0 0 0 3px var(--cor),
+  0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-botao{min-height:52px}
+.pc-oculto{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0}
+
+.pc-lista{position:absolute;z-index:50;left:0;right:0;top:calc(100% + 10px);
+  padding:8px;background:var(--branco);border:1px solid var(--risco);
+  border-radius:14px;max-height:400px;overflow:auto;
+  box-shadow:0 24px 54px -26px rgba(11,43,42,.5);text-align:left}
+.pc-lista[hidden]{display:none}
+.pc-grupo{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600;padding:12px 12px 6px}
+.pc-grupo:first-child{padding-top:6px}
+.pc-op{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  border-radius:9px;cursor:pointer;color:var(--texto);font-size:15px}
+.pc-op[aria-selected="true"],.pc-op:hover{background:var(--papel)}
+.pc-icone{width:34px;height:34px;flex:none;border-radius:9px;
+  background:var(--papel);display:grid;place-items:center;color:var(--tinta)}
+.pc-op[aria-selected="true"] .pc-icone{background:var(--branco)}
+.pc-icone svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pc-txt{min-width:0;flex:1}
+.pc-t1{display:block;color:var(--tinta);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-t2{display:block;color:var(--mudo);font-size:13px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-n{flex:none;font-size:12px;font-weight:600;color:var(--branco);
+  background:var(--cor-escura);border-radius:999px;padding:3px 10px}
+.pc-nada{flex:none;font-size:12.5px;color:var(--mudo)}
+.pc-vazio{padding:16px 12px 18px;color:var(--mudo);font-size:14.5px}
+.pc-vazio b{color:var(--tinta)}
+@media (max-width:700px){
+  .pc-caixa{flex-wrap:wrap;padding:8px}
+  .pc-caixa input{flex:1 1 100%;padding:12px 8px}
+  .pc-lupa{display:none}
+  .pc-botao{flex:1 1 100%}
+}
+
+<style>
+.migalhas{font-size:13.5px;color:var(--mudo);padding:18px 0 0}
+/* sublinhados de proposito: na migalha o link tem a mesma cor do texto
+   a volta, e sem sublinhado a unica coisa que o distingue e a cor — que
+   e exatamente o que a norma nao deixa. */
+.migalhas a{color:var(--mudo);text-decoration:underline;
+  text-underline-offset:2px;text-decoration-color:var(--risco)}
+.migalhas a:hover{color:var(--cor-escura);
+  text-decoration-color:var(--cor-escura)}
+
+.t-topo{padding:14px 0 30px}
+.t-kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--cor-escura);font-weight:600;margin:0 0 10px}
+.t-topo h1{font-size:clamp(1.9rem, 1.3rem + 2.2vw, 3rem);margin:0 0 14px}
+.t-lede{font-size:clamp(1.05rem,1rem + .35vw,1.25rem);color:var(--texto);
+  max-width:60ch;margin:0}
+
+/* A grande manda na altura e as duas pequenas enchem as duas filas. Com
+   proporcao propria em cada uma, as pequenas acabavam antes da grande e
+   sobrava um buraco branco por baixo delas. */
+.galeria{display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr;
+  grid-template-rows:repeat(2,1fr);margin:0 0 34px}
+.galeria figure{position:relative;margin:0;border-radius:var(--raio);
+  overflow:hidden;background:var(--uma-f);min-height:0}
+.galeria figure:first-child{aspect-ratio:3/2;grid-row:1/3}
+.galeria img{width:100%;height:100%;object-fit:cover}
+.galeria figcaption{position:absolute;right:8px;bottom:7px;font-size:10.5px;
+  color:#fff;background:rgba(11,43,42,.68);padding:3px 7px;border-radius:5px}
+@media (max-width:860px){
+  .galeria{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .galeria figure{aspect-ratio:4/3}
+  .galeria figure:first-child{grid-column:1/-1;grid-row:auto;aspect-ratio:3/2}
+}
+
+.t-grelha{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:52px;
+  align-items:start;padding-bottom:80px}
+@media (max-width:980px){.t-grelha{grid-template-columns:1fr;gap:36px}}
+
+.factos{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 36px}
+.facto{border:1px solid var(--risco);border-radius:11px;padding:11px 15px}
+.facto b{display:block;font-family:var(--tipo-titulo);color:var(--tinta);
+  font-size:1rem;line-height:1.2}
+.facto span{font-size:12.5px;color:var(--mudo)}
+
+.sec{margin:0 0 44px}
+.sec h2{font-size:1.45rem;margin:0 0 6px}
+.sec .intro{color:var(--mudo);margin:0 0 20px;max-width:58ch}
+
+/* a linha do dia: as posicoes sao as do tours.json, nao desenhadas a olho */
+.fita{position:relative;height:66px;margin:0 0 26px}
+.fita-linha{position:absolute;left:0;right:0;top:26px;height:3px;
+  background:var(--risco);border-radius:2px}
+.fita-ponto{position:absolute;top:19px;width:17px;height:17px;
+  border-radius:50%;background:var(--branco);
+  border:3px solid var(--tinta-f);transform:translateX(-50%)}
+.fita-ponto.chave{background:var(--cor);border-color:var(--cor);
+  width:21px;height:21px;top:17px}
+.fita-rot{position:absolute;top:46px;transform:translateX(-50%);
+  font-size:11.5px;color:var(--mudo);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.fita-fim{position:absolute;top:0;font-size:12px;color:var(--tinta);
+  font-weight:600;font-variant-numeric:tabular-nums}
+.fita-fim.e{left:0}.fita-fim.d{right:0}
+@media (max-width:760px){.fita{display:none}}
+
+.paragens{list-style:none;margin:0;padding:0}
+.paragem{display:grid;grid-template-columns:76px 1fr;gap:18px;
+  padding:0 0 26px;position:relative}
+.paragem::before{content:'';position:absolute;left:87px;top:20px;bottom:0;
+  width:2px;background:var(--risco)}
+.paragem:last-child::before{display:none}
+.paragem-h{font-variant-numeric:tabular-nums;color:var(--mudo);
+  font-size:14px;padding-top:1px;text-align:right}
+.paragem-c{position:relative;padding-left:26px}
+.paragem-c::before{content:'';position:absolute;left:-5px;top:7px;
+  width:11px;height:11px;border-radius:50%;background:var(--tinta-f)}
+.paragem.chave .paragem-c::before{background:var(--cor);
+  box-shadow:0 0 0 4px var(--cor-f)}
+.paragem h3{font-size:1.05rem;margin:0 0 5px}
+.paragem p{margin:0;color:var(--texto);font-size:15.5px}
+.paragem .nota{display:inline-block;margin-top:8px;font-size:12.5px;
+  color:var(--texto);background:var(--papel);border:1px solid var(--risco);
+  border-radius:999px;padding:3px 11px}
+
+.inclui{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.inclui li{display:flex;gap:11px;align-items:flex-start;font-size:15.5px}
+.inclui svg{width:19px;height:19px;flex:none;margin-top:3px;fill:none;
+  stroke:var(--cor-escura);stroke-width:2.4;stroke-linecap:round;
+  stroke-linejoin:round}
+.nao-inclui{margin:18px 0 0;color:var(--mudo);font-size:15.5px;
+  max-width:58ch}
+
+.pratico{border-collapse:collapse;width:100%;font-size:15.5px}
+.pratico th{text-align:left;vertical-align:top;padding:13px 20px 13px 0;
+  width:150px;color:var(--tinta);font-weight:600;
+  border-top:1px solid var(--risco)}
+.pratico td{padding:13px 0;border-top:1px solid var(--risco);
+  color:var(--texto)}
+
+.faq details{border-top:1px solid var(--risco)}
+.faq details:last-of-type{border-bottom:1px solid var(--risco)}
+.faq summary{cursor:pointer;padding:16px 0;font-weight:600;
+  color:var(--tinta);list-style:none;display:flex;gap:14px;
+  align-items:flex-start}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';margin-left:auto;color:var(--cor-escura);
+  font-size:20px;line-height:1}
+.faq details[open] summary::after{content:'\2013'}
+.faq p{margin:0 0 18px;color:var(--texto);max-width:60ch}
+
+/* o painel de preco */
+.painel{position:sticky;top:94px;border:1px solid var(--risco);
+  border-radius:var(--raio);padding:24px;background:var(--branco);
+  box-shadow:0 18px 44px -28px rgba(11,43,42,.4)}
+.painel .desde{font-size:13px;color:var(--mudo);margin:0}
+.painel .preco{font-family:var(--tipo-titulo);font-size:2.3rem;
+  color:var(--tinta);font-variant-numeric:tabular-nums;line-height:1.1;
+  margin:2px 0 2px}
+.painel .por{font-size:13.5px;color:var(--mudo);margin:0 0 20px}
+.escaloes{width:100%;border-collapse:collapse;font-size:14.5px;
+  margin:0 0 20px}
+.escaloes th{text-align:left;font-weight:600;color:var(--mudo);
+  font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  padding:0 0 8px}
+.escaloes th:last-child,.escaloes td:last-child{text-align:right}
+.escaloes td{padding:8px 0;border-top:1px solid var(--risco);
+  font-variant-numeric:tabular-nums}
+.escaloes tr.activo td{color:var(--tinta);font-weight:600}
+.escaloes .veic{color:var(--mudo);font-size:13px}
+.painel .nota{font-size:13.5px;color:var(--mudo);margin:0}
+.painel .nota b{color:var(--tinta)}
+.reservar{display:block;width:100%;text-align:center;margin:0 0 14px}
+
+.relacionados{background:var(--papel);border-top:1px solid var(--risco);
+  padding:64px 0 76px}
+.relacionados h2{font-size:1.5rem;margin:0 0 24px}
+</style>
+</style>
+</head>
+<body>
+<a class="saltar" href="#principal">Skip to content</a>
+<header class="topo">
+  <div class="folha topo-i">
+    <span class="marca" style="--t:44px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
+    <nav class="nav" aria-label="Main">
+      <a href="/tours/">All tours</a>
+      <a href="/#destinations">Destinations</a>
+      <a href="/#how">How it works</a>
+      <a href="/contact/">Help</a>
+    </nav>
+  </div>
+</header>
+<main id="principal">
+<div class="folha">
+  <nav class="migalhas" aria-label="Breadcrumb">
+    <a href="/">Home</a> &rsaquo;
+    <a href="/tours/?country=uk">United Kingdom</a> &rsaquo;
+    <span>London</span>
+  </nav>
+
+  <header class="t-topo">
+    <p class="t-kicker">Private day tour from London</p>
+    <h1>Private Day Tour: Stonehenge &amp; Oxford</h1>
+    <p class="t-lede">Five thousand years of standing stones in the morning, and the oldest university in the English-speaking world in the afternoon. Both entrances booked before you arrive.</p>
+  </header>
+
+  <div class="galeria"><figure><img class="" src="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200" srcset="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=600 600w, https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200 1200w" sizes="(min-width:860px) 50vw, 100vw" alt="The stone circle at Stonehenge" fetchpriority="high" decoding="async" onerror="this.style.display=&quot;none&quot;"><figcaption>Photo K. Mitch Hodge</figcaption></figure>
+<figure><img class="" src="https://images.unsplash.com/photo-1680475699247-7400e947fabd?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200" srcset="https://images.unsplash.com/photo-1680475699247-7400e947fabd?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=600 600w, https://images.unsplash.com/photo-1680475699247-7400e947fabd?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200 1200w" sizes="(min-width:860px) 50vw, 100vw" alt="The standing stones of Stonehenge" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;"><figcaption>Photo Priyank V</figcaption></figure>
+<figure><img class="" src="https://images.unsplash.com/photo-1676759527273-c4398483f22f?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200" srcset="https://images.unsplash.com/photo-1676759527273-c4398483f22f?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=600 600w, https://images.unsplash.com/photo-1676759527273-c4398483f22f?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=1200 1200w" sizes="(min-width:860px) 50vw, 100vw" alt="The Radcliffe Camera, Oxford" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;"><figcaption>Photo Ben Elliott</figcaption></figure></div>
+
+  <div class="t-grelha">
+    <div>
+      <div class="factos"><span class="facto"><b>12h</b><span>door to door</span></span><span class="facto"><b>Up to 16</b><span>in one group</span></span><span class="facto"><b>07:00</b><span>departure</span></span><span class="facto"><b>London</b><span>pick-up</span></span><span class="facto"><b>Private</b><span>nobody else</span></span></div>
+
+      <section class="sec">
+        <h2>The day</h2>
+        <p class="intro">Two long stops rather than many short ones, which is what makes twelve hours feel unhurried.</p>
+        <div class="fita" aria-hidden="true"><span class="fita-linha"></span><span class="fita-fim e">07:00</span><span class="fita-fim d">19:00</span><span class="fita-ponto chave" style="left:26%"></span><span class="fita-rot" style="left:26%">Stonehenge</span><span class="fita-ponto" style="left:52%"></span><span class="fita-rot" style="left:52%">Oxford</span><span class="fita-ponto chave" style="left:74%"></span><span class="fita-rot" style="left:74%">Christ Church</span></div>
+        <ol class="paragens"><li class="paragem">
+  <span class="paragem-h">07:00</span>
+  <div class="paragem-c">
+    <h3>London, your hotel door</h3>
+    <p>Early out of London, because the stones before the crowds are a different experience from the stones at noon.</p>
+    
+  </div>
+</li>
+<li class="paragem chave">
+  <span class="paragem-h">09:30</span>
+  <div class="paragem-c">
+    <h3>Stonehenge</h3>
+    <p>A ring of standing stones raised somewhere around 2500 BC, by people who moved some of them two hundred kilometres. Your entry is booked, so you walk past the queue.</p>
+    <span class="nota">Skip-the-line entry included</span>
+  </div>
+</li>
+<li class="paragem">
+  <span class="paragem-h">12:30</span>
+  <div class="paragem-c">
+    <h3>Oxford</h3>
+    <p>A walking tour of the colleges and the lanes between them, with time of your own for lunch in a pub or a cafe.</p>
+    
+  </div>
+</li>
+<li class="paragem chave">
+  <span class="paragem-h">14:30</span>
+  <div class="paragem-c">
+    <h3>Christ Church College</h3>
+    <p>The hall that the Harry Potter films copied, the cathedral inside the college, and the staircase everyone recognises. Entry included.</p>
+    <span class="nota">Entry included</span>
+  </div>
+</li>
+<li class="paragem">
+  <span class="paragem-h">19:00</span>
+  <div class="paragem-c">
+    <h3>Back at your hotel</h3>
+    <p>Or anywhere in central London you'd rather be dropped.</p>
+    
+  </div>
+</li></ol>
+      </section>
+
+      <section class="sec">
+        <h2>What the price covers</h2>
+        <p class="intro">The price covers the vehicle, the guide and both entries.</p>
+        <ul class="inclui"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Private vehicle and driver-guide for the whole day</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Pick-up and drop-off at your London hotel</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Skip-the-line entry to Stonehenge</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Entry to Christ Church College</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Guided walking tour of Oxford</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg><span>Fuel, tolls and parking</span></li></ul>
+        <p class="nao-inclui">Lunch and drinks are your own. There's time for both in Oxford, and your guide will point you somewhere good.</p>
+      </section>
+
+      <section class="sec">
+        <h2>Practical</h2>
+        <table class="pratico"><tbody><tr><th>Pick-up</th><td>Any hotel or address in central London. Tell us where when you book.</td></tr>
+<tr><th>Entries</th><td>Unusually for our tours, both of the paid entries are included here. You don't need to buy anything in advance.</td></tr>
+<tr><th>Walking</th><td>Oxford is walked, on cobbles. Comfortable shoes make the afternoon better.</td></tr></tbody></table>
+      </section>
+
+      <section class="sec faq"><h2>Questions</h2><details><summary>Does the price depend on the size of the group?</summary><p>Yes. The tour is private, and the price depends on how many of you travel, starting from €1,390. Choose the number of people when you book.</p></details>
+<details><summary>Can we add Bath or Windsor?</summary><p>Bath makes it a very long day but people do it. Windsor fits more comfortably. Ask us and we'll price the version you want.</p></details>
+<details><summary>Can we go inside the stone circle?</summary><p>Not on a standard ticket — the inner circle needs a special early-morning access booking. Tell us well in advance and we'll try.</p></details>
+<details><summary>Are there more than 16 of us?</summary><p>Two vehicles travelling together, on one booking. Message us and we'll price it.</p></details></section>
+
+      <section class="sec" id="book">
+        <h2>How to book</h2>
+        <p class="intro">Online booking opens shortly. Until then, tell us the
+          date and the size of your group and we will come back to you with the
+          exact price and a hold on the day.</p>
+      </section>
+    </div>
+
+    <aside class="painel">
+  <p class="desde">From</p>
+  <p class="preco">&euro;1 390</p>
+  <p class="por">for the whole group, up to 16 people</p>
+  <table class="escaloes">
+    <thead><tr><th>Group size</th><th>Total</th></tr></thead>
+    <tbody><tr class="activo"><td>Up to 4<span class="veic"> &middot; Sedan</span></td><td>&euro;1 390</td></tr>
+<tr><td>Up to 8<span class="veic"> &middot; Van</span></td><td>&euro;2 270</td></tr>
+<tr><td>Up to 12<span class="veic"> &middot; Van + Sedan</span></td><td>&euro;3 660</td></tr>
+<tr><td>Up to 16<span class="veic"> &middot; 2 Vans</span></td><td>&euro;4 540</td></tr></tbody>
+  </table>
+  <a class="botao reservar" href="#book">Check this date</a>
+  <p class="nota">The price is for the <b>whole vehicle</b>, not per person.
+    Four people pay the same as one.</p>
+</aside>
+  </div>
+</div>
+
+<section class="relacionados">
+  <div class="folha">
+    <h2>More days in United Kingdom</h2>
+    <div class="tours"><a class="tour" href="/tours/london-photography-walk/">
+  <span class="tour-foto"><img class="" src="https://images.unsplash.com/photo-1729956436615-490a5f8da139?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900" srcset="https://images.unsplash.com/photo-1729956436615-490a5f8da139?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=560 560w, https://images.unsplash.com/photo-1729956436615-490a5f8da139?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900 900w" sizes="(min-width:1100px) 33vw, (min-width:700px) 50vw, 100vw" alt="The London Eye above the Thames" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;"><span class="credito">Photo Steff Hanson</span></span>
+  <span class="tour-corpo">
+    <span class="tour-onde">London, United Kingdom</span>
+    <span class="tour-nome">London Personal Photography Walking Tour</span>
+    <span class="tour-linha">
+      <span class="etiq">3h</span>
+      <span class="etiq">up to 8</span>
+      <span class="etiq">departs 07:00</span>
+    </span>
+    <span class="tour-preco">
+      <b>&euro;169.90</b>
+      <span class="tour-preco-nota">total for up to 8</span>
+    </span>
+  </span>
+</a>
+<a class="tour" href="/tours/central-london/">
+  <span class="tour-foto"><img class="" src="https://images.unsplash.com/photo-1678739815865-4cc92aaf635a?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900" srcset="https://images.unsplash.com/photo-1678739815865-4cc92aaf635a?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=560 560w, https://images.unsplash.com/photo-1678739815865-4cc92aaf635a?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900 900w" sizes="(min-width:1100px) 33vw, (min-width:700px) 50vw, 100vw" alt="The Tower of London on the Thames" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;"><span class="credito">Photo George Ciobra</span></span>
+  <span class="tour-corpo">
+    <span class="tour-onde">London, United Kingdom</span>
+    <span class="tour-nome">Private Tour of Central London</span>
+    <span class="tour-linha">
+      <span class="etiq">4h</span>
+      <span class="etiq">up to 16</span>
+      <span class="etiq">departs 07:00</span>
+    </span>
+    <span class="tour-preco">
+      <b>&euro;550</b>
+      <span class="tour-preco-nota">total for up to 4 &middot; Sedan</span>
+    </span>
+  </span>
+</a>
+<a class="tour" href="/tours/windsor-castle/">
+  <span class="tour-foto"><img class="" src="https://images.unsplash.com/photo-1626202826025-07ce3d501413?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900" srcset="https://images.unsplash.com/photo-1626202826025-07ce3d501413?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=560 560w, https://images.unsplash.com/photo-1626202826025-07ce3d501413?auto=format&crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=74&w=900 900w" sizes="(min-width:1100px) 33vw, (min-width:700px) 50vw, 100vw" alt="Windsor Castle" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;"><span class="credito">Photo E Mens</span></span>
+  <span class="tour-corpo">
+    <span class="tour-onde">London, United Kingdom</span>
+    <span class="tour-nome">Windsor Castle Private Tour from London</span>
+    <span class="tour-linha">
+      <span class="etiq">6h</span>
+      <span class="etiq">up to 16</span>
+      <span class="etiq">departs 07:00</span>
+    </span>
+    <span class="tour-preco">
+      <b>&euro;600</b>
+      <span class="tour-preco-nota">total for up to 4 &middot; Sedan</span>
+    </span>
+  </span>
+</a></div>
+  </div>
+</section>
+</main>
+<footer class="rodape">
+  <div class="folha">
+    <div class="rodape-i">
+      <div>
+        <span class="marca" style="--t:40px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
+        <p class="rodape-nota">Private day tours, priced for the whole group.</p>
+      </div>
+      <div class="rodape-cols">
+        <div class="rodape-col">
+          <h3>Tours</h3>
+          <a href="/tours/?country=italy">Italy</a>
+<a href="/tours/?country=portugal">Portugal</a>
+<a href="/tours/?country=uk">United Kingdom</a>
+<a href="/tours/?country=ireland">Ireland</a>
+<a href="/tours/?country=france">France</a>
+<a href="/tours/?country=spain">Spain</a>
+        </div>
+        <div class="rodape-col">
+          <h3>Company</h3>
+          <a href="/tours/">All tours</a>
+          <a href="/contact/">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="rodape-fim">
+      <span>&copy; 2026 Exclusive World Tours</span>
+      <span>Photographs by their authors on Unsplash</span>
+    </div>
+  </div>
+</footer>
+<script>
+(function () {
+  var raiz = document.querySelector('[data-pc]');
+  if (!raiz) return;
+  var campo = raiz.querySelector('input');
+  var lista = raiz.querySelector('.pc-lista');
+  var aviso = raiz.querySelector('[data-pc-aviso]');
+  var form = raiz.closest('form');
+  var dados = null, aCarregar = null, itens = [], activo = -1;
+  var LUGARES = 7;
+
+  var ICONE_D = '<svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>';
+  var ICONE_T = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6M12 3.2c4.5 5 4.5 12.6 0 17.6-4.5-5-4.5-12.6 0-17.6"/></svg>';
+
+  function chave(s) {
+    return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
+  function carregar() {
+    if (dados) return Promise.resolve();
+    if (aCarregar) return aCarregar;
+    aCarregar = fetch('/assets/procura.json')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        d.cidades.forEach(function (c) {
+          c.k = chave(c.n);
+          c.kp = chave(c.p);
+          c.ka = (c.a || []).map(chave);
+        });
+        d.tours.forEach(function (t) {
+          t.k = chave(t.titulo);
+          t.kc = chave(t.cidade);
+        });
+        dados = d;
+      })
+      .catch(function () { dados = null; aCarregar = null; });
+    return aCarregar;
+  }
+
+  // distancia de edicao com tecto: assim que passa do limite, desiste.
+  // So serve para apanhar gralhas; nunca para inventar resultados.
+  function perto(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var ant = [], act = [], i, j;
+    for (j = 0; j <= b.length; j++) ant[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      act[0] = i;
+      var melhor = act[0];
+      for (j = 1; j <= b.length; j++) {
+        act[j] = Math.min(ant[j] + 1, act[j - 1] + 1,
+                          ant[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (act[j] < melhor) melhor = act[j];
+      }
+      if (melhor > max) return max + 1;
+      ant = act.slice();
+    }
+    return ant[b.length];
+  }
+
+  // Quanto mais baixo, melhor. O texto manda; a popularidade so desempata.
+  // O fuzzy comeca nos 400 de propósito: nunca passa a frente de nada
+  // que tenha sido escrito como deve ser.
+  function pontuar(k, campos, q) {
+    var melhor = 1e9;
+    for (var i = 0; i < campos.length; i++) {
+      var c = campos[i], pen = i * 2;        // o nome vale mais que o pais
+      if (!c) continue;
+      if (c === q) melhor = Math.min(melhor, 0 + pen);
+      else if (c.indexOf(q) === 0) melhor = Math.min(melhor, 10 + pen);
+      else if (c.indexOf(' ' + q) > -1) melhor = Math.min(melhor, 20 + pen);
+      else if (c.indexOf(q) > -1) melhor = Math.min(melhor, 40 + pen);
+    }
+    if (melhor < 1e9) return melhor;
+    if (q.length >= 4) {
+      var max = q.length >= 7 ? 2 : 1;
+      for (var j = 0; j < campos.length; j++) {
+        var d = perto(q, (campos[j] || '').slice(0, q.length + max), max);
+        if (d <= max) return 400 + d * 10 + j * 2;
+      }
+    }
+    return 1e9;
+  }
+
+  function procurar(q) {
+    var k = chave(q.trim());
+    if (!dados || k.length < 2) return [];
+    var res = [];
+    dados.cidades.forEach(function (c) {
+      var p = pontuar(k, [c.k, c.kp].concat(c.ka), k);
+      if (p >= 1e9) return;
+      // popularidade limitada: no maximo tira 4 pontos, nunca inverte
+      // uma diferenca de relevancia de texto
+      res.push({ tipo: 'd', p: p + c.t - (c.x ? 4 : 0), d: c });
+    });
+    dados.tours.forEach(function (t) {
+      var p = pontuar(k, [t.k, t.kc], k);
+      if (p >= 1e9) return;
+      res.push({ tipo: 't', p: p + 1, d: t });
+    });
+    res.sort(function (a, b) { return a.p - b.p; });
+
+    // os sete lugares: ate cinco destinos, o resto tours
+    var ds = res.filter(function (r) { return r.tipo === 'd'; }).slice(0, 5);
+    var ts = res.filter(function (r) { return r.tipo === 't'; })
+                .slice(0, LUGARES - ds.length);
+    return ds.concat(ts).sort(function (a, b) { return a.p - b.p; });
+  }
+
+  function populares() {
+    if (!dados) return [];
+    var com = dados.cidades.filter(function (c) { return c.x; });
+    com.sort(function (a, b) { return b.x - a.x || a.t - b.t; });
+    return com.slice(0, LUGARES).map(function (c) {
+      return { tipo: 'd', d: c };
+    });
+  }
+
+  function linha(r, i) {
+    var el = document.createElement('div');
+    el.className = 'pc-op';
+    el.id = 'pc-op-' + i;
+    el.setAttribute('role', 'option');
+    el.setAttribute('aria-selected', 'false');
+    var ic = document.createElement('span');
+    ic.className = 'pc-icone';
+    ic.innerHTML = r.tipo === 'd' ? ICONE_D : ICONE_T;
+    var tx = document.createElement('span');
+    tx.className = 'pc-txt';
+    var t1 = document.createElement('span');
+    t1.className = 'pc-t1';
+    var t2 = document.createElement('span');
+    t2.className = 'pc-t2';
+    if (r.tipo === 'd') {
+      t1.textContent = r.d.n;
+      t2.textContent = r.d.p + (r.d.a && r.d.a.length
+        ? ' · ' + r.d.a.filter(function (x) { return x.length === 3; })
+            .join(' ') : '');
+    } else {
+      t1.textContent = r.d.titulo;
+      t2.textContent = r.d.cidade + ', ' + r.d.pais + ' · ' + r.d.h
+        + ' · from €' + r.d.preco;
+    }
+    tx.appendChild(t1); tx.appendChild(t2);
+    el.appendChild(ic); el.appendChild(tx);
+    // a direita so leva coisa nos destinos: nos tours repetia o
+    // cabecalho do grupo, que ja diz que aquilo e um tour
+    if (r.tipo === 'd') {
+      var fim = document.createElement('span');
+      if (r.d.x) {
+        fim.className = 'pc-n';
+        fim.textContent = r.d.x + (r.d.x === 1 ? ' tour' : ' tours');
+      } else {
+        fim.className = 'pc-nada';
+        fim.textContent = 'no tours yet';
+      }
+      el.appendChild(fim);
+    }
+    el.addEventListener('mousedown', function (ev) {
+      ev.preventDefault(); escolher(i);
+    });
+    return el;
+  }
+
+  function desenhar(res, q, titulo) {
+    lista.innerHTML = '';
+    itens = res;
+    activo = -1;
+    if (!res.length) {
+      if (!q) { fechar(); return; }
+      var v = document.createElement('div');
+      v.className = 'pc-vazio';
+      v.innerHTML = dados
+        ? 'Nothing matches <b></b> yet. Try a city or an airport code.'
+        : 'Could not load the suggestions. You can still press Search.';
+      if (dados) v.querySelector('b').textContent = q;
+      lista.appendChild(v);
+      abrir();
+      dizer('No suggestions.');
+      return;
+    }
+    var grupo = null, n = 0;
+    res.forEach(function (r) {
+      var g = r.tipo === 'd' ? (titulo || 'Destinations') : 'Tours';
+      if (g !== grupo) {
+        grupo = g;
+        var h = document.createElement('div');
+        h.className = 'pc-grupo';
+        h.textContent = g;
+        h.setAttribute('role', 'presentation');
+        lista.appendChild(h);
+      }
+      lista.appendChild(linha(r, n++));
+    });
+    abrir();
+    dizer(res.length + (res.length === 1 ? ' suggestion' : ' suggestions')
+          + ' available.');
+  }
+
+  function dizer(t) { if (aviso) aviso.textContent = t; }
+  function abrir() { lista.hidden = false;
+    campo.setAttribute('aria-expanded', 'true'); }
+  function fechar() {
+    lista.hidden = true;
+    campo.setAttribute('aria-expanded', 'false');
+    campo.removeAttribute('aria-activedescendant');
+    activo = -1;
+  }
+
+  function marcar(i) {
+    var os = lista.querySelectorAll('.pc-op');
+    for (var j = 0; j < os.length; j++) {
+      os[j].setAttribute('aria-selected', j === i ? 'true' : 'false');
+    }
+    if (i >= 0 && os[i]) {
+      campo.setAttribute('aria-activedescendant', os[i].id);
+      os[i].scrollIntoView({ block: 'nearest' });
+    } else {
+      campo.removeAttribute('aria-activedescendant');
+    }
+    activo = i;
+  }
+
+  function escolher(i) {
+    var r = itens[i];
+    if (!r) return;
+    if (r.tipo === 't') { window.location.href = '/tours/' + r.d.slug + '/'; return; }
+    campo.value = r.d.n;
+    fechar();
+    dizer(r.d.n + ' selected.');
+    if (form) form.submit();
+  }
+
+  var espera;
+  campo.addEventListener('input', function () {
+    var q = campo.value;
+    clearTimeout(espera);
+    espera = setTimeout(function () {
+      carregar().then(function () {
+        if (q.trim().length < 2) {
+          desenhar(populares(), '', 'Popular destinations');
+        } else {
+          desenhar(procurar(q), q.trim());
+        }
+      });
+    }, 90);
+  });
+
+  campo.addEventListener('focus', function () {
+    carregar().then(function () {
+      if (campo.value.trim().length < 2) {
+        desenhar(populares(), '', 'Popular destinations');
+      }
+    });
+  });
+
+  campo.addEventListener('keydown', function (ev) {
+    if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      if (lista.hidden) {
+        carregar().then(function () {
+          desenhar(campo.value.trim().length < 2
+            ? populares() : procurar(campo.value), campo.value.trim(),
+            campo.value.trim().length < 2 ? 'Popular destinations' : null);
+        });
+        return;
+      }
+      ev.preventDefault();
+      if (ev.key === 'ArrowDown') {
+        marcar(activo + 1 >= itens.length ? 0 : activo + 1);
+      } else {
+        marcar(activo - 1 < 0 ? itens.length - 1 : activo - 1);
+      }
+    } else if (ev.key === 'Enter') {
+      if (activo >= 0) { ev.preventDefault(); escolher(activo); }
+    } else if (ev.key === 'Escape') {
+      fechar();
+    }
+  });
+
+  document.addEventListener('click', function (ev) {
+    if (!raiz.contains(ev.target)) fechar();
+  });
+})();
+</script>
+</body>
+</html>
