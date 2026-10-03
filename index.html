@@ -38,7 +38,7 @@ html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms !important;
     transition-duration:.01ms !important}}
-body{margin:0;background:var(--branco);color:var(--texto);
+body{margin:0;background:var(--papel);color:var(--texto);
   font-family:var(--tipo);font-size:15.5px;line-height:1.55;
   -webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
@@ -66,7 +66,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .saltar:focus{top:0}
 
 /* ------------------------------------------------------------ cabecalho */
-.topo{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
+.topo{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);
   backdrop-filter:saturate(180%) blur(12px);
   border-bottom:1px solid var(--risco)}
 .topo-i{display:flex;align-items:center;gap:28px;height:62px}
@@ -76,6 +76,19 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .nav a:hover{color:var(--tinta);border-bottom-color:var(--cor)}
 .topo .marca{color:var(--tinta)}
 @media (max-width:760px){.nav{display:none}}
+/* ---------------------------------------------------------- as bandas
+   O site deixa de ser uma folha branca com coisas em cima. Alterna
+   bandas de cor a toda a largura, e e isso que da ritmo a pagina quando
+   se percorre. */
+.banda{background:var(--papel)}
+.banda-b{background:var(--branco);border-top:1px solid var(--risco);
+  border-bottom:1px solid var(--risco)}
+.banda-e{background:var(--tinta);color:rgba(255,255,255,.86)}
+.banda-e h1,.banda-e h2,.banda-e h3{color:var(--branco)}
+.banda-e .rot{color:rgba(255,255,255,.6)}
+.banda-e .rot b{color:var(--cor)}
+.banda-e .rot::after{background:rgba(255,255,255,.18)}
+
 /* ------------------------------------------------------- o detalhe fino
    O Ricardo pediu mais detalhe decorativo. Nao e enfeite solto: e um
    sistema pequeno que se repete em todas as paginas e faz o site parecer

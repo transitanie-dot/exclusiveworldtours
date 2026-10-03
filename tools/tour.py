@@ -41,163 +41,204 @@ POLITICA = re.compile(
 
 
 CSS = '''<style>
-.migalhas{font-size:13.5px;color:var(--mudo);padding:18px 0 0}
-/* sublinhados de proposito: na migalha o link tem a mesma cor do texto
-   a volta, e sem sublinhado a unica coisa que o distingue e a cor — que
-   e exatamente o que a norma nao deixa. */
-.migalhas a{color:var(--mudo);text-decoration:underline;
-  text-underline-offset:2px;text-decoration-color:var(--risco)}
-.migalhas a:hover{color:var(--cor-escura);
-  text-decoration-color:var(--cor-escura)}
+/* ------------------------------------------------------------- o heroi
+   A fotografia a sangrar com o titulo por cima. A Viator e a
+   GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
+   por baixo; isto poe o sitio primeiro, que e o que se esta a comprar. */
+.heroi-t{position:relative;min-height:clamp(380px,48vw,560px);
+  display:flex;align-items:flex-end;background:var(--tinta);overflow:hidden}
+.heroi-t .foto{position:absolute;inset:0;overflow:hidden}
+.heroi-t .foto img{width:100%;height:100%;object-fit:cover}
+.heroi-t::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(11,43,42,.94) 0%,
+    rgba(11,43,42,.78) 32%, rgba(11,43,42,.34) 66%, rgba(11,43,42,.22) 100%)}
+.heroi-t .folha{position:relative;z-index:2;padding-top:var(--e5);
+  padding-bottom:var(--e4)}
+.migalhas{font-size:12.5px;color:rgba(255,255,255,.72);margin:0 0 var(--e2)}
+.migalhas a{color:rgba(255,255,255,.72);text-decoration:underline;
+  text-underline-offset:2px;text-decoration-color:rgba(255,255,255,.3)}
+.migalhas a:hover{color:#fff;text-decoration-color:#fff}
+.t-kicker{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cor);font-weight:600;margin:0 0 10px}
+.heroi-t h1{color:var(--branco);max-width:17ch;
+  font-size:clamp(2rem, 1.3rem + 2.6vw, 3.4rem);margin:0 0 12px}
+.t-lede{color:rgba(255,255,255,.85);max-width:54ch;margin:0 0 var(--e3);
+  font-size:clamp(1rem,.95rem + .3vw,1.12rem)}
+.factos{display:flex;flex-wrap:wrap;gap:0;border:1px solid rgba(255,255,255,.22);
+  border-radius:var(--raio);overflow:hidden;width:fit-content;max-width:100%}
+.facto{padding:10px 18px;border-right:1px solid rgba(255,255,255,.22)}
+.facto:last-child{border-right:0}
+.facto b{display:block;font-family:var(--tipo-titulo);color:var(--branco);
+  font-size:.98rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.facto span{font-size:11.5px;color:rgba(255,255,255,.66)}
+@media (max-width:620px){.factos{width:100%}.facto{flex:1 1 44%;
+  border-bottom:1px solid rgba(255,255,255,.22)}}
 
-.t-topo{padding:14px 0 30px}
-.t-kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--cor-escura);font-weight:600;margin:0 0 10px}
-.t-topo h1{font-size:clamp(1.9rem, 1.3rem + 2.2vw, 3rem);margin:0 0 14px}
-.t-lede{font-size:clamp(1.05rem,1rem + .35vw,1.25rem);color:var(--texto);
-  max-width:60ch;margin:0}
+/* a tira de fotografias, por baixo do heroi */
+/* o numero de colunas segue o numero de fotografias: fixo em tres, com
+   duas ficava um buraco do tamanho de uma fotografia */
+.tira{display:grid;gap:8px;padding:8px 0 0;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.tira figure{position:relative;margin:0;border-radius:var(--raio);
+  overflow:hidden;background:var(--uma-f);aspect-ratio:3/2}
+.tira img{width:100%;height:100%;object-fit:cover}
+.tira figcaption{position:absolute;right:7px;bottom:6px;font-size:10px;
+  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+@media (max-width:700px){.tira{grid-template-columns:1fr 1fr}
+  .tira figure:first-child{grid-column:1/-1}}
 
-/* A grande manda na altura e as duas pequenas enchem as duas filas. Com
-   proporcao propria em cada uma, as pequenas acabavam antes da grande e
-   sobrava um buraco branco por baixo delas. */
-.galeria{display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr;
-  grid-template-rows:repeat(2,1fr);margin:0 0 34px}
-.galeria figure{position:relative;margin:0;border-radius:var(--raio);
-  overflow:hidden;background:var(--uma-f);min-height:0}
-.galeria figure:first-child{aspect-ratio:3/2;grid-row:1/3}
-.galeria img{width:100%;height:100%;object-fit:cover}
-.galeria figcaption{position:absolute;right:8px;bottom:7px;font-size:10.5px;
-  color:#fff;background:rgba(11,43,42,.68);padding:3px 7px;border-radius:5px}
-@media (max-width:860px){
-  .galeria{grid-template-columns:1fr 1fr;grid-template-rows:auto}
-  .galeria figure{aspect-ratio:4/3}
-  .galeria figure:first-child{grid-column:1/-1;grid-row:auto;aspect-ratio:3/2}
-}
-
-.t-grelha{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:52px;
-  align-items:start;padding-bottom:80px}
-@media (max-width:980px){.t-grelha{grid-template-columns:1fr;gap:36px}}
-
-.factos{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 36px}
-.facto{border:1px solid var(--risco);border-radius:11px;padding:11px 15px}
-.facto b{display:block;font-family:var(--tipo-titulo);color:var(--tinta);
-  font-size:1rem;line-height:1.2}
-.facto span{font-size:12.5px;color:var(--mudo)}
-
-.sec{margin:0 0 44px}
-.sec h2{font-size:1.45rem;margin:0 0 6px}
-.sec .intro{color:var(--mudo);margin:0 0 20px;max-width:58ch}
-
-/* a linha do dia: as posicoes sao as do tours.json, nao desenhadas a olho */
-.fita{position:relative;height:66px;margin:0 0 26px}
-.fita-linha{position:absolute;left:0;right:0;top:26px;height:3px;
-  background:var(--risco);border-radius:2px}
-.fita-ponto{position:absolute;top:19px;width:17px;height:17px;
-  border-radius:50%;background:var(--branco);
-  border:3px solid var(--tinta-f);transform:translateX(-50%)}
-.fita-ponto.chave{background:var(--cor);border-color:var(--cor);
-  width:21px;height:21px;top:17px}
-.fita-rot{position:absolute;top:46px;transform:translateX(-50%);
-  font-size:11.5px;color:var(--mudo);white-space:nowrap;
+/* a barra que aparece ao percorrer, com o preco sempre a mao */
+.fixa{position:fixed;left:0;right:0;top:62px;z-index:39;background:var(--tinta);
+  color:#fff;transform:translateY(-100%);transition:transform .25s ease;
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.fixa.vis{transform:none}
+@media (max-width:620px){.fixa{top:62px}}
+.fixa .folha{display:flex;align-items:center;gap:var(--e3);height:58px}
+.fixa-t{font-family:var(--tipo-titulo);font-weight:600;color:#fff;
+  font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fixa-p{margin-left:auto;white-space:nowrap;font-size:13px;
+  color:rgba(255,255,255,.75)}
+.fixa-p b{font-family:var(--tipo-titulo);font-size:1.05rem;color:#fff;
   font-variant-numeric:tabular-nums}
-.fita-fim{position:absolute;top:0;font-size:12px;color:var(--tinta);
-  font-weight:600;font-variant-numeric:tabular-nums}
+/* O botao da barra e branco, nao ambar. Branco sobre ambar da 3.51:1 e
+   tinta sobre ambar 4.3:1 — os dois reprovam os 4.5 que a norma pede a
+   texto. Tinta sobre branco da 15:1, e numa barra escura o branco salta
+   mais do que o ambar saltava. */
+.fixa .botao{min-height:38px;padding:0 18px;background:var(--branco);
+  color:var(--tinta);font-size:14px}
+.fixa .botao:hover{background:var(--papel);color:var(--tinta)}
+@media (max-width:700px){.fixa-t{display:none}.fixa-p{margin-left:0}}
+
+/* ------------------------------------------------------------ o corpo */
+.t-grelha{display:grid;grid-template-columns:minmax(0,1fr) 340px;
+  gap:var(--e5);align-items:start}
+@media (max-width:980px){.t-grelha{grid-template-columns:1fr;gap:var(--e4)}}
+
+.sec{margin:0 0 var(--e5)}
+.sec:last-child{margin-bottom:0}
+.sec h2{font-size:1.35rem;margin:0 0 6px}
+.sec .intro{color:var(--mudo);margin:0 0 var(--e3);max-width:56ch}
+.banda-e .sec .intro{color:rgba(255,255,255,.7)}
+
+/* a linha do dia */
+.fita{position:relative;height:62px;margin:0 0 var(--e3)}
+.fita-linha{position:absolute;left:0;right:0;top:24px;height:2px;
+  background:rgba(255,255,255,.2);border-radius:2px}
+.fita-ponto{position:absolute;top:18px;width:14px;height:14px;
+  border-radius:50%;background:var(--tinta);
+  border:2px solid rgba(255,255,255,.45);transform:translateX(-50%)}
+.fita-ponto.chave{background:var(--cor);border-color:var(--cor);
+  width:18px;height:18px;top:16px}
+.fita-rot{position:absolute;top:42px;transform:translateX(-50%);
+  font-size:11px;color:rgba(255,255,255,.66);white-space:nowrap}
+.fita-fim{position:absolute;top:0;font-size:11.5px;color:#fff;
+  font-weight:600;font-family:var(--mono)}
 .fita-fim.e{left:0}.fita-fim.d{right:0}
 @media (max-width:760px){.fita{display:none}}
 
-.paragens{list-style:none;margin:0;padding:0}
-.paragem{display:grid;grid-template-columns:76px 1fr;gap:18px;
-  padding:0 0 26px;position:relative}
-.paragem::before{content:'';position:absolute;left:87px;top:20px;bottom:0;
-  width:2px;background:var(--risco)}
-.paragem:last-child::before{display:none}
-.paragem-h{font-variant-numeric:tabular-nums;color:var(--mudo);
-  font-size:14px;padding-top:1px;text-align:right}
-.paragem-c{position:relative;padding-left:26px}
-.paragem-c::before{content:'';position:absolute;left:-5px;top:7px;
-  width:11px;height:11px;border-radius:50%;background:var(--tinta-f)}
+.paragens{list-style:none;margin:0;padding:0;
+  columns:2;column-gap:var(--e5)}
+@media (max-width:860px){.paragens{columns:1}}
+.paragem{display:grid;grid-template-columns:54px 1fr;gap:14px;
+  padding:0 0 var(--e3);break-inside:avoid}
+.paragem-h{font-family:var(--mono);font-size:12.5px;
+  color:rgba(255,255,255,.6);padding-top:2px;text-align:right}
+.paragem-c{position:relative;padding-left:20px;
+  border-left:1px solid rgba(255,255,255,.16)}
+.paragem-c::before{content:'';position:absolute;left:-5px;top:6px;
+  width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35)}
 .paragem.chave .paragem-c::before{background:var(--cor);
-  box-shadow:0 0 0 4px var(--cor-f)}
-.paragem h3{font-size:1.05rem;margin:0 0 5px}
-.paragem p{margin:0;color:var(--texto);font-size:15.5px}
-.paragem .nota{display:inline-block;margin-top:8px;font-size:12.5px;
-  color:var(--texto);background:var(--papel);border:1px solid var(--risco);
-  border-radius:999px;padding:3px 11px}
+  box-shadow:0 0 0 4px rgba(206,112,48,.25)}
+.paragem h3{font-size:.98rem;margin:0 0 4px;color:#fff}
+.paragem p{margin:0;color:rgba(255,255,255,.76);font-size:14px}
+.paragem .nota{display:inline-block;margin-top:7px;font-size:11.5px;
+  color:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.22);
+  border-radius:4px;padding:2px 8px}
 
-.inclui{list-style:none;margin:0;padding:0;display:grid;gap:9px}
-.inclui li{display:flex;gap:11px;align-items:flex-start;font-size:15.5px}
-.inclui svg{width:19px;height:19px;flex:none;margin-top:3px;fill:none;
-  stroke:var(--cor-escura);stroke-width:2.4;stroke-linecap:round;
+.inclui{list-style:none;margin:0;padding:0;display:grid;gap:8px;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.inclui li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+.inclui svg{width:17px;height:17px;flex:none;margin-top:3px;fill:none;
+  stroke:var(--cor-escura);stroke-width:2.6;stroke-linecap:round;
   stroke-linejoin:round}
-.nao-inclui{margin:18px 0 0;color:var(--mudo);font-size:15.5px;
-  max-width:58ch}
+.nao-inclui{margin:var(--e3) 0 0;color:var(--mudo);font-size:14.5px;
+  max-width:60ch;padding-left:14px;border-left:2px solid var(--risco)}
 
-.pratico{border-collapse:collapse;width:100%;font-size:15.5px}
-.pratico th{text-align:left;vertical-align:top;padding:13px 20px 13px 0;
-  width:150px;color:var(--tinta);font-weight:600;
+.pratico{border-collapse:collapse;width:100%;font-size:14.5px}
+.pratico th{text-align:left;vertical-align:top;padding:12px 18px 12px 0;
+  width:140px;color:var(--tinta);font-weight:600;
   border-top:1px solid var(--risco)}
-.pratico td{padding:13px 0;border-top:1px solid var(--risco);
-  color:var(--texto)}
+.pratico td{padding:12px 0;border-top:1px solid var(--risco)}
 
-.faq details{border-top:1px solid var(--risco)}
+.faq details{border-top:1px solid var(--risco);background:var(--branco)}
 .faq details:last-of-type{border-bottom:1px solid var(--risco)}
-.faq summary{cursor:pointer;padding:16px 0;font-weight:600;
+.faq summary{cursor:pointer;padding:14px 16px;font-weight:600;
   color:var(--tinta);list-style:none;display:flex;gap:14px;
-  align-items:flex-start}
+  align-items:flex-start;font-size:14.5px}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:'+';margin-left:auto;color:var(--cor-escura);
-  font-size:20px;line-height:1}
-.faq details[open] summary::after{content:'\\2013'}
-.faq p{margin:0 0 18px;color:var(--texto);max-width:60ch}
+  font-size:18px;line-height:1}
+.faq details[open] summary::after{content:'\2013'}
+.faq p{margin:0 16px 16px;color:var(--texto);max-width:62ch;font-size:14.5px}
 
-/* o painel de preco */
-.painel{position:sticky;top:94px;border:1px solid var(--risco);
-  border-radius:var(--raio);padding:24px;background:var(--branco);
-  box-shadow:0 18px 44px -28px rgba(11,43,42,.4)}
-.painel .desde{font-size:13px;color:var(--mudo);margin:0}
-.painel .preco{font-family:var(--tipo-titulo);font-size:2.3rem;
+/* ----------------------------------------------------------- a coluna */
+.lado{position:sticky;top:74px;display:grid;gap:12px}
+.painel{border:1px solid var(--risco);border-radius:var(--raio);
+  padding:18px;background:var(--branco);
+  box-shadow:0 14px 36px -26px rgba(11,43,42,.45)}
+.painel .desde{font-size:11.5px;color:var(--mudo);margin:0;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.painel .preco{font-family:var(--tipo-titulo);font-size:2rem;
   color:var(--tinta);font-variant-numeric:tabular-nums;line-height:1.1;
-  margin:2px 0 2px}
-.painel .por{font-size:13.5px;color:var(--mudo);margin:0 0 20px}
-.escaloes{width:100%;border-collapse:collapse;font-size:14.5px;
-  margin:0 0 20px}
+  margin:3px 0 1px}
+.painel .por{font-size:12.5px;color:var(--mudo);margin:0 0 var(--e3)}
+.escaloes{width:100%;border-collapse:collapse;font-size:13.5px;
+  margin:0 0 var(--e3)}
 .escaloes th{text-align:left;font-weight:600;color:var(--mudo);
-  font-size:12px;letter-spacing:.06em;text-transform:uppercase;
-  padding:0 0 8px}
+  font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  padding:0 0 7px}
 .escaloes th:not(:first-child),.escaloes td:not(:first-child){text-align:right}
-.escaloes .pp{color:var(--mudo);font-size:13px}
-.escaloes td{padding:8px 0;border-top:1px solid var(--risco);
+.escaloes td{padding:7px 0;border-top:1px solid var(--risco);
   font-variant-numeric:tabular-nums}
 .escaloes tr.activo td{color:var(--tinta);font-weight:600}
-.escaloes .veic{color:var(--mudo);font-size:13px}
-.painel .nota{font-size:13.5px;color:var(--mudo);margin:0}
+.escaloes .veic{color:var(--mudo);font-size:12px}
+.escaloes .pp{color:var(--mudo);font-size:12.5px}
+.painel .nota{font-size:12.5px;color:var(--mudo);margin:0}
 .painel .nota b{color:var(--tinta)}
-.reservar{display:block;width:100%;text-align:center;margin:0 0 14px}
+.reservar{display:block;width:100%;text-align:center;margin:0 0 12px;
+  min-height:46px}
+
+/* o que a concorrencia nao mostra: o resumo do que esta incluido, ali
+   mesmo ao lado do preco, para nao ser preciso ir procurar */
+.lado-bloco{border:1px solid var(--risco);border-radius:var(--raio);
+  padding:14px 16px;background:var(--branco)}
+.lado-bloco h3{font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--mudo);font-family:var(--tipo);font-weight:600;margin:0 0 10px}
+.lado-lista{list-style:none;margin:0;padding:0;display:grid;gap:7px;
+  font-size:13.5px}
+.lado-lista li{display:flex;gap:9px;align-items:flex-start}
+.lado-lista svg{width:15px;height:15px;flex:none;margin-top:2px;fill:none;
+  stroke:var(--cor-escura);stroke-width:2.6;stroke-linecap:round;
+  stroke-linejoin:round}
 
 /* o mapa pequeno */
-.pratico-g{display:grid;grid-template-columns:1fr 240px;gap:var(--e4);
-  align-items:start}
-@media (max-width:860px){.pratico-g{grid-template-columns:1fr}}
-.mapinha{overflow:hidden}
+.mapinha{overflow:hidden;border:1px solid var(--risco);
+  border-radius:var(--raio);background:var(--branco)}
 .mapinha svg{width:100%;height:auto;display:block;background:var(--papel)}
 .mapinha .m-ctx path{fill:none;stroke:var(--risco);stroke-width:1.4}
 .mapinha .m-pais path{fill:var(--papel);stroke:var(--tinta-f);
   stroke-width:1.6}
 .mapinha .m-eu{fill:var(--cor);stroke:var(--branco);stroke-width:2.5}
-/* a coordenada nao pode partir a meio: "6.2489° W" numa linha e o "W"
-   na seguinte deixa de se ler como uma coordenada */
 .mapinha-pe{display:flex;align-items:center;justify-content:space-between;
   gap:8px;margin:0;padding:9px 11px;border-top:1px solid var(--risco);
   font-size:12.5px;flex-wrap:wrap}
-.mapinha-pe .cod{white-space:nowrap;font-size:10.5px;padding:2px 5px}
 .mapinha-pe b{color:var(--tinta)}
+.mapinha-pe .cod{white-space:nowrap;font-size:10.5px;padding:2px 5px}
 
-.reservar-bloco{padding:var(--e3) var(--e3) var(--e3)}
+.reservar-bloco{padding:var(--e3)}
 .reservar-bloco h2{margin-bottom:6px}
-
-.relacionados{background:var(--papel);border-top:1px solid var(--risco);
-  padding:64px 0 76px}
-.relacionados h2{font-size:1.5rem;margin:0 0 24px}
+.relacionados{padding:var(--e5) 0}
+.relacionados h2{font-size:1.35rem;margin:0 0 var(--e3)}
 </style>'''
 
 
@@ -330,6 +371,21 @@ def painel(t):
                'linhas': '\n'.join(linhas)}
 
 
+JS_FIXA = """
+(function () {
+  // A barra com o preco so aparece depois de o heroi sair do ecra: antes
+  // disso o preco ja esta a vista no painel, e duas barras ao mesmo
+  // tempo e ruido.
+  var barra = document.querySelector('[data-fixa]');
+  var heroi = document.querySelector('.heroi-t');
+  if (!barra || !heroi || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (es) {
+    barra.classList.toggle('vis', !es[0].isIntersecting);
+  }, { rootMargin: '-60px 0px 0px 0px' }).observe(heroi);
+})();
+"""
+
+
 def main():
     tours = carregar()
     paises = por_pais(tours)
@@ -339,49 +395,76 @@ def main():
     for t in tours:
         d = t['durations'][0]
         fotos = t.get('photos') or []
-        galeria = ''
-        if fotos:
+        # a primeira fotografia e o heroi, a sangrar; as outras ficam numa
+        # tira por baixo. A Viator e a GetYourGuide poem uma grelha de
+        # miniaturas; quem compra um dia quer ver o sitio grande primeiro.
+        heroi_img = (img(fotos[0]['id'], fotos[0]['alt'], (900, 1600, 2200),
+                         '100vw', eager=True) if fotos else '')
+        tira = ''
+        if len(fotos) > 1:
             figs = []
-            for i, f in enumerate(fotos[:3]):
+            for f in fotos[1:4]:
                 figs.append('<figure>%s<figcaption>Photo %s</figcaption></figure>'
-                            % (img(f['id'], f['alt'], (600, 1200),
-                                   '(min-width:860px) 50vw, 100vw',
-                                   eager=(i == 0)), e(f['by'])))
-            galeria = '<div class="galeria">%s</div>' % '\n'.join(figs)
+                            % (img(f['id'], f['alt'], (500, 900),
+                                   '(min-width:700px) 33vw, 50vw'), e(f['by'])))
+            tira = ('<div class="folha"><div class="tira">%s</div></div>'
+                    % '\n'.join(figs))
+
+        # o resumo do que esta incluido, ao lado do preco. A concorrencia
+        # obriga a ir procurar isto no fundo da pagina.
+        lado_inclui = ''
+        if t.get('included'):
+            lado_inclui = ('<div class="lado-bloco"><h3>Included</h3>'
+                           '<ul class="lado-lista">%s</ul></div>'
+                           % '\n'.join('<li>%s<span>%s</span></li>' % (VISTO, e(x))
+                                       for x in t['included'][:5]))
 
         irmaos = [x for x in tours
                   if x['countryName'] == t['countryName'] and x['slug'] != t['slug']]
         irmaos = sorted(irmaos, key=lambda x: x['_preco'])[:3]
 
         corpo = '''%(cabecalho)s
-<main id="principal">
-<div class="folha">
-  <nav class="migalhas" aria-label="Breadcrumb">
-    <a href="/">Home</a> &rsaquo;
-    <a href="/tours/?country=%(cod)s">%(pais)s</a> &rsaquo;
-    <span>%(cidade)s</span>
-  </nav>
 
-  <header class="t-topo">
+<div class="fixa" data-fixa>
+  <div class="folha">
+    <span class="fixa-t">%(titulo_curto)s</span>
+    <span class="fixa-p">from <b>&euro;%(menor)s</b> &middot; whole group</span>
+    <a class="botao" href="#book">Check this date</a>
+  </div>
+</div>
+
+<main id="principal">
+
+<header class="heroi-t">
+  <div class="foto">%(heroi_img)s</div>
+  <div class="folha">
+    <nav class="migalhas" aria-label="Breadcrumb">
+      <a href="/">Home</a> &rsaquo;
+      <a href="/tours/?country=%(cod)s">%(pais)s</a> &rsaquo;
+      <span>%(cidade)s</span>
+    </nav>
     <p class="t-kicker">%(kicker)s</p>
     <h1>%(titulo)s</h1>
     <p class="t-lede">%(lede)s</p>
-  </header>
+    <div class="factos">%(factos)s</div>
+  </div>
+</header>
 
-  %(galeria)s
+%(tira)s
 
+<section class="banda-e" data-rev>
+  <div class="folha bloco">
+    <p class="rot"><b>01</b> The day</p>
+    <h2>From %(cidade)s, door to door</h2>
+    <p class="intro">%(stopsIntro)s</p>
+    %(fita)s
+    %(paragens)s
+  </div>
+</section>
+
+<div class="folha bloco">
   <div class="t-grelha">
     <div>
-      <div class="factos">%(factos)s</div>
-
-      <section class="sec" data-rev>
-        <p class="rot"><b>01</b> The day</p>
-        <h2>From %(cidade)s, door to door</h2>
-        <p class="intro">%(stopsIntro)s</p>
-        %(fita)s
-        %(paragens)s
-      </section>
-
       <section class="sec" data-rev>
         <p class="rot"><b>02</b> What the price covers</p>
         <h2>The vehicle, not the seat</h2>
@@ -390,12 +473,10 @@ def main():
         <p class="nao-inclui">%(naoInclui)s</p>
       </section>
 
-      <section class="sec pratico-sec" data-rev>
+      <section class="sec" data-rev>
         <p class="rot"><b>03</b> Practical</p>
-        <div class="pratico-g">
-          <table class="pratico"><tbody>%(pratico)s</tbody></table>
-          %(mapa)s
-        </div>
+        <h2>Before the day</h2>
+        <table class="pratico"><tbody>%(pratico)s</tbody></table>
       </section>
 
       %(faq)s
@@ -409,7 +490,11 @@ def main():
       </section>
     </div>
 
-    %(painel)s
+    <div class="lado">
+      %(painel)s
+      %(lado_inclui)s
+      %(mapa)s
+    </div>
   </div>
 </div>
 
@@ -420,7 +505,11 @@ def main():
             'cod': e(t['country']), 'pais': e(t['countryName']),
             'cidade': e(t['city']),
             'kicker': e(t.get('kicker') or ''), 'titulo': e(t['title']),
-            'lede': e(t.get('lede') or ''), 'galeria': galeria,
+            'titulo_curto': e(t['title'].replace('Private Tour: ', '')),
+            'menor': euros(t['_preco']),
+            'lede': e(t.get('lede') or ''),
+            'heroi_img': heroi_img, 'tira': tira,
+            'lado_inclui': lado_inclui,
             'factos': ''.join([
                 facto(t['_h'], 'door to door'),
                 facto('Up to %d' % t['_max'], 'in one group'),
@@ -451,7 +540,7 @@ def main():
         html = envolver(
             '%s — Exclusive World Tours' % t['title'],
             t.get('metaDesc') or '',
-            CSS, corpo, js=procura.JS)
+            CSS, corpo, js=procura.JS + JS_FIXA)
         escrever(html, 'tours/%s/index.html' % t['slug'])
 
     print('%d paginas de tour' % len(tours))
