@@ -198,6 +198,11 @@ h1{font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:-.025em;
 .nota b{color:#14161A;font-weight:600}
 .nota + .nota{margin-top:10px}
 .fim{color:#3C4149;max-width:62ch}
+/* o titulo de uma familia de propostas, quando a pagina traz mais do que
+   uma linha de trabalho */
+.seccao{font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:-.02em;
+  font-size:1.75rem;margin:0 0 10px}
+.seccao + .intro{margin-bottom:40px}
 
 /* ---------------------------------------------------------- as marcas
    A raiz leva --t e tudo por dentro esta em em: um numero escala a marca
@@ -335,7 +340,11 @@ def pagina(titulo, abertura, propostas, fecho):
 ''' % {'titulo': titulo, 'abertura': abertura, 'fecho': fecho,
        'faces': faces(), 'css': css(),
        'tinta': PALETA['tinta'], 'cor': PALETA['cor'],
-       'blocos': '\n'.join(bloco(p) for p in propostas)}
+       'blocos': '\n'.join(
+           (('<h2 class="seccao">%s</h2><p class="intro">%s</p>'
+             % (p['seccao'], p.get('seccao_nota', '')))
+            if p.get('seccao') else '') + bloco(p)
+           for p in propostas)}
 
 
 def escrever(html, nome):
