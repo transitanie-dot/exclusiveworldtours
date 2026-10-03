@@ -1,0 +1,409 @@
+﻿IATA,Aeroporto,Cidade,País,Continente,Tier
+ALG,Houari Boumediene Airport,Algiers,Algeria,Africa,2
+LAD,Quatro de Fevereiro Airport,Luanda,Angola,Africa,2
+BVC,Rabil Airport,Boa Vista,Cape Verde,Africa,2
+RAI,Praia International Airport,Praia,Cape Verde,Africa,2
+ABJ,Port Bouet Airport,Abidjan,Cote d'Ivoire,Africa,2
+CAI,Cairo International Airport,Cairo,Egypt,Africa,1
+HRG,Hurghada International Airport,Hurghada,Egypt,Africa,1
+SSH,Sharm El Sheikh International Airport,Sharm El Sheikh,Egypt,Africa,1
+BSG,Bata Airport,Bata,Equatorial Guinea,Africa,3
+SSG,Malabo Airport,Malabo,Equatorial Guinea,Africa,3
+ACC,Kotoka International Airport,Accra,Ghana,Africa,2
+MBA,Mombasa Moi International Airport,Mombasa,Kenya,Africa,1
+NBO,Jomo Kenyatta International Airport,Nairobi,Kenya,Africa,1
+BKO,Modibo Keita International Airport,Bamako,Mali,Africa,3
+MRU,Sir Seewoosagur Ramgoolam International Airport,Plaisance,Mauritius,Africa,1
+AGA,Al Massira Airport,Agadir,Morocco,Africa,1
+CMN,Mohammed V International Airport,Casablanca,Morocco,Africa,1
+FEZ,Saïss Airport,Fes,Morocco,Africa,2
+RAK,Menara Airport,Marrakech,Morocco,Africa,1
+OZZ,Ouarzazate Airport,Ouarzazate,Morocco,Africa,2
+RBA,Rabat-Salé Airport,Rabat,Morocco,Africa,3
+TNG,Ibn Batouta Airport,Tangier,Morocco,Africa,2
+MPM,Maputo Airport,Maputo,Mozambique,Africa,3
+LOS,Murtala Muhammed International Airport,Lagos,Nigeria,Africa,2
+PCP,Principe Airport,Principe,Sao Tome and Principe,Africa,3
+TMS,São Tomé International Airport,Sao Tome,Sao Tome and Principe,Africa,3
+DKR,Léopold Sédar Senghor International Airport,Dakar,Senegal,Africa,2
+SEZ,Seychelles International Airport,Mahe,Seychelles,Africa,1
+CPT,Cape Town International Airport,Cape Town,South Africa,Africa,1
+JNB,OR Tambo International Airport,Johannesburg,South Africa,Africa,1
+PLZ,Port Elizabeth Airport,Port Elizabeth,South Africa,Africa,2
+JRO,Kilimanjaro International Airport,Kilimanjaro,Tanzania,Africa,1
+ZNZ,Abeid Amani Karume International Airport,Zanzibar,Tanzania,Africa,1
+DJE,Djerba Zarzis International Airport,Djerba,Tunisia,Africa,1
+MIR,Monastir Habib Bourguiba International Airport,Monastir,Tunisia,Africa,2
+TUN,Tunis Carthage International Airport,Tunis,Tunisia,Africa,1
+HRE,Robert Gabriel Mugabe International Airport,Harare,Zimbabwe,Africa,1
+VFA,Victoria Falls International Airport,Victoria Falls,Zimbabwe,Africa,2
+GYD,Heydar Aliyev International Airport,Baku,Azerbaijan,Asia,2
+REP,Siem Reap International Airport,Siem Reap,Cambodia,Asia,1
+PEK,Beijing Capital International Airport,Beijing,China,Asia,1
+CAN,Guangzhou Baiyun International Airport,Guangzhou,China,Asia,1
+PVG,Shanghai Pudong International Airport,Shanghai,China,Asia,1
+TBS,Tbilisi International Airport,Tbilisi,Georgia,Asia,2
+HKG,Hong Kong International Airport,Hong Kong,Hong Kong,Asia,1
+DEL,Indira Gandhi International Airport,Delhi,India,Asia,1
+BOM,Chhatrapati Shivaji International Airport,Mumbai,India,Asia,1
+DPS,Ngurah Rai (Bali) International Airport,Denpasar,Indonesia,Asia,1
+HIJ,Hiroshima Airport,Hiroshima,Japan,Asia,2
+KIX,Kansai International Airport,Osaka,Japan,Asia,1
+HND,Tokyo Haneda International Airport,Tokyo,Japan,Asia,1
+NRT,Narita International Airport,Tokyo,Japan,Asia,1
+MFM,Macau International Airport,Macau,Macau,Asia,2
+KUL,Kuala Lumpur International Airport,Kuala Lumpur,Malaysia,Asia,1
+MLE,Malé International Airport,Male,Maldives,Asia,1
+KMV,Kalay Airport,Kalemyo,Myanmar,Asia,3
+KTM,Tribhuvan International Airport,Kathmandu,Nepal,Asia,2
+PKR,Pokhara Airport,Pokhara,Nepal,Asia,2
+CEB,Mactan Cebu International Airport,Cebu,Philippines,Asia,1
+MNL,Ninoy Aquino International Airport,Manila,Philippines,Asia,1
+SIN,Singapore Changi Airport,Singapore,Singapore,Asia,1
+XSP,Seletar Airport,Singapore,Singapore,Asia,3
+GMP,Gimpo International Airport,Seoul,South Korea,Asia,3
+ICN,Incheon International Airport,Seoul,South Korea,Asia,1
+CMB,Bandaranaike International Colombo Airport,Colombo,Sri Lanka,Asia,1
+TPE,Taiwan Taoyuan International Airport,Taipei,Taiwan,Asia,1
+BKK,Suvarnabhumi Airport,Bangkok,Thailand,Asia,1
+DMK,Don Mueang International Airport,Bangkok,Thailand,Asia,3
+UTP,U-Tapao International Airport,Pattaya,Thailand,Asia,2
+HKT,Phuket International Airport,Phuket,Thailand,Asia,1
+ESB,Esenboğa International Airport,Ankara,Turkey,Asia,1
+AYT,Antalya International Airport,Antalya,Turkey,Asia,1
+BJV,Milas Bodrum International Airport,Bodrum,Turkey,Asia,1
+DLM,Dalaman International Airport,Dalaman,Turkey,Asia,1
+IST,Istanbul Airport,Istanbul,Turkey,Asia,1
+ADB,Adnan Menderes International Airport,Izmir,Turkey,Asia,1
+DAD,Da Nang International Airport,Danang,Vietnam,Asia,1
+HAN,Noi Bai International Airport,Hanoi,Vietnam,Asia,1
+SGN,Tan Son Nhat International Airport,Ho Chi Minh City,Vietnam,Asia,1
+CXR,Cam Ranh Airport,Nha Trang,Vietnam,Asia,1
+PQC,Phu Quoc International Airport,Phu Quoc,Vietnam,Asia,1
+TIA,Tirana International Airport Mother Teresa,Tirana,Albania,Europe,1
+LNZ,Linz Hörsching Airport,Linz,Austria,Europe,2
+SZG,Salzburg Airport,Salzburg,Austria,Europe,2
+VIE,Vienna International Airport,Vienna,Austria,Europe,1
+ANR,Antwerp International Airport (Deurne),Antwerp,Belgium,Europe,2
+BRU,Brussels Airport,Brussels,Belgium,Europe,1
+CRL,Brussels South Charleroi Airport,Charleroi,Belgium,Europe,2
+LGG,Liège Airport,Liege,Belgium,Europe,2
+SJJ,Sarajevo International Airport,Sarajevo,Bosnia and Herzegovina,Europe,3
+SOF,Sofia Airport,Sofia,Bulgaria,Europe,1
+DBV,Dubrovnik Airport,Dubrovnik,Croatia,Europe,1
+PUY,Pula Airport,Pula,Croatia,Europe,2
+RJK,Rijeka Airport,Rijeka,Croatia,Europe,2
+SPU,Split Airport,Split,Croatia,Europe,1
+ZAD,Zadar Airport,Zadar,Croatia,Europe,2
+ZAG,Zagreb Airport,Zagreb,Croatia,Europe,1
+PFO,Paphos International Airport,Paphos,Cyprus,Europe,2
+PRG,Václav Havel Airport Prague,Prague,Czech Republic,Europe,1
+AAL,Aalborg Airport,Aalborg,Denmark,Europe,2
+BLL,Billund Airport,Billund,Denmark,Europe,2
+CPH,Copenhagen Kastrup Airport,Copenhagen,Denmark,Europe,1
+TLL,Lennart Meri Tallinn Airport,Tallinn,Estonia,Europe,2
+HEL,Helsinki Vantaa Airport,Helsinki,Finland,Europe,1
+AJA,Ajaccio-Napoléon Bonaparte Airport,Ajaccio,France,Europe,2
+BIA,Bastia-Poretta Airport,Bastia,France,Europe,2
+BVA,Paris Beauvais Tillé Airport,Beauvais,France,Europe,2
+BIQ,Biarritz-Anglet-Bayonne Airport,Biarritz,France,Europe,2
+BOD,Bordeaux-Mérignac Airport,Bordeaux,France,Europe,2
+BES,Brest Bretagne Airport,Brest,France,Europe,2
+TLN,Toulon-Hyères Airport,Hyeres,France,Europe,2
+LIL,Lille-Lesquin Airport,Lille,France,Europe,2
+LYS,Lyon Saint-Exupéry Airport,Lyon,France,Europe,2
+MRS,Marseille Provence Airport,Marseille,France,Europe,1
+MPL,Montpellier-Méditerranée Airport,Montpellier,France,Europe,2
+BSL,EuroAirport Basel-Mulhouse-Freiburg Airport,Mulhouse,France,Europe,2
+NTE,Nantes Atlantique Airport,Nantes,France,Europe,2
+NCE,Nice-Côte d'Azur Airport,Nice,France,Europe,1
+CDG,Charles de Gaulle International Airport,Paris,France,Europe,1
+ORY,Paris-Orly Airport,Paris,France,Europe,3
+PGF,Perpignan-Rivesaltes (Llabanère) Airport,Perpignan,France,Europe,2
+SXB,Strasbourg Airport,Strasbourg,France,Europe,2
+TLS,Toulouse-Blagnac Airport,Toulouse,France,Europe,2
+BRE,Bremen Airport,Bremen,Germany,Europe,2
+CGN,Cologne Bonn Airport,Cologne,Germany,Europe,1
+DTM,Dortmund Airport,Dortmund,Germany,Europe,2
+DUS,Düsseldorf Airport,Düsseldorf,Germany,Europe,1
+FRA,Frankfurt am Main Airport,Frankfurt,Germany,Europe,1
+HAM,Hamburg Airport,Hamburg,Germany,Europe,1
+HAJ,Hannover Airport,Hannover,Germany,Europe,2
+FKB,Karlsruhe Baden-Baden Airport,Karlsruhe/Baden-Baden,Germany,Europe,2
+LEJ,Leipzig/Halle Airport,Leipzig,Germany,Europe,2
+MUC,Munich Airport,Munich,Germany,Europe,1
+FMO,Münster Osnabrück Airport,Munster,Germany,Europe,2
+NUE,Nuremberg Airport,Nuremberg,Germany,Europe,2
+STR,Stuttgart Airport,Stuttgart,Germany,Europe,1
+GIB,Gibraltar Airport,Gibraltar,Gibraltar,Europe,3
+ATH,Eleftherios Venizelos International Airport,Athens,Greece,Europe,1
+CHQ,Chania International Airport,Chania,Greece,Europe,1
+CFU,Ioannis Kapodistrias International Airport,Corfu,Greece,Europe,1
+HER,Heraklion International Nikos Kazantzakis Airport,Heraklion,Greece,Europe,1
+KGS,Kos Airport,Kos,Greece,Europe,1
+JMK,Mikonos Airport,Mykonos,Greece,Europe,1
+RHO,Diagoras Airport,Rhodes,Greece,Europe,1
+JTR,Santorini Airport,Santorini,Greece,Europe,1
+SKG,Thessaloniki Macedonia International Airport,Thessaloniki,Greece,Europe,1
+BUD,Budapest Liszt Ferenc International Airport,Budapest,Hungary,Europe,1
+KEF,Keflavik International Airport,Keflavik,Iceland,Europe,2
+ORK,Cork Airport,Cork,Ireland,Europe,2
+DUB,Dublin Airport,Dublin,Ireland,Europe,1
+GWY,Galway Airport,Galway,Ireland,Europe,3
+SNN,Shannon Airport,Shannon,Ireland,Europe,2
+AOI,Ancona Falconara Airport,Ancona,Italy,Europe,2
+BRI,Bari Karol Wojtyła Airport,Bari,Italy,Europe,2
+BGY,Il Caravaggio International Airport,Bergamo,Italy,Europe,1
+BLQ,Bologna Guglielmo Marconi Airport,Bologna,Italy,Europe,2
+BDS,Brindisi – Salento Airport,Brindisi,Italy,Europe,2
+CAG,Cagliari Elmas Airport,Cagliari,Italy,Europe,2
+CTA,Catania-Fontanarossa Airport,Catania,Italy,Europe,1
+FLR,Peretola Airport,Florence,Italy,Europe,1
+GOA,Genoa Cristoforo Colombo Airport,Genoa,Italy,Europe,2
+SUF,Lamezia Terme Airport,Lamezia Terme,Italy,Europe,2
+LIN,Milano Linate Airport,Milan,Italy,Europe,1
+MXP,Malpensa International Airport,Milan,Italy,Europe,1
+NAP,Naples International Airport,Naples,Italy,Europe,1
+PMO,Falcone–Borsellino Airport,Palermo,Italy,Europe,1
+PEG,Perugia San Francesco d'Assisi – Umbria International Airport,Perugia,Italy,Europe,3
+PSA,Pisa International Airport,Pisa,Italy,Europe,1
+CIA,Ciampino–G. B. Pastine International Airport,Rome,Italy,Europe,3
+FCO,Leonardo da Vinci–Fiumicino Airport,Rome,Italy,Europe,1
+TSF,Treviso-Sant'Angelo Airport,Treviso,Italy,Europe,2
+TRS,Trieste–Friuli Venezia Giulia Airport,Trieste,Italy,Europe,2
+TRN,Turin Airport,Turin,Italy,Europe,2
+VCE,Venice Marco Polo Airport,Venice,Italy,Europe,1
+VRN,Verona Villafranca Airport,Verona,Italy,Europe,2
+RIX,Riga International Airport,Riga,Latvia,Europe,2
+KUN,Kaunas International Airport,Kaunas,Lithuania,Europe,2
+VNO,Vilnius International Airport,Vilnius,Lithuania,Europe,2
+LUX,Luxembourg-Findel International Airport,Luxembourg,Luxembourg,Europe,2
+MLA,Malta International Airport,Malta,Malta,Europe,2
+TGD,Podgorica Airport,Podgorica,Montenegro,Europe,2
+TIV,Tivat Airport,Tivat,Montenegro,Europe,2
+AMS,Amsterdam Airport Schiphol,Amsterdam,Netherlands,Europe,1
+EIN,Eindhoven Airport,Eindhoven,Netherlands,Europe,2
+MST,Maastricht Aachen Airport,Maastricht,Netherlands,Europe,2
+RTM,Rotterdam The Hague Airport,Rotterdam,Netherlands,Europe,2
+OSL,Oslo Lufthavn,Oslo,Norway,Europe,1
+GDN,Gdańsk Lech Wałęsa Airport,Gdansk,Poland,Europe,2
+KTW,Katowice International Airport,Katowice,Poland,Europe,2
+KRK,Kraków John Paul II International Airport,Krakow,Poland,Europe,1
+POZ,Poznań-Ławica Airport,Poznan,Poland,Europe,2
+WAW,Warsaw Chopin Airport,Warsaw,Poland,Europe,1
+FAO,Faro Airport,Faro,Portugal,Europe,1
+FNC,Madeira Airport,Funchal,Portugal,Europe,3
+LIS,Humberto Delgado Airport (Lisbon Portela Airport),Lisbon,Portugal,Europe,1
+PDL,João Paulo II Airport,Ponta Delgada,Portugal,Europe,3
+OPO,Francisco de Sá Carneiro Airport,Porto,Portugal,Europe,1
+VSE,Aerodromo Goncalves Lobato (Viseu Airport),Viseu,Portugal,Europe,3
+BBU,Băneasa International Airport,Bucharest,Romania,Europe,3
+OTP,Henri Coandă International Airport,Bucharest,Romania,Europe,1
+CLJ,Cluj-Napoca International Airport,Cluj-Napoca,Romania,Europe,2
+CND,Mihail Kogălniceanu International Airport,Constanta,Romania,Europe,2
+TSR,Timişoara Traian Vuia Airport,Timisoara,Romania,Europe,2
+BEG,Belgrade Nikola Tesla Airport,Belgrade,Serbia,Europe,2
+BTS,M. R. Štefánik Airport,Bratislava,Slovakia,Europe,2
+LJU,Ljubljana Jože Pučnik Airport,Ljubljana,Slovenia,Europe,2
+ALC,Alicante International Airport,Alicante,Spain,Europe,1
+LEI,Almería International Airport,Almeria,Spain,Europe,2
+ACE,Lanzarote Airport,Arrecife,Spain,Europe,2
+OVD,Asturias Airport,Aviles,Spain,Europe,2
+BJZ,Badajoz Airport,Badajoz,Spain,Europe,3
+BCN,Barcelona International Airport,Barcelona,Spain,Europe,1
+BIO,Bilbao Airport,Bilbao,Spain,Europe,2
+FUE,Fuerteventura Airport,Fuerteventura,Spain,Europe,2
+GRO,Girona Airport,Girona,Spain,Europe,2
+LPA,Gran Canaria Airport,Gran Canaria,Spain,Europe,1
+GRX,Federico Garcia Lorca Airport,Granada,Spain,Europe,3
+IBZ,Ibiza Airport,Ibiza,Spain,Europe,1
+XRY,Jerez Airport,Jerez,Spain,Europe,2
+ECV,Cuatro Vientos Airport,Madrid,Spain,Europe,3
+MAD,Adolfo Suárez Madrid–Barajas Airport,Madrid,Spain,Europe,1
+AGP,Málaga Airport,Malaga,Spain,Europe,1
+MAH,Menorca Airport,Menorca,Spain,Europe,2
+MJV,San Javier Airport,Murcia,Spain,Europe,3
+RMU,Región de Murcia International Airport,Murcia,Spain,Europe,3
+PMI,Palma De Mallorca Airport,Palma de Mallorca,Spain,Europe,1
+REU,Reus Airport,Reus,Spain,Europe,2
+EAS,San Sebastian Airport,San Sebastian,Spain,Europe,3
+SPC,La Palma Airport,Santa Cruz de La Palma,Spain,Europe,2
+SDR,Santander Airport,Santander,Spain,Europe,3
+SCQ,Santiago de Compostela Airport,Santiago,Spain,Europe,2
+SVQ,Sevilla Airport,Seville,Spain,Europe,2
+TFN,Tenerife Norte Airport,Tenerife,Spain,Europe,2
+TFS,Tenerife South Airport,Tenerife,Spain,Europe,1
+VLC,Valencia Airport,Valencia,Spain,Europe,2
+VGO,Vigo Airport,Vigo,Spain,Europe,2
+ZAZ,Zaragoza Airport,Zaragoza,Spain,Europe,2
+GOT,Gothenburg-Landvetter Airport,Gothenburg,Sweden,Europe,2
+MMX,Malmö Sturup Airport,Malmö,Sweden,Europe,2
+ARN,Stockholm-Arlanda Airport,Stockholm,Sweden,Europe,1
+BMA,Stockholm-Bromma Airport,Stockholm,Sweden,Europe,3
+BRN,Bern Belp Airport,Bern,Switzerland,Europe,2
+GVA,Geneva Cointrin International Airport,Geneva,Switzerland,Europe,2
+QLS,Lausanne-Blécherette Airport,Lausanne,Switzerland,Europe,3
+LUG,Lugano Airport,Lugano,Switzerland,Europe,2
+ZRH,Zürich Airport,Zurich,Switzerland,Europe,1
+ABZ,Aberdeen Dyce Airport,Aberdeen,United Kingdom,Europe,2
+BFS,Belfast International Airport,Belfast,United Kingdom,Europe,2
+BHD,George Best Belfast City Airport,Belfast,United Kingdom,Europe,2
+BHX,Birmingham International Airport,Birmingham,United Kingdom,Europe,1
+BOH,Bournemouth Airport,Bournemouth,United Kingdom,Europe,3
+BRS,Bristol Airport,Bristol,United Kingdom,Europe,1
+CWL,Cardiff International Airport,Cardiff,United Kingdom,Europe,2
+EMA,East Midlands Airport,East Midlands,United Kingdom,Europe,2
+EDI,Edinburgh Airport,Edinburgh,United Kingdom,Europe,1
+EXT,Exeter International Airport,Exeter,United Kingdom,Europe,2
+GLA,Glasgow International Airport,Glasgow,United Kingdom,Europe,1
+LBA,Leeds Bradford Airport,Leeds,United Kingdom,Europe,2
+LPL,Liverpool John Lennon Airport,Liverpool,United Kingdom,Europe,2
+LGW,London Gatwick Airport,London,United Kingdom,Europe,1
+LHR,London Heathrow Airport,London,United Kingdom,Europe,1
+LTN,London Luton Airport,London,United Kingdom,Europe,1
+STN,London Stansted Airport,London,United Kingdom,Europe,1
+MAN,Manchester Airport,Manchester,United Kingdom,Europe,1
+NCL,Newcastle Airport,Newcastle,United Kingdom,Europe,2
+SOU,Southampton Airport,Southampton,United Kingdom,Europe,2
+BAH,Bahrain International Airport,Manama,Bahrain,Middle East,1
+BGW,Baghdad International Airport,Baghdad,Iraq,Middle East,3
+KWI,Kuwait International Airport,Kuwait City,Kuwait,Middle East,1
+MCT,Muscat International Airport,Muscat,Oman,Middle East,1
+DOH,Hamad International Airport,Doha,Qatar,Middle East,1
+JED,King Abdulaziz International Airport,Jeddah,Saudi Arabia,Middle East,1
+RUH,King Khaled International Airport,Riyadh,Saudi Arabia,Middle East,1
+AUH,Abu Dhabi International Airport,Abu Dhabi,United Arab Emirates,Middle East,1
+DWC,Al Maktoum International Airport,Dubai,United Arab Emirates,Middle East,2
+DXB,Dubai International Airport,Dubai,United Arab Emirates,Middle East,1
+RKT,Ras Al Khaimah International Airport,Ras Al Khaimah,United Arab Emirates,Middle East,2
+NAS,Lynden Pindling International Airport,Nassau,Bahamas,North America,2
+BGI,Sir Grantley Adams International Airport,Bridgetown,Barbados,North America,2
+BZE,Philip S. W. Goldson International Airport,Belize City,Belize,North America,2
+YUL,Montreal / Pierre Elliott Trudeau International Airport,Montreal,Canada,North America,1
+YYZ,Lester B. Pearson International Airport,Toronto,Canada,North America,1
+YVR,Vancouver International Airport,Vancouver,Canada,North America,1
+GCM,Owen Roberts International Airport,Georgetown,Cayman Islands,North America,2
+SJO,Juan Santamaria International Airport,San Jose,Costa Rica,North America,2
+HAV,José Martí International Airport,Havana,Cuba,North America,2
+PUJ,Punta Cana International Airport,Punta Cana,Dominican Republic,North America,2
+SDQ,Las Américas International Airport,Santo Domingo,Dominican Republic,North America,2
+SAL,Monseñor Óscar Arnulfo Romero International Airport,San Salvador,El Salvador,North America,2
+GUA,La Aurora Airport,Guatemala City,Guatemala,North America,2
+RTB,Juan Manuel Galvez International Airport,Roatan,Honduras,North America,2
+KIN,Norman Manley International Airport,Kingston,Jamaica,North America,2
+KTP,Tinson Pen Airport,Kingston,Jamaica,North America,3
+ACA,General Juan N Alvarez International Airport,Acapulco,Mexico,North America,3
+CUN,Cancún International Airport,Cancun,Mexico,North America,1
+CZM,Cozumel International Airport,Cozumel,Mexico,North America,1
+MEX,Licenciado Benito Juarez International Airport,Mexico City,Mexico,North America,1
+NTR,Del Norte International Airport,Monterrey,Mexico,North America,3
+PBC,Hermanos Serdán International Airport,Puebla,Mexico,North America,3
+PVR,Licenciado Gustavo Díaz Ordaz International Airport,Puerto Vallarta,Mexico,North America,1
+SJD,Los Cabos International Airport,San José del Cabo,Mexico,North America,1
+NCR,San Carlos,San Carlos,Nicaragua,North America,3
+PTY,Tocumen International Airport,Panama City,Panama,North America,2
+SJU,Luis Munoz Marin International Airport,San Juan,Puerto Rico,North America,2
+POS,Piarco International Airport,Port of Spain,Trinidad and Tobago,North America,2
+ATL,Hartsfield Jackson Atlanta International Airport,Atlanta,United States,North America,1
+AUS,Austin Bergstrom International Airport,Austin,United States,North America,2
+BWI,Baltimore/Washington International Thurgood Marshall Airport,Baltimore,United States,North America,2
+BOS,General Edward Lawrence Logan International Airport,Boston,United States,North America,1
+MDW,Chicago Midway International Airport,Chicago,United States,North America,2
+ORD,Chicago O'Hare International Airport,Chicago,United States,North America,1
+DFW,Dallas Fort Worth International Airport,Dallas-Fort Worth,United States,North America,1
+DEN,Denver International Airport,Denver,United States,North America,1
+FLL,Fort Lauderdale Hollywood International Airport,Fort Lauderdale,United States,North America,2
+RSW,Southwest Florida International Airport,Fort Myers,United States,North America,2
+IAH,George Bush Intercontinental Houston Airport,Houston,United States,North America,1
+LAS,McCarran International Airport,Las Vegas,United States,North America,1
+LAX,Los Angeles International Airport,Los Angeles,United States,North America,1
+MIA,Miami International Airport,Miami,United States,North America,1
+MSP,Minneapolis-St Paul International/Wold-Chamberlain Airport,Minneapolis,United States,North America,2
+JFK,John F Kennedy International Airport,New York,United States,North America,1
+LGA,La Guardia Airport,New York,United States,North America,1
+EWR,Newark Liberty International Airport,Newark,United States,North America,1
+OAK,Metropolitan Oakland International Airport,Oakland,United States,North America,2
+MCO,Orlando International Airport,Orlando,United States,North America,1
+PHL,Philadelphia International Airport,Philadelphia,United States,North America,2
+PHX,Phoenix Sky Harbor International Airport,Phoenix,United States,North America,1
+PDX,Portland International Airport,Portland,United States,North America,2
+SLC,Salt Lake City International Airport,Salt Lake City,United States,North America,2
+SAT,San Antonio International Airport,San Antonio,United States,North America,2
+SAN,San Diego International Airport,San Diego,United States,North America,1
+SFO,San Francisco International Airport,San Francisco,United States,North America,1
+SJC,Norman Y. Mineta San Jose International Airport,San Jose,United States,North America,2
+SEA,Seattle Tacoma International Airport,Seattle,United States,North America,1
+TPA,Tampa International Airport,Tampa,United States,North America,2
+DCA,Ronald Reagan Washington National Airport,Washington,United States,North America,2
+IAD,Washington Dulles International Airport,Washington,United States,North America,2
+PBI,Palm Beach International Airport,West Palm Beach,United States,North America,2
+STT,Cyril E. King Airport,St. Thomas,Virgin Islands,North America,2
+ADL,Adelaide International Airport,Adelaide,Australia,Oceania,2
+BNE,Brisbane International Airport,Brisbane,Australia,Oceania,1
+BME,Broome International Airport,Broome,Australia,Oceania,2
+CNS,Cairns International Airport,Cairns,Australia,Oceania,1
+CBR,Canberra International Airport,Canberra,Australia,Oceania,2
+OOL,Gold Coast Airport,Coolangatta,Australia,Oceania,1
+DRW,Darwin International Airport,Darwin,Australia,Oceania,2
+HTI,Hamilton Island Airport,Hamilton Island,Australia,Oceania,2
+HBA,Hobart International Airport,Hobart,Australia,Oceania,2
+LST,Launceston Airport,Launceston,Australia,Oceania,2
+MCY,Sunshine Coast Airport,Maroochydore,Australia,Oceania,2
+MEL,Melbourne International Airport,Melbourne,Australia,Oceania,1
+NTL,Newcastle Airport,Newcastle,Australia,Oceania,2
+PER,Perth International Airport,Perth,Australia,Oceania,1
+PPP,Proserpine Whitsunday Coast Airport,Proserpine,Australia,Oceania,2
+SYD,Sydney Kingsford Smith International Airport,Sydney,Australia,Oceania,1
+TSV,Townsville Airport,Townsville,Australia,Oceania,2
+NAN,Nadi International Airport,Nadi,Fiji,Oceania,1
+BOB,Bora Bora Airport,Bora Bora,French Polynesia,Oceania,2
+PPT,Faa'a International Airport,Papeete,French Polynesia,Oceania,1
+AKL,Auckland International Airport,Auckland,New Zealand,Oceania,1
+CHC,Christchurch International Airport,Christchurch,New Zealand,Oceania,1
+ZQN,Queenstown International Airport,Queenstown,New Zealand,Oceania,1
+ROR,Babelthuap Airport,Babelthuap,Palau,Oceania,3
+BER,Berlin Brandenburg Airport,Berlin,Germany,Other,1
+AEP,Jorge Newbery Airpark,Buenos Aires,Argentina,South America,2
+EZE,Ministro Pistarini International Airport,Buenos Aires,Argentina,South America,1
+COR,Ingeniero Ambrosio Taravella Airport,Cordoba,Argentina,South America,2
+IGR,Cataratas Del Iguazú International Airport,Iguazu Falls,Argentina,South America,2
+LPB,El Alto International Airport,La Paz,Bolivia,South America,2
+VVI,Viru Viru International Airport,Santa Cruz,Bolivia,South America,2
+BEL,Val de Cans/Júlio Cezar Ribeiro International Airport,Belem,Brazil,South America,2
+CNF,Tancredo Neves International Airport,Belo Horizonte,Brazil,South America,1
+BSB,Presidente Juscelino Kubistschek International Airport,Brasilia,Brazil,South America,1
+VCP,Viracopos International Airport,Campinas,Brazil,South America,2
+CGB,Marechal Rondon Airport,Cuiaba,Brazil,South America,2
+BFH,Bacacheri Airport,Curitiba,Brazil,South America,3
+CWB,Afonso Pena Airport,Curitiba,Brazil,South America,1
+FLN,Hercílio Luz International Airport,Florianopolis,Brazil,South America,2
+FOR,Pinto Martins International Airport,Fortaleza,Brazil,South America,1
+IGU,Cataratas International Airport,Foz do Iguaçu,Brazil,South America,2
+GYN,Santa Genoveva Airport,Goiania,Brazil,South America,2
+JPA,Presidente Castro Pinto International Airport,Joao Pessoa,Brazil,South America,2
+MCZ,Zumbi dos Palmares Airport,Maceio,Brazil,South America,2
+MAO,Eduardo Gomes International Airport,Manaus,Brazil,South America,2
+NAT,Governador Aluízio Alves International Airport,Natal,Brazil,South America,2
+NVT,Ministro Victor Konder International Airport,Navegantes,Brazil,South America,2
+POA,Salgado Filho Airport,Porto Alegre,Brazil,South America,1
+BPS,Porto Seguro Airport,Porto Seguro,Brazil,South America,3
+REC,Guararapes - Gilberto Freyre International Airport,Recife,Brazil,South America,1
+GIG,Rio Galeão – Tom Jobim International Airport,Rio de Janeiro,Brazil,South America,1
+SDU,Santos Dumont Airport,Rio de Janeiro,Brazil,South America,2
+SSA,Deputado Luiz Eduardo Magalhães International Airport,Salvador,Brazil,South America,1
+CGH,Congonhas Airport,Sao Paulo,Brazil,South America,2
+GRU,Guarulhos - Governador André Franco Montoro International Airport,Sao Paulo,Brazil,South America,1
+VIX,Eurico de Aguiar Salles Airport,Vitoria,Brazil,South America,2
+SCL,Comodoro Arturo Merino Benítez International Airport,Santiago,Chile,South America,1
+BOG,El Dorado International Airport,Bogota,Colombia,South America,1
+CTG,Rafael Nuñez International Airport,Cartagena,Colombia,South America,1
+GYE,José Joaquín de Olmedo International Airport,Guayaquil,Ecuador,South America,2
+UIO,Mariscal Sucre International Airport,Quito,Ecuador,South America,2
+ASU,Silvio Pettirossi International Airport,Asuncion,Paraguay,South America,2
+AGT,Guarani International Airport,Ciudad del Este,Paraguay,South America,3
+AQP,Rodríguez Ballón International Airport,Arequipa,Peru,South America,2
+CUZ,Alejandro Velasco Astete International Airport,Cusco,Peru,South America,2
+LIM,Jorge Chávez International Airport,Lima,Peru,South America,1
+MVD,Carrasco International /General C L Berisso Airport,Montevideo,Uruguay,South America,1
+PDP,Capitan Corbeta CA Curbelo International Airport,Punta del Este,Uruguay,South America,1
+SCI,Paramillo Airport,San Cristobal,Venezuela,South America,3

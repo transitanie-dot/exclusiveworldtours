@@ -33,6 +33,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from marca import CSS as CSS_MARCA, lockup, marca_mini  # noqa: E402
+import procura  # noqa: E402
 from marca_base import PALETA, contraste, misturar  # noqa: E402
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -290,9 +291,10 @@ h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
 @media (max-width:760px){.nav{display:none}}
 
 /* ----------------------------------------------------------------- heroi */
-.heroi{position:relative;background:var(--tinta);color:var(--branco);
-  overflow:hidden}
-.heroi-foto{position:absolute;inset:0}
+.heroi{position:relative;background:var(--tinta);color:var(--branco)}
+/* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
+   procura. Quem recorta a fotografia e a camada da fotografia. */
+.heroi-foto{position:absolute;inset:0;overflow:hidden}
 .heroi-foto img{width:100%%;height:100%%;object-fit:cover}
 .heroi::after{content:'';position:absolute;inset:0;
   background:linear-gradient(100deg,
@@ -304,33 +306,17 @@ h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
 .heroi p{font-size:clamp(1.05rem, .98rem + .4vw, 1.3rem);
   color:rgba(255,255,255,.88);margin:0 0 34px;max-width:33em}
 
-/* a barra de procura */
-.procura{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:0;
-  background:var(--branco);border-radius:var(--raio);padding:7px;
-  box-shadow:0 18px 46px -22px rgba(11,43,42,.55)}
-.campo{display:flex;flex-direction:column;gap:2px;padding:10px 16px;
-  border-right:1px solid var(--risco);min-width:0}
-.campo:nth-child(3){border-right:0}
-.campo label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--mudo);font-weight:600}
-.campo select,.campo input{border:0;padding:0;font:inherit;font-size:15px;
-  color:var(--tinta);background:transparent;width:100%%;min-width:0}
-.campo select:focus-visible,.campo input:focus-visible,
-a:focus-visible,button:focus-visible{outline:3px solid var(--cor);
-  outline-offset:3px;border-radius:4px}
-.procura .botao{margin:0 2px}
+/* a barra de procura: o CSS dela vive em tools/procura.py, junto com o
+   comportamento, porque as duas coisas so fazem sentido juntas */
+.procura{max-width:620px}
 .botao{display:inline-flex;align-items:center;justify-content:center;
   background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
   padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
   cursor:pointer;text-decoration:none;white-space:nowrap}
 .botao:hover{background:var(--cor-escura)}
-@media (max-width:860px){
-  .procura{grid-template-columns:1fr 1fr}
-  .campo{border-right:0;border-bottom:1px solid var(--risco)}
-  .campo:nth-child(1){grid-column:1/-1}
-  .procura .botao{grid-column:1/-1;margin-top:6px}
-}
-
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
+  border-radius:4px}
 /* a linha de numeros, toda contada a partir dos dados */
 .numeros{display:flex;flex-wrap:wrap;gap:14px 40px;margin-top:40px;
   padding-top:26px;border-top:1px solid rgba(255,255,255,.22)}
@@ -439,7 +425,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--cor);
 .rodape-fim{margin-top:40px;padding-top:22px;border-top:1px solid var(--risco);
   font-size:13.5px;color:var(--mudo);display:flex;gap:18px;flex-wrap:wrap;
   justify-content:space-between}
-''' % CORES) + CSS_MARCA
+''' % CORES) + CSS_MARCA + (procura.CSS % CORES)
 
 
 # ------------------------------------------------------------------ pagina
@@ -528,24 +514,7 @@ def main():
       set early enough to reach the place before the coaches do.</p>
 
     <form class="procura" action="/tours/" method="get" role="search">
-      <label class="campo">
-        <span>Destination</span>
-        <select name="city">
-          <option value="">Anywhere</option>
-          %(opcoes_cidade)s
-        </select>
-      </label>
-      <label class="campo">
-        <span>Date</span>
-        <input type="date" name="date">
-      </label>
-      <label class="campo">
-        <span>Group size</span>
-        <select name="people">
-          %(opcoes_grupo)s
-        </select>
-      </label>
-      <button class="botao" type="submit">Search</button>
+      %(procura)s
     </form>
 
     <div class="numeros">
@@ -646,22 +615,18 @@ def main():
   </div>
 </footer>
 
+<script>%(js)s</script>
 </body>
 </html>
 ''' % {
-        'css': css(),
+        'css': css(), 'js': procura.JS,
         'ndesc': len(tours), 'nt': len(tours), 'np': len(paises),
         'nc': len(cidades), 'menor': euros(menor), 'ano': 2026,
         'marca': lockup(44, titulo=True),
         'marca_rodape': lockup(40),
         'heroi_img': (img(hf['id'], hf['alt'], (900, 1600, 2200),
                           '100vw', eager=True) if hf else ''),
-        'opcoes_cidade': '\n'.join(
-            '<option value="%s">%s</option>' % (e(c), e(c)) for c in cidades),
-        'opcoes_grupo': '\n'.join(
-            '<option value="%d">%d %s</option>' % (n, n,
-                                                   'person' if n == 1 else 'people')
-            for n in (2, 4, 6, 8, 12, 16)),
+        'procura': procura.HTML,
         'paises': '\n'.join(cartao_pais(p, i) for i, p in enumerate(paises)),
         'tours': '\n'.join(cartao_tour(t, i == 0)
                            for i, t in enumerate(destaques)),
