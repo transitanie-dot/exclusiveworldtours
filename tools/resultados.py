@@ -37,7 +37,7 @@ import procura  # noqa: E402
 from pagina import (CORES, cabecalho, cartao_tour, carregar, e, envolver,  # noqa: E402
                     escrever, por_pais, rodape)
 
-CSS = '''<style>
+CSS = '''
 .capa{background:var(--papel);border-bottom:1px solid var(--risco);
   padding:40px 0 34px}
 .capa h1{font-size:clamp(1.8rem, 1.3rem + 1.8vw, 2.6rem);margin:0 0 6px}
@@ -70,7 +70,7 @@ CSS = '''<style>
 .nada .destino b{color:var(--tinta)}
 .nada .destino span{color:var(--mudo);font-size:14px}
 .sugestao{margin:30px 0 14px;font-size:1.1rem}
-</style>'''
+'''
 
 
 JS = r'''

@@ -40,7 +40,7 @@ POLITICA = re.compile(
     r'insured|reschedul)\w*\b', re.I)
 
 
-CSS = '''<style>
+CSS = '''
 /* ------------------------------------------------------------- o heroi
    A fotografia a sangrar com o titulo por cima. A Viator e a
    GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
@@ -298,7 +298,7 @@ CSS = '''<style>
 .reservar-bloco h2{margin-bottom:6px}
 .relacionados{padding:var(--e5) 0}
 .relacionados h2{font-size:1.35rem;margin:0 0 var(--e3)}
-</style>'''
+'''
 
 
 def grande_url(fid):

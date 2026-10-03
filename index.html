@@ -26,6 +26,9 @@
   --papel:#F6F4F1; --branco:#FFFFFF;
   --tinta-f:#B0B8B5; --cor-f:#E1AF8D; --uma-f:#B9C0BD;
   --texto:#354F4E; --mudo:#5B6F6E; --risco:#D5D8D5;
+  /* o ambar sobre fundo escuro: o normal da 4.30:1 e texto pequeno
+     precisa de 4.5. Este da 5.24:1 e le-se como a mesma cor. */
+  --cor-clara:#D5854F;
   --tipo:'Inter',system-ui,-apple-system,sans-serif;
   --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
   --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
@@ -154,7 +157,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .banda-e{background:var(--tinta);color:rgba(255,255,255,.86)}
 .banda-e h1,.banda-e h2,.banda-e h3{color:var(--branco)}
 .banda-e .rot{color:rgba(255,255,255,.6)}
-.banda-e .rot b{color:var(--cor)}
+.banda-e .rot b{color:var(--cor-clara)}
 .banda-e .rot::after{background:rgba(255,255,255,.18)}
 
 /* ------------------------------------------------------- o detalhe fino
@@ -321,7 +324,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   .pc-botao{flex:1 1 100%}
 }
 
-<style>
+
 /* ----------------------------------------------------------------- heroi */
 .heroi{position:relative;background:var(--tinta);color:var(--branco)}
 /* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
@@ -406,7 +409,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   font-family:var(--tipo-titulo);font-size:15px}
 .passo h3{font-size:1.1rem}
 .passo p{margin:0;color:var(--mudo);font-size:15.5px}
-</style>
+
 </style>
 </head>
 <body>

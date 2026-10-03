@@ -91,7 +91,7 @@ def cartao_pais(p, i):
 
 def css():
     """So o que e desta pagina. O resto vem de pagina.css_base()."""
-    return '<style>' + ('''
+    return ('''
 /* ----------------------------------------------------------------- heroi */
 .heroi{position:relative;background:var(--tinta);color:var(--branco)}
 /* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
@@ -176,7 +176,7 @@ def css():
   font-family:var(--tipo-titulo);font-size:15px}
 .passo h3{font-size:1.1rem}
 .passo p{margin:0;color:var(--mudo);font-size:15.5px}
-''' % CORES) + '</style>'
+''' % CORES)
 
 
 def main():

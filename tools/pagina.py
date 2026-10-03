@@ -48,6 +48,7 @@ CORES = {
     'mudo': misturar(TINTA, PAPEL, .66),      # as legendas
     'risco': misturar(TINTA, PAPEL, .14),     # os filetes
     'cor_escura': '#A85426',                  # o ambar para texto pequeno
+    'cor_clara': '#D5854F',                   # o ambar sobre fundo escuro
 }
 
 # Estes tem de passar a norma e nao e por acreditar em mim que passam:
@@ -59,6 +60,7 @@ MINIMOS = [
     ('papel sobre tinta', 'papel', TINTA, 4.5),
     ('ambar escuro sobre papel', 'cor_escura', PAPEL, 4.5),
     ('ambar sobre tinta', 'cor', TINTA, 3.0),
+    ('ambar claro sobre tinta', 'cor_clara', TINTA, 4.5),
     ('papel sobre ambar', 'papel', COR, 3.0),
 ]
 
@@ -204,6 +206,9 @@ def css_base():
   --papel:%(papel)s; --branco:%(branco)s;
   --tinta-f:%(tinta_f)s; --cor-f:%(cor_f)s; --uma-f:%(uma_f)s;
   --texto:%(texto)s; --mudo:%(mudo)s; --risco:%(risco)s;
+  /* o ambar sobre fundo escuro: o normal da 4.30:1 e texto pequeno
+     precisa de 4.5. Este da 5.24:1 e le-se como a mesma cor. */
+  --cor-clara:%(cor_clara)s;
   --tipo:'Inter',system-ui,-apple-system,sans-serif;
   --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
   --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
@@ -332,7 +337,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .banda-e{background:var(--tinta);color:rgba(255,255,255,.86)}
 .banda-e h1,.banda-e h2,.banda-e h3{color:var(--branco)}
 .banda-e .rot{color:rgba(255,255,255,.6)}
-.banda-e .rot b{color:var(--cor)}
+.banda-e .rot b{color:var(--cor-clara)}
 .banda-e .rot::after{background:rgba(255,255,255,.18)}
 
 /* ------------------------------------------------------- o detalhe fino
@@ -590,7 +595,11 @@ def envolver(titulo, descricao, css_pagina, corpo, js='', noindex=True):
 ''' % {
         'titulo': e(titulo), 'descricao': e(descricao),
         'robots': '<meta name="robots" content="noindex, nofollow">' if noindex else '',
-        'fontes': FONTES, 'css': css_base(), 'css_pagina': css_pagina,
+        'fontes': FONTES, 'css': css_base(),
+        # tira-se qualquer <style> que venha no CSS da pagina: isto ja
+        # esta dentro de um, e um <style> aninhado faz o browser engolir
+        # a regra seguinte sem dar erro nenhum
+        'css_pagina': css_pagina.replace('<style>', '').replace('</style>', ''),
         'corpo': corpo,
         'js': '<script>%s</script>' % (js + MENU + REVELAR),
     }

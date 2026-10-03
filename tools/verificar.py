@@ -20,7 +20,8 @@ RAIZ = os.path.dirname(AQUI)
 
 import glob
 
-PAGINAS = (['index.html', 'tours/index.html', 'search/index.html']
+PAGINAS = (['index.html', 'tours/index.html', 'search/index.html',
+            'suppliers/index.html']
            + sorted(os.path.relpath(x, RAIZ)
                     for x in glob.glob(os.path.join(RAIZ, 'tours', '*',
                                                     'index.html'))))
@@ -57,6 +58,12 @@ def main():
         # o preco nunca pode sair com uma casa decimal so
         for m in re.finditer(r'&euro;([0-9 ,]+\.[0-9])(?![0-9])', html):
             falhas.append('%s: preco com uma casa decimal: %s' % (nome, m.group(0)))
+        # um <style> dentro de outro: o browser engole a regra seguinte
+        # sem dar erro nenhum. Custou-me uma seccao com o fundo errado
+        # para descobrir, por isso passa a ser verificado.
+        if html.count('<style>') != 1 or html.count('</style>') != 1:
+            falhas.append('%s: tem %d <style> (devia ter 1)'
+                          % (nome, html.count('<style>')))
         # noindex ligado ate os precos estarem confirmados
         if 'noindex' not in html:
             falhas.append('%s: sem noindex (os precos ainda nao foram '
