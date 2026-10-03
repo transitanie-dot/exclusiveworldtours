@@ -69,9 +69,10 @@ create table if not exists operators (
   website         text,
   licence_ref     text,                           -- licenca de turismo, se houver
   status          operator_status not null default 'pending',
-  -- a comissao fica por operador e nao numa constante: ha sempre um
-  -- caso especial, e o caso especial nao deve obrigar a publicar codigo
-  commission_rate numeric(5,4) not null default 0.1500
+  -- Comissao: 20%, decidido pelo Ricardo a 2 de outubro de 2026.
+  -- Fica por operador e nao numa constante, porque ha sempre um caso
+  -- especial e o caso especial nao deve obrigar a publicar codigo.
+  commission_rate numeric(5,4) not null default 0.2000
                   check (commission_rate >= 0 and commission_rate <= 0.5),
   notes           text,                           -- notas internas do Ricardo
   created_at      timestamptz not null default now(),
@@ -217,6 +218,20 @@ as $$
       join listings l on l.id = p_listing
       where b.operator_id = l.operator_id
         and p_day between b.starts_on and b.ends_on);
+$$;
+
+-- Quanto fica para o operador num preco. A conta esta aqui e so aqui:
+-- feita a mao no site, no painel e na fatura, mais tarde ou mais cedo
+-- os tres numeros deixam de bater certo.
+create or replace function repartir(p_operator uuid, p_total numeric)
+returns table (total numeric, comissao numeric, para_o_operador numeric)
+language sql
+stable
+as $$
+  select p_total,
+         round(p_total * o.commission_rate, 2),
+         round(p_total - p_total * o.commission_rate, 2)
+  from operators o where o.id = p_operator;
 $$;
 
 -- ---------------------------------------------------------------------
