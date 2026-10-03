@@ -247,13 +247,81 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .topo{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);
   backdrop-filter:saturate(180%%) blur(12px);
   border-bottom:1px solid var(--risco)}
-.topo-i{display:flex;align-items:center;gap:28px;height:62px}
-.nav{display:flex;gap:26px;margin-left:auto;font-size:15px;font-weight:500}
-.nav a{text-decoration:none;color:var(--texto);padding:6px 0;
-  border-bottom:2px solid transparent}
-.nav a:hover{color:var(--tinta);border-bottom-color:var(--cor)}
-.topo .marca{color:var(--tinta)}
-@media (max-width:760px){.nav{display:none}}
+.topo-i{display:flex;align-items:center;gap:var(--e3);height:62px}
+.topo .marca{color:var(--tinta);flex:none}
+
+.nav{display:flex;align-items:center;gap:4px;margin-left:var(--e2);
+  font-size:14.5px;font-weight:500}
+.nav > a,.nav-b{display:inline-flex;align-items:center;gap:6px;
+  padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--texto);
+  background:transparent;border:0;font:inherit;font-weight:500;cursor:pointer}
+.nav > a:hover,.nav-b:hover{background:var(--branco);color:var(--tinta)}
+.nav-b svg{width:11px;height:8px;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;transition:transform .18s}
+.nav-b[aria-expanded="true"] svg{transform:rotate(180deg)}
+.nav-b[aria-expanded="true"]{background:var(--branco);color:var(--tinta)}
+
+/* a gaveta dos destinos */
+.nav-d{position:relative}
+.men{position:absolute;left:0;top:calc(100%% + 10px);z-index:50;width:400px;
+  background:var(--branco);border:1px solid var(--risco);
+  border-radius:var(--raio);padding:14px;
+  box-shadow:0 26px 54px -28px rgba(11,43,42,.45)}
+.men[hidden]{display:none}
+.men-t{margin:0 0 10px;font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--mudo);font-weight:600}
+.men-g{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.men-g a{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:9px 11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-size:14.5px}
+.men-g a:hover{background:var(--papel)}
+.men-n{font-family:var(--mono);font-size:11.5px;color:var(--mudo)}
+.men-todos{display:block;margin-top:10px;padding:10px 11px;border-radius:7px;
+  background:var(--papel);text-decoration:none;color:var(--cor-escura);
+  font-weight:600;font-size:14px}
+.men-todos:hover{background:var(--tinta);color:var(--branco)}
+
+.topo-acoes{display:flex;align-items:center;gap:8px;margin-left:auto}
+.topo-proc{display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 12px;
+  border:1px solid var(--risco);border-radius:999px;text-decoration:none;
+  color:var(--mudo);font-size:14px;background:var(--branco)}
+.topo-proc:hover{border-color:var(--tinta-f);color:var(--tinta)}
+.topo-proc svg{width:15px;height:15px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.botao-p{min-height:38px;padding:0 16px;font-size:14px;border-radius:8px}
+
+/* a gaveta de ecra pequeno */
+.hamb{display:none;width:40px;height:38px;border:1px solid var(--risco);
+  border-radius:8px;background:var(--branco);cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.hamb span{display:block;width:17px;height:2px;background:var(--tinta);
+  border-radius:2px;transition:transform .2s, opacity .2s}
+.hamb[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] span:nth-child(2){opacity:0}
+.hamb[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.men-movel{display:none;border-top:1px solid var(--risco);
+  background:var(--branco);padding:var(--e3) 0}
+.men-movel[hidden]{display:none !important}
+.men-m-proc{display:flex;align-items:center;gap:10px;padding:13px 15px;
+  border:1px solid var(--risco);border-radius:10px;text-decoration:none;
+  color:var(--mudo);margin:0 0 var(--e3);font-size:15px}
+.men-m-proc svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.men-l{display:grid;gap:2px;margin-top:var(--e3);
+  border-top:1px solid var(--risco);padding-top:var(--e2)}
+.men-l a{padding:11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-weight:500}
+.men-l a:hover{background:var(--papel)}
+
+@media (max-width:980px){
+  .nav,.topo-proc{display:none}
+  .hamb{display:flex}
+  .men-movel{display:block}
+}
+@media (max-width:520px){
+  .botao-p{display:none}
+}
+
 /* ---------------------------------------------------------- as bandas
    O site deixa de ser uma folha branca com coisas em cima. Alterna
    bandas de cor a toda a largura, e e isso que da ritmo a pagina quando
@@ -383,21 +451,85 @@ FONTES = """<link rel="preload" as="font" type="font/woff2" crossorigin href="/a
   src:url(/assets/fontes/archivo-latin-700-normal.woff2) format('woff2')}"""
 
 
-def cabecalho(marca_titulo=False):
-    """O topo. A marca so e <h1> na homepage; nas outras paginas o <h1> e
-    o titulo da propria pagina, senao todas as paginas do site teriam o
-    mesmo cabecalho de primeiro nivel e nenhuma diria do que trata."""
+def cabecalho(marca_titulo=False, paises=None, compacto=False):
+    """O topo do site.
+
+    A marca so e <h1> na homepage; nas outras paginas o <h1> e o titulo da
+    propria pagina, senao todas as paginas teriam o mesmo cabecalho de
+    primeiro nivel e nenhuma diria do que trata.
+
+    Antes isto era a marca e quatro ligacoes, e abaixo dos 760 px as
+    ligacoes desapareciam — o site ficava **sem navegacao nenhuma** no
+    telemovel, que e onde a maior parte das pessoas o abre. Agora ha um
+    menu a serio, com os destinos abertos a partir dos dados e uma
+    gaveta em ecra pequeno.
+    """
+    if paises is None:
+        paises = por_pais(carregar())
+    total = sum(p['n'] for p in paises)
+
+    destinos = '\n'.join(
+        '<a href="/tours/?country=%s"><span>%s</span>'
+        '<span class="men-n">%d</span></a>' % (e(p['cod']), e(p['nome']), p['n'])
+        for p in paises)
+
     return '''<header class="topo">
   <div class="folha topo-i">
-    %s
+    %(marca)s
+
     <nav class="nav" aria-label="Main">
-      <a href="/tours/">All tours</a>
-      <a href="/#destinations">Destinations</a>
+      <div class="nav-d">
+        <button type="button" class="nav-b" aria-expanded="false"
+                aria-controls="men-dest" data-menu="men-dest">
+          Destinations
+          <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 L6 6.5 L11 1.5"/></svg>
+        </button>
+        <div class="men" id="men-dest" hidden>
+          <p class="men-t">%(np)d countries &middot; %(nt)d days</p>
+          <div class="men-g">%(destinos)s</div>
+          <a class="men-todos" href="/tours/">See all tours &rarr;</a>
+        </div>
+      </div>
       <a href="/#how">How it works</a>
-      <a href="/contact/">Help</a>
+      <a href="/suppliers/">For operators</a>
     </nav>
+
+    <div class="topo-acoes">
+      <a class="topo-proc" href="/search/" aria-label="Search tours">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/>
+        </svg>
+        <span>Search</span>
+      </a>
+      <a class="botao botao-p" href="/contact/">Help</a>
+      <button type="button" class="hamb" aria-expanded="false"
+              aria-controls="men-movel" data-menu="men-movel"
+              aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
-</header>''' % lockup(44, titulo=marca_titulo)
+
+  <div class="men-movel" id="men-movel" hidden>
+    <div class="folha">
+      <a class="men-m-proc" href="/search/">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/>
+        </svg>
+        Search %(nt)d private days
+      </a>
+      <p class="men-t">Destinations</p>
+      <div class="men-g">%(destinos)s</div>
+      <div class="men-l">
+        <a href="/tours/">All tours</a>
+        <a href="/#how">How it works</a>
+        <a href="/suppliers/">For operators</a>
+        <a href="/contact/">Help</a>
+      </div>
+    </div>
+  </div>
+</header>''' % {'marca': lockup(40, titulo=marca_titulo),
+                 'destinos': destinos, 'np': len(paises), 'nt': total}
 
 
 def rodape(paises):
@@ -460,8 +592,55 @@ def envolver(titulo, descricao, css_pagina, corpo, js='', noindex=True):
         'robots': '<meta name="robots" content="noindex, nofollow">' if noindex else '',
         'fontes': FONTES, 'css': css_base(), 'css_pagina': css_pagina,
         'corpo': corpo,
-        'js': '<script>%s</script>' % (js + REVELAR),
+        'js': '<script>%s</script>' % (js + MENU + REVELAR),
     }
+
+
+MENU = r"""
+(function () {
+  // Os menus: um botao, um painel, e o estado todo no aria-expanded — que
+  // e o que um leitor de ecra le. Escape fecha, clicar fora fecha, e o
+  // foco volta ao botao, senao quem navega por teclado fica no limbo.
+  var bs = [].slice.call(document.querySelectorAll('[data-menu]'));
+  if (!bs.length) return;
+
+  function fechar(b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    p.hidden = true;
+    b.setAttribute('aria-expanded', 'false');
+  }
+  function fecharTodos(excepto) {
+    bs.forEach(function (b) { if (b !== excepto) fechar(b); });
+  }
+
+  bs.forEach(function (b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    b.addEventListener('click', function () {
+      var aberto = b.getAttribute('aria-expanded') === 'true';
+      fecharTodos(b);
+      p.hidden = aberto;
+      b.setAttribute('aria-expanded', aberto ? 'false' : 'true');
+    });
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape') return;
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') === 'true') { fechar(b); b.focus(); }
+    });
+  });
+
+  document.addEventListener('click', function (ev) {
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') !== 'true') return;
+      var p = document.getElementById(b.getAttribute('data-menu'));
+      if (!b.contains(ev.target) && p && !p.contains(ev.target)) fechar(b);
+    });
+  });
+})();
+"""
 
 
 REVELAR = """
