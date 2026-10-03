@@ -56,7 +56,11 @@ $$;
 -- ---------------------------------------------------------------------
 -- OPERADORES — as empresas que vendem no marketplace
 -- ---------------------------------------------------------------------
-create type operator_status as enum ('pending', 'approved', 'suspended');
+do $$ begin
+  create type operator_status as enum ('pending', 'approved', 'suspended');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists operators (
   id              uuid primary key default gen_random_uuid(),
@@ -69,9 +73,10 @@ create table if not exists operators (
   website         text,
   licence_ref     text,                           -- licenca de turismo, se houver
   status          operator_status not null default 'pending',
-  -- a comissao fica por operador e nao numa constante: ha sempre um
-  -- caso especial, e o caso especial nao deve obrigar a publicar codigo
-  commission_rate numeric(5,4) not null default 0.1500
+  -- Comissao: 20%, decidido pelo Ricardo a 2 de outubro de 2026.
+  -- Fica por operador e nao numa constante, porque ha sempre um caso
+  -- especial e o caso especial nao deve obrigar a publicar codigo.
+  commission_rate numeric(5,4) not null default 0.2000
                   check (commission_rate >= 0 and commission_rate <= 0.5),
   notes           text,                           -- notas internas do Ricardo
   created_at      timestamptz not null default now(),
@@ -104,7 +109,11 @@ $$;
 -- ---------------------------------------------------------------------
 -- ANUNCIOS — o anuncio e a identidade; o conteudo vive nas versoes
 -- ---------------------------------------------------------------------
-create type listing_status as enum ('draft', 'live', 'paused', 'withdrawn');
+do $$ begin
+  create type listing_status as enum ('draft', 'live', 'paused', 'withdrawn');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists listings (
   id          uuid primary key default gen_random_uuid(),
@@ -123,7 +132,11 @@ create index if not exists listings_status_idx on listings(status);
 -- ---------------------------------------------------------------------
 -- VERSOES — e aqui que a revisao acontece
 -- ---------------------------------------------------------------------
-create type review_status as enum ('pending', 'approved', 'rejected');
+do $$ begin
+  create type review_status as enum ('pending', 'approved', 'rejected');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists listing_versions (
   id            uuid primary key default gen_random_uuid(),
@@ -170,7 +183,11 @@ where  l.status = 'live' and o.status = 'approved';
 -- ---------------------------------------------------------------------
 -- CALENDARIO — dados rapidos, sem revisao
 -- ---------------------------------------------------------------------
-create type day_status as enum ('open', 'closed', 'sold_out');
+do $$ begin
+  create type day_status as enum ('open', 'closed', 'sold_out');
+exception
+  when duplicate_object then null;  -- ja existia; o ficheiro volta a correr
+end $$;
 
 create table if not exists availability (
   listing_id     uuid not null references listings(id) on delete cascade,
@@ -217,6 +234,20 @@ as $$
       join listings l on l.id = p_listing
       where b.operator_id = l.operator_id
         and p_day between b.starts_on and b.ends_on);
+$$;
+
+-- Quanto fica para o operador num preco. A conta esta aqui e so aqui:
+-- feita a mao no site, no painel e na fatura, mais tarde ou mais cedo
+-- os tres numeros deixam de bater certo.
+create or replace function repartir(p_operator uuid, p_total numeric)
+returns table (total numeric, comissao numeric, para_o_operador numeric)
+language sql
+stable
+as $$
+  select p_total,
+         round(p_total * o.commission_rate, 2),
+         round(p_total - p_total * o.commission_rate, 2)
+  from operators o where o.id = p_operator;
 $$;
 
 -- ---------------------------------------------------------------------

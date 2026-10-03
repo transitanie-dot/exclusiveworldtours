@@ -33,6 +33,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pagina  # noqa: E402
+import ligacao  # noqa: E402
 import procura  # noqa: E402
 from pagina import (CORES, cabecalho, cartao_tour, carregar, e, envolver,  # noqa: E402
                     escrever, por_pais, rodape)
@@ -144,6 +145,7 @@ JS = r'''
       + ' — Exclusive World Tours';
 
     mostrarVazio(n, termo);
+    registarDepois(termo, n);
   }
 
   function mostrarVazio(n, termo) {
@@ -208,6 +210,42 @@ JS = r'''
     if (campo) campo.value = '';
     aplicar();
   });
+
+  // ------------------------------------------------------------ registo
+  //
+  // O que as pessoas procuram e nao encontram e a informacao mais
+  // valiosa que este site produz: diz em que cidade falta um operador.
+  // Mas registar tem de ser invisivel e tem de ser honesto:
+  //
+  //  - espera-se 1,2 s depois da ultima mudanca, senao uma pessoa a
+  //    escrever "dublin" gravava d, du, dub, dubl...
+  //  - a mesma procura nao conta duas vezes na mesma sessao, senao uma
+  //    recarga da pagina inventa procuras que ninguem fez;
+  //  - se a base nao responder, nao acontece nada. Isto nao vale uma
+  //    unica mensagem de erro na cara de quem esta a procurar.
+  var jaRegistado = {};
+  var temporizador = null;
+
+  function registar(termo, n) {
+    if (!window.ewt || window.ewt.avariado) return;
+    if (!termo) return;
+    var k = chave(termo);
+    if (!k || jaRegistado[k]) return;
+    jaRegistado[k] = true;
+
+    var p = params();
+    ewt.sb.rpc('registar_procura', {
+      p_q: termo,
+      p_resultados: n,
+      p_cidade: p.get('city') || null,
+      p_pais: p.get('country') || null
+    }).then(function () {}, function () {});
+  }
+
+  function registarDepois(termo, n) {
+    if (temporizador) clearTimeout(temporizador);
+    temporizador = setTimeout(function () { registar(termo, n); }, 1200);
+  }
 
   aplicar();
 })();
@@ -309,6 +347,11 @@ def main():
         'Search every private day tour we run: %d tours in %d countries, '
         'priced for the whole group.' % (len(tours), len(paises)),
         CSS, corpo, js=procura.JS + JS)
+
+    # A pagina de resultados fala com a base para uma coisa so: registar
+    # o que foi procurado. Nao le nada dela — os tours continuam a vir
+    # das paginas geradas, que e o que a torna rapida.
+    html = html.replace('</head>', ligacao.SCRIPTS + '\n</head>')
 
     # a mesma pagina nas duas moradas: /tours/ e o catalogo, /search/ e a
     # pagina de resultados. O conteudo e o mesmo; quem muda e a pergunta

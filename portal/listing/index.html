@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit a tour — Exclusive World Tours</title>
+<meta name="description" content="Operator area of Exclusive World Tours.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/inter-latin-400-normal.woff2">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url(/assets/fontes/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url(/assets/fontes/inter-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
+  src:url(/assets/fontes/archivo-latin-700-normal.woff2) format('woff2')}
+
+
+:root{
+  --tinta:#0B2B2A; --cor:#CE7030; --cor-escura:#A85426;
+  --papel:#F6F4F1; --branco:#FFFFFF;
+  --tinta-f:#B0B8B5; --cor-f:#E1AF8D; --uma-f:#B9C0BD;
+  --texto:#354F4E; --mudo:#5B6F6E; --risco:#D5D8D5;
+  /* o ambar sobre fundo escuro: o normal da 4.30:1 e texto pequeno
+     precisa de 4.5. Este da 5.24:1 e le-se como a mesma cor. */
+  --cor-clara:#D5854F;
+  --tipo:'Inter',system-ui,-apple-system,sans-serif;
+  --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
+  --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
+  --raio:10px;
+  /* a escala de intervalos: tudo no site sai daqui */
+  --e1:6px; --e2:12px; --e3:20px; --e4:32px; --e5:52px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;
+    transition-duration:.01ms !important}}
+body{margin:0;background:var(--papel);color:var(--texto);
+  font-family:var(--tipo);font-size:15.5px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
+  letter-spacing:-.025em;line-height:1.08;margin:0}
+.folha{max-width:1320px;margin:0 auto;padding:0 clamp(16px,2.4vw,32px)}
+/* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
+   homepage e a pagina de resultados ficou com um botao cinzento do
+   browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
+.botao{display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
+  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
+  cursor:pointer;text-decoration:none;white-space:nowrap}
+.botao:hover{background:var(--cor-escura)}
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
+  border-radius:4px}
+/* So aparece a quem navega por teclado — mas aparece mesmo, que e o
+   ponto. Escondido com left:-9999px e sem regra de foco, este atalho
+   existe no HTML e nao serve a ninguem. */
+.saltar{position:absolute;left:16px;top:-60px;z-index:60;background:var(--tinta);
+  color:var(--branco);padding:12px 18px;border-radius:0 0 10px 10px;
+  text-decoration:none;font-weight:600;transition:top .15s ease}
+.saltar:focus{top:0}
+
+/* ------------------------------------------------------------ cabecalho */
+.topo{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--risco)}
+.topo-i{display:flex;align-items:center;gap:var(--e3);height:62px}
+.topo .marca{color:var(--tinta);flex:none}
+
+.nav{display:flex;align-items:center;gap:4px;margin-left:var(--e2);
+  font-size:14.5px;font-weight:500}
+.nav > a,.nav-b{display:inline-flex;align-items:center;gap:6px;
+  padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--texto);
+  background:transparent;border:0;font:inherit;font-weight:500;cursor:pointer}
+.nav > a:hover,.nav-b:hover{background:var(--branco);color:var(--tinta)}
+.nav-b svg{width:11px;height:8px;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;transition:transform .18s}
+.nav-b[aria-expanded="true"] svg{transform:rotate(180deg)}
+.nav-b[aria-expanded="true"]{background:var(--branco);color:var(--tinta)}
+
+/* a gaveta dos destinos */
+.nav-d{position:relative}
+.men{position:absolute;left:0;top:calc(100% + 10px);z-index:50;width:400px;
+  background:var(--branco);border:1px solid var(--risco);
+  border-radius:var(--raio);padding:14px;
+  box-shadow:0 26px 54px -28px rgba(11,43,42,.45)}
+.men[hidden]{display:none}
+.men-t{margin:0 0 10px;font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--mudo);font-weight:600}
+.men-g{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.men-g a{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:9px 11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-size:14.5px}
+.men-g a:hover{background:var(--papel)}
+.men-n{font-family:var(--mono);font-size:11.5px;color:var(--mudo)}
+.men-todos{display:block;margin-top:10px;padding:10px 11px;border-radius:7px;
+  background:var(--papel);text-decoration:none;color:var(--cor-escura);
+  font-weight:600;font-size:14px}
+.men-todos:hover{background:var(--tinta);color:var(--branco)}
+
+.topo-acoes{display:flex;align-items:center;gap:8px;margin-left:auto}
+.topo-proc{display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 12px;
+  border:1px solid var(--risco);border-radius:999px;text-decoration:none;
+  color:var(--mudo);font-size:14px;background:var(--branco)}
+.topo-proc:hover{border-color:var(--tinta-f);color:var(--tinta)}
+.topo-proc svg{width:15px;height:15px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.botao-p{min-height:38px;padding:0 16px;font-size:14px;border-radius:8px}
+
+/* a gaveta de ecra pequeno */
+.hamb{display:none;width:40px;height:38px;border:1px solid var(--risco);
+  border-radius:8px;background:var(--branco);cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.hamb span{display:block;width:17px;height:2px;background:var(--tinta);
+  border-radius:2px;transition:transform .2s, opacity .2s}
+.hamb[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] span:nth-child(2){opacity:0}
+.hamb[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.men-movel{display:none;border-top:1px solid var(--risco);
+  background:var(--branco);padding:var(--e3) 0}
+.men-movel[hidden]{display:none !important}
+.men-m-proc{display:flex;align-items:center;gap:10px;padding:13px 15px;
+  border:1px solid var(--risco);border-radius:10px;text-decoration:none;
+  color:var(--mudo);margin:0 0 var(--e3);font-size:15px}
+.men-m-proc svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round}
+.men-l{display:grid;gap:2px;margin-top:var(--e3);
+  border-top:1px solid var(--risco);padding-top:var(--e2)}
+.men-l a{padding:11px;border-radius:7px;text-decoration:none;
+  color:var(--tinta);font-weight:500}
+.men-l a:hover{background:var(--papel)}
+
+@media (max-width:980px){
+  .nav,.topo-proc{display:none}
+  .hamb{display:flex}
+  .men-movel{display:block}
+}
+@media (max-width:520px){
+  .botao-p{display:none}
+}
+
+/* ---------------------------------------------------------- as bandas
+   O site deixa de ser uma folha branca com coisas em cima. Alterna
+   bandas de cor a toda a largura, e e isso que da ritmo a pagina quando
+   se percorre. */
+.banda{background:var(--papel)}
+.banda-b{background:var(--branco);border-top:1px solid var(--risco);
+  border-bottom:1px solid var(--risco)}
+.banda-e{background:var(--tinta);color:rgba(255,255,255,.86)}
+.banda-e h1,.banda-e h2,.banda-e h3{color:var(--branco)}
+.banda-e .rot{color:rgba(255,255,255,.6)}
+.banda-e .rot b{color:var(--cor-clara)}
+.banda-e .rot::after{background:rgba(255,255,255,.18)}
+
+/* ------------------------------------------------------- o detalhe fino
+   O Ricardo pediu mais detalhe decorativo. Nao e enfeite solto: e um
+   sistema pequeno que se repete em todas as paginas e faz o site parecer
+   um instrumento em vez de uma brochura — rotulos numerados, filetes,
+   cantos marcados, numeros de largura fixa. */
+
+/* o rotulo numerado de uma seccao: "01 / THE DAY" */
+.rot{display:flex;align-items:center;gap:10px;margin:0 0 var(--e2);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600}
+.rot b{font-family:var(--mono);font-weight:600;color:var(--cor-escura);
+  font-size:11px;letter-spacing:.06em}
+.rot::after{content:'';flex:1;height:1px;background:var(--risco)}
+
+/* numeros sempre de largura fixa: precos, horas, coordenadas */
+.num,.preco,time,[data-num]{font-variant-numeric:tabular-nums}
+
+/* a moldura com os cantos marcados, para blocos que tem de pesar */
+.moldura{position:relative;border:1px solid var(--risco);
+  border-radius:var(--raio);background:var(--branco)}
+.moldura::before,.moldura::after{content:'';position:absolute;width:9px;
+  height:9px;border:2px solid var(--cor);pointer-events:none}
+.moldura::before{top:-1px;left:-1px;border-right:0;border-bottom:0;
+  border-radius:var(--raio) 0 0 0}
+.moldura::after{bottom:-1px;right:-1px;border-left:0;border-top:0;
+  border-radius:0 0 var(--raio) 0}
+
+/* um codigo: IATA, coordenada, referencia */
+.cod{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+  color:var(--mudo);background:var(--papel);border:1px solid var(--risco);
+  border-radius:4px;padding:2px 6px}
+
+/* a revelacao ao percorrer. Quem pediu para nao haver movimento nao tem
+   movimento nenhum — e a regra esta primeiro, para nunca ser esquecida. */
+@media (prefers-reduced-motion:no-preference){
+  [data-rev]{opacity:0;transform:translateY(14px);
+    transition:opacity .5s cubic-bezier(.2,.6,.2,1),
+               transform .5s cubic-bezier(.2,.6,.2,1)}
+  [data-rev].vis{opacity:1;transform:none}
+}
+
+/* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
+   isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
+   pagina de resultados os cartoes sairam como texto corrido. */
+/* tours */
+/* mais cartoes por ecra: a 1440 cabem quatro, nao tres */
+.tours{display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,268px),1fr))}
+.tour{display:flex;flex-direction:column;text-decoration:none;
+  border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden;
+  background:var(--branco);transition:border-color .18s, transform .18s}
+.tour:hover{border-color:var(--tinta-f);transform:translateY(-2px)}
+.tour-foto{position:relative;aspect-ratio:16/10;background:var(--uma-f);
+  display:block;overflow:hidden}
+.tour-foto img{width:100%;height:100%;object-fit:cover;
+  transition:transform .5s ease}
+.tour:hover .tour-foto img{transform:scale(1.045)}
+.credito{position:absolute;right:7px;bottom:6px;z-index:2;font-size:10px;
+  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+/* a duracao em cima da fotografia: le-se antes do titulo, que e a ordem
+   por que as pessoas decidem */
+.tour-sel{position:absolute;left:7px;top:7px;z-index:2;font-family:var(--mono);
+  font-size:11px;letter-spacing:.03em;color:var(--tinta);background:var(--branco);
+  padding:3px 8px;border-radius:4px;font-variant-numeric:tabular-nums}
+.tour-corpo{display:flex;flex-direction:column;gap:7px;padding:14px 15px 15px;
+  flex:1}
+.tour-onde{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--cor-escura);font-weight:600}
+.tour-onde .pt{color:var(--risco)}
+.tour-nome{font-family:var(--tipo-titulo);font-weight:600;font-size:1.02rem;
+  color:var(--tinta);line-height:1.2}
+.tour-linha{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+.etiq{font-size:11.5px;color:var(--texto);background:var(--papel);
+  border:1px solid var(--risco);border-radius:4px;padding:2px 7px}
+.tour-preco{margin-top:auto;padding-top:11px;border-top:1px solid var(--risco);
+  display:flex;align-items:flex-end;gap:9px;justify-content:space-between}
+.tour-preco b{font-family:var(--tipo-titulo);font-size:1.22rem;
+  color:var(--tinta);line-height:1}
+.tour-preco-nota{font-size:11.5px;color:var(--mudo);text-align:right;
+  line-height:1.35}
+
+/* rodape */
+.rodape{background:var(--papel);border-top:1px solid var(--risco);
+  padding:var(--e5) 0 var(--e4);margin-top:0}
+.rodape-i{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
+.rodape .marca{color:var(--tinta)}
+.rodape-nota{color:var(--mudo);font-size:14px;max-width:40ch;margin:16px 0 0}
+.rodape-cols{display:flex;gap:56px;flex-wrap:wrap}
+.rodape-col h3{font-size:13px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mudo);font-family:var(--tipo);font-weight:600;margin:0 0 12px}
+.rodape-col a{display:block;text-decoration:none;color:var(--texto);
+  font-size:15px;padding:4px 0}
+.rodape-col a:hover{color:var(--cor-escura)}
+.rodape-fim{margin-top:40px;padding-top:22px;border-top:1px solid var(--risco);
+  font-size:13.5px;color:var(--mudo);display:flex;gap:18px;flex-wrap:wrap;
+  justify-content:space-between}
+
+.marca{font-size:var(--t);line-height:1;display:inline-flex;align-items:center;
+  gap:.6em;text-decoration:none}
+.marca .sim{width:1em;height:1em;flex:none;display:block}
+.marca-nome{display:inline-flex;flex-direction:column;align-items:flex-start;
+  font-family:var(--tipo-titulo);font-weight:600;text-transform:uppercase;
+  color:var(--tinta);line-height:1;white-space:nowrap;margin:0}
+.marca-nome-h1{font-size:inherit}
+.marca-l1{font-size:.268em;letter-spacing:.075em;margin-right:-.075em}
+.marca-l2{font-size:.268em;letter-spacing:.2165em;margin-right:-.2165em;
+  margin-top:.19em}
+/* os planos: nenhum gradiente, so cores cheias que tapam o que esta atras */
+.sim .papel{fill:var(--papel)}
+.sim .p{fill:var(--tinta)}
+.sim .pf{fill:var(--tinta-f)}
+.sim .c{fill:var(--cor)}
+.sim .u{fill:var(--tinta)}
+.sim .u-f{fill:var(--uma-f)}
+
+.pc{position:relative;width:100%}
+.pc-caixa{display:flex;align-items:center;gap:12px;background:var(--branco);
+  border-radius:14px;padding:8px 8px 8px 20px;
+  box-shadow:0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-lupa{width:21px;height:21px;flex:none;fill:none;stroke:var(--mudo);
+  stroke-width:2;stroke-linecap:round}
+.pc-caixa input{flex:1;min-width:0;border:0;padding:16px 0;font:inherit;
+  font-size:17px;color:var(--tinta);background:transparent}
+.pc-caixa input::placeholder{color:var(--mudo)}
+.pc-caixa input:focus{outline:0}
+.pc-caixa:focus-within{box-shadow:0 0 0 3px var(--cor),
+  0 18px 46px -22px rgba(11,43,42,.55)}
+.pc-botao{min-height:52px}
+.pc-oculto{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0}
+
+.pc-lista{position:absolute;z-index:50;left:0;right:0;top:calc(100% + 10px);
+  padding:8px;background:var(--branco);border:1px solid var(--risco);
+  border-radius:14px;max-height:400px;overflow:auto;
+  box-shadow:0 24px 54px -26px rgba(11,43,42,.5);text-align:left}
+.pc-lista[hidden]{display:none}
+.pc-grupo{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600;padding:12px 12px 6px}
+.pc-grupo:first-child{padding-top:6px}
+.pc-op{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  border-radius:9px;cursor:pointer;color:var(--texto);font-size:15px}
+.pc-op[aria-selected="true"],.pc-op:hover{background:var(--papel)}
+.pc-icone{width:34px;height:34px;flex:none;border-radius:9px;
+  background:var(--papel);display:grid;place-items:center;color:var(--tinta)}
+.pc-op[aria-selected="true"] .pc-icone{background:var(--branco)}
+.pc-icone svg{width:17px;height:17px;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pc-txt{min-width:0;flex:1}
+.pc-t1{display:block;color:var(--tinta);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-t2{display:block;color:var(--mudo);font-size:13px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-n{flex:none;font-size:12px;font-weight:600;color:var(--branco);
+  background:var(--cor-escura);border-radius:999px;padding:3px 10px}
+.pc-nada{flex:none;font-size:12.5px;color:var(--mudo)}
+.pc-vazio{padding:16px 12px 18px;color:var(--mudo);font-size:14.5px}
+.pc-vazio b{color:var(--tinta)}
+@media (max-width:700px){
+  .pc-caixa{flex-wrap:wrap;padding:8px}
+  .pc-caixa input{flex:1 1 100%;padding:12px 8px}
+  .pc-lupa{display:none}
+  .pc-botao{flex:1 1 100%}
+}
+
+
+/* ------------------------------------------------------------ portal */
+body.pt { background: #F6F4F1; }
+
+.pt-topo {
+  background: #0B2B2A; color: #F6F4F1;
+  border-bottom: 3px solid #CE7030;
+  position: sticky; top: 0; z-index: 40;
+  /* as tintas de fundo escuro, para a marca aqui dentro */
+  --papel: #0B1715; --tinta: #F3F1EE; --cor: #CE7030;
+  --tinta-f: #515856; --cor-f: #704523; --uma-f: #47504D;
+}
+/* O fundo do topo e o verde da marca e nao o quase-preto do palco
+   escuro, por isso a capa do passaporte leva a cor do papel claro: e
+   assim que ela se destaca, como se destaca no papel. */
+.pt-topo .sim .p { fill: #F6F4F1; }
+.pt-topo .sim .pf { fill: #E1AF8D; }
+.pt-topo .sim .papel { fill: #0B2B2A; }
+.pt-topo .sim .u { fill: #F6F4F1; }
+.pt-topo .marca-nome { color: #F6F4F1; }
+.pt-topo-i {
+  display: flex; align-items: center; gap: .6rem 1rem;
+  min-height: 60px; padding: .5rem 0;
+  /* Dobra. Sem isto, a marca mais a etiqueta mais o email mais o botao
+     de sair somavam 525px num ecra de 390 e a pagina toda rolava para o
+     lado — no sitio onde o operador a vai mesmo abrir. */
+  flex-wrap: wrap;
+}
+.pt-topo .marca { flex: 0 0 auto; }
+.pt-etiq {
+  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #D5854F; padding: .3rem .5rem;
+  border: 1px solid #D5854F; border-radius: 3px;
+  white-space: nowrap;
+}
+.pt-topo-fim {
+  margin-left: auto; display: flex; align-items: center; gap: .9rem;
+  min-width: 0;
+}
+.pt-quem {
+  font: 400 .8rem/1.3 'Inter', system-ui, sans-serif;
+  color: #F6F4F1; opacity: .85; text-align: right;
+  max-width: 14rem; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; min-width: 0;
+}
+/* Em ecra estreito o email e a primeira coisa a sair: quem esta a usar o
+   telemovel sabe de quem e o telemovel. O botao de sair fica. */
+@media (max-width: 560px) {
+  .pt-quem { display: none; }
+  .pt-topo-i { min-height: 54px; }
+  .pt-etiq { font-size: .62rem; padding: .26rem .4rem; }
+}
+.pt-sair {
+  font: 500 .82rem/1 'Inter', system-ui, sans-serif;
+  color: #F6F4F1; background: none;
+  border: 1px solid rgba(255,255,255,.4); border-radius: 4px;
+  padding: .5rem .8rem; cursor: pointer;
+}
+.pt-sair:hover { border-color: #F6F4F1; }
+
+.pt-nav {
+  background: #FFFFFF; border-bottom: 1px solid #D5D8D5;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.pt-nav-i { display: flex; gap: 0; }
+.pt-nav a {
+  font: 500 .88rem/1 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; text-decoration: none;
+  padding: .95rem 1.1rem; border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+.pt-nav a:hover { color: #0B2B2A; background: #F6F4F1; }
+.pt-nav a[aria-current="page"] {
+  color: #0B2B2A; border-bottom-color: #CE7030; font-weight: 600;
+}
+
+.pt-corpo { padding: 1.6rem 0 4rem; }
+.pt-cab { margin-bottom: 1.4rem; }
+.pt-cab h1 {
+  font: 700 clamp(1.4rem, 3vw, 1.9rem)/1.15 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin: 0 0 .3rem;
+}
+.pt-cab p {
+  font: 400 .95rem/1.5 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; margin: 0; max-width: 56ch;
+}
+
+/* ------------------------------------------------------------- cartoes */
+.cx {
+  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
+  padding: 1.2rem; margin-bottom: 1.1rem;
+}
+.cx-t {
+  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: #5B6F6E; margin: 0 0 .9rem;
+  padding-bottom: .6rem; border-bottom: 1px solid #D5D8D5;
+}
+.cx-v { display: grid; gap: 1.1rem; }
+@media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
+
+/* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
+   onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
+   rotulo nenhum e um campo que ninguem consegue usar as cegas. */
+.so-leitor {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ formulario */
+.campo { margin-bottom: 1rem; }
+.campo > label, .campo > .rot {
+  display: block; margin-bottom: .35rem;
+  font: 600 .82rem/1.3 'Inter', system-ui, sans-serif; color: #0B2B2A;
+}
+.campo .ajuda {
+  display: block; margin-top: .3rem;
+  font: 400 .78rem/1.45 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+input[type=text], input[type=email], input[type=tel], input[type=url],
+input[type=number], input[type=date], input[type=time], select, textarea {
+  width: 100%; box-sizing: border-box;
+  font: 400 .95rem/1.4 'Inter', system-ui, sans-serif; color: #0B2B2A;
+  background: #FFFFFF; border: 1px solid #5B6F6E; border-radius: 4px;
+  padding: .66rem .7rem;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #CE7030; outline-offset: 1px; border-color: #0B2B2A;
+}
+input[aria-invalid="true"], textarea[aria-invalid="true"] {
+  border-color: #B3261E; border-width: 2px;
+}
+textarea { min-height: 6.5rem; resize: vertical; }
+.linha2 { display: grid; gap: 1rem; }
+@media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
+fieldset { border: 0; padding: 0; margin: 0 0 1rem; }
+legend {
+  padding: 0; margin-bottom: .6rem;
+  font: 700 1.02rem/1.2 'Archivo', system-ui, sans-serif; color: #0B2B2A;
+}
+.obrig { color: #8C1D18; }
+
+/* --------------------------------------------------------------- avisos */
+.aviso {
+  margin: .9rem 0; padding: .8rem .9rem; border-radius: 4px;
+  font: 400 .9rem/1.5 'Inter', system-ui, sans-serif;
+  border-left: 4px solid #5B6F6E; background: #F6F4F1; color: #354F4E;
+}
+.aviso-mal { border-left-color: #8C1D18; background: #FCEEEC; color: #5F1512; }
+.aviso-bem { border-left-color: #1B5E20; background: #EDF5EE; color: #14401A; }
+.aviso-nota { border-left-color: #CE7030; background: #FBF2EB; color: #354F4E; }
+
+/* --------------------------------------------------------------- estados */
+.est {
+  display: inline-block; vertical-align: middle;
+  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .32rem .5rem; border-radius: 3px; white-space: nowrap;
+}
+.est-pending  { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
+.est-approved { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
+.est-live     { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
+.est-rejected { background: #FCEEEC; color: #5F1512; border: 1px solid #D79C96; }
+.est-draft    { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
+.est-paused   { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
+.est-new      { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
+
+/* --------------------------------------------------------------- tabelas */
+.tab-rolo { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tab-rolo:focus-visible { outline: 3px solid #CE7030; outline-offset: 2px; }
+table.tab { width: 100%; border-collapse: collapse; }
+table.tab th, table.tab td {
+  text-align: left; padding: .7rem .8rem;
+  border-bottom: 1px solid #D5D8D5; vertical-align: top;
+  font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
+}
+table.tab th {
+  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .1em; text-transform: uppercase; color: #5B6F6E;
+  border-bottom: 2px solid #D5D8D5; white-space: nowrap;
+}
+table.tab tr:last-child td { border-bottom: 0; }
+table.tab a { color: #A85426; font-weight: 500; }
+
+/* ---------------------------------------------------------------- vazio */
+.vazio {
+  padding: 2.2rem 1.2rem; text-align: center;
+  border: 2px dashed #D5D8D5; border-radius: 6px; background: #FFFFFF;
+}
+.vazio h3 {
+  font: 700 1.05rem/1.25 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin: 0 0 .4rem;
+}
+.vazio p {
+  font: 400 .92rem/1.55 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; margin: 0 auto 1rem; max-width: 42ch;
+}
+
+/* --------------------------------------------------------------- acoes */
+.acoes { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.bt {
+  font: 600 .92rem/1 'Inter', system-ui, sans-serif;
+  padding: .75rem 1.15rem; border-radius: 4px; border: 1px solid transparent;
+  cursor: pointer; text-decoration: none; display: inline-block;
+}
+.bt-p { background: #0B2B2A; color: #F6F4F1; }
+.bt-p:hover { background: #354F4E; }
+.bt-s { background: #FFFFFF; color: #0B2B2A; border-color: #5B6F6E; }
+.bt-s:hover { border-color: #0B2B2A; background: #F6F4F1; }
+.bt-mal { background: #FFFFFF; color: #8C1D18; border-color: #B3261E; }
+.bt-mal:hover { background: #FCEEEC; }
+.bt[disabled] { opacity: .55; cursor: not-allowed; }
+.bt-pq { font-size: .82rem; padding: .5rem .7rem; }
+
+/* --------------------------------------------------------- a carregar */
+.carrega {
+  padding: 2rem 0; text-align: center;
+  font: 400 .92rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+
+.ed { display: grid; gap: 1.1rem; }
+@media (min-width: 1040px) {
+  .ed { grid-template-columns: minmax(0,1fr) 19rem; align-items: start; }
+}
+
+/* --------------------------------------------------- linhas repetiveis */
+.rep { display: grid; gap: .7rem; }
+.rep-l {
+  display: grid; gap: .6rem; align-items: start;
+  padding: .8rem; border: 1px solid #D5D8D5; border-radius: 5px;
+  background: #F6F4F1;
+}
+.rep-l > .campo { margin: 0; }
+.rep-x {
+  justify-self: start;
+  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
+  color: #8C1D18; background: none; border: 1px solid #B3261E;
+  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
+}
+.rep-x:hover { background: #FCEEEC; }
+.rep-mais {
+  justify-self: start; margin-top: .3rem;
+  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
+  color: #0B2B2A; background: #FFFFFF;
+  border: 1px dashed #5B6F6E; border-radius: 4px;
+  padding: .6rem .85rem; cursor: pointer;
+}
+.rep-mais:hover { border-style: solid; border-color: #0B2B2A; }
+@media (min-width: 700px) {
+  .rep-escalao { grid-template-columns: 7rem 1fr 9rem auto; align-items: end; }
+  .rep-paragem { grid-template-columns: 7rem 1fr; }
+  .rep-paragem .rep-p-t, .rep-paragem .rep-x { grid-column: 1 / -1; }
+  .rep-faq { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------------------------------- barra */
+.lado { position: sticky; top: 76px; }
+.lado .cx { margin-bottom: .9rem; }
+.lado .acoes { flex-direction: column; align-items: stretch; }
+.lado .bt { width: 100%; text-align: center; box-sizing: border-box; }
+.lado-nota {
+  font: 400 .82rem/1.5 'Inter', system-ui, sans-serif;
+  color: #5B6F6E; margin: .7rem 0 0;
+}
+.hist { font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; }
+.hist div {
+  padding: .45rem 0; border-bottom: 1px solid #D5D8D5;
+  display: flex; gap: .5rem; align-items: center; justify-content: space-between;
+}
+.hist div:last-child { border-bottom: 0; }
+.conta {
+  margin-top: .7rem; padding-top: .7rem; border-top: 1px solid #D5D8D5;
+  font: 400 .84rem/1.6 'Inter', system-ui, sans-serif; color: #354F4E;
+}
+.conta b { font-variant-numeric: tabular-nums; }
+
+</style>
+<script src="/assets/lib/supabase.js"></script>
+<script src="/assets/ligacao.js"></script>
+</head>
+<body class="pt">
+<a class="saltar" href="#principal">Skip to content</a>
+<header class="pt-topo">
+  <div class="folha pt-topo-i">
+    <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
+    <span class="pt-etiq">Operator portal</span>
+    <div class="pt-topo-fim">
+      <span class="pt-quem" id="quem"></span>
+      <button type="button" class="pt-sair" id="sair" hidden>Sign out</button>
+    </div>
+  </div>
+</header>
+  <nav class="pt-nav" aria-label="Portal">
+    <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
+<a href="/portal/calendar/">Calendar</a>
+<a href="/portal/account/">Account</a></div>
+  </nav><main id="principal" class="pt-corpo">
+  <div class="folha" id="conteudo">
+    <p class="carrega" id="carrega">Loading&hellip;</p>
+
+    <div id="ed" hidden>
+      <div class="pt-cab">
+        <h1 id="t-ed">Add a tour</h1>
+        <p>Write it as you would say it to a guest. We read every
+          submission before it goes on the site &mdash; and we read what
+          you wrote, not a shortened version of it. <span id="est-ed"></span></p>
+      </div>
+
+      <p class="aviso" id="av-ed" role="status" hidden></p>
+
+      <div class="ed">
+        <div>
+          <div class="cx">
+            <p class="cx-t">The tour</p>
+            <div class="campo">
+              <label for="titulo">Title <span class="obrig">*</span></label>
+              <input type="text" id="titulo" maxlength="140"
+                     placeholder="Private Tour: Cliffs of Moher &amp; Galway">
+            </div>
+            <div class="linha2">
+              <div class="campo">
+                <label for="slug">Web address <span class="obrig">*</span></label>
+                <input type="text" id="slug" maxlength="70"
+                       placeholder="cliffs-of-moher-galway">
+                <span class="ajuda">Becomes
+                  exclusiveworldtours.com/tours/&hellip;/ &mdash; changing it
+                  later breaks links people already have.</span>
+              </div>
+              <div class="campo">
+                <label for="kicker">One line above the title</label>
+                <input type="text" id="kicker" maxlength="90"
+                       placeholder="Private day tour from Dublin">
+              </div>
+            </div>
+            <div class="campo">
+              <label for="lede">The opening paragraph <span class="obrig">*</span></label>
+              <textarea id="lede" maxlength="700" rows="4"
+                placeholder="What the day is, in two or three sentences."></textarea>
+              <span class="ajuda">This is what people read before anything
+                else. Say what makes your day different, not that it is
+                unforgettable.</span>
+            </div>
+            <div class="linha2">
+              <div class="campo">
+                <label for="cidade">Starts from (city) <span class="obrig">*</span></label>
+                <input type="text" id="cidade" maxlength="80" placeholder="Dublin">
+              </div>
+              <div class="campo">
+                <label for="pais">Country <span class="obrig">*</span></label>
+                <input type="text" id="pais" maxlength="80" placeholder="Ireland">
+              </div>
+            </div>
+            <div class="linha2">
+              <div class="campo">
+                <label for="duracao">How long <span class="obrig">*</span></label>
+                <input type="text" id="duracao" maxlength="30" placeholder="12h 30m">
+              </div>
+              <div class="campo">
+                <label for="partidas">Departure times</label>
+                <input type="text" id="partidas" maxlength="120" placeholder="07:00, 09:00">
+                <span class="ajuda">Separated by commas.</span>
+              </div>
+            </div>
+            <div class="linha2">
+              <div class="campo">
+                <label for="entrada_para">Main attraction</label>
+                <input type="text" id="entrada_para" maxlength="120"
+                       placeholder="Cliffs of Moher">
+                <span class="ajuda">If an entrance ticket is included, name
+                  what it is for.</span>
+              </div>
+              <div class="campo">
+                <label for="meta">Search-engine description</label>
+                <input type="text" id="meta" maxlength="170">
+                <span class="ajuda">About 160 characters. Left empty, we
+                  use the opening paragraph.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Price by group size</p>
+            <p class="lado-nota" style="margin:0 0 .9rem">One line per
+              vehicle. The price is for the <b>whole group</b>, not per
+              person &mdash; that is the thing that makes this site
+              different from the big ones, so the number has to be the
+              number you would charge.</p>
+            <div class="rep" id="escaloes"></div>
+            <button type="button" class="rep-mais" id="mais-escalao">Add a
+              group size</button>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">The day, stop by stop</p>
+            <div class="campo">
+              <label for="paragens_intro">A line before the stops</label>
+              <textarea id="paragens_intro" maxlength="500" rows="2"
+                placeholder="A guide, not a timetable."></textarea>
+            </div>
+            <div class="rep" id="paragens"></div>
+            <button type="button" class="rep-mais" id="mais-paragem">Add a
+              stop</button>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">What the price covers</p>
+            <div class="campo">
+              <label for="inclui_intro">A line before the list</label>
+              <input type="text" id="inclui_intro" maxlength="200"
+                     placeholder="The price covers the vehicle.">
+            </div>
+            <div class="rep" id="inclui"></div>
+            <button type="button" class="rep-mais" id="mais-inclui">Add an
+              item</button>
+            <div class="campo" style="margin-top:1.1rem">
+              <label for="nao_inclui">What is not included</label>
+              <textarea id="nao_inclui" maxlength="900" rows="3"></textarea>
+              <span class="ajuda">Say it plainly here and nobody argues
+                about it on the day.</span>
+            </div>
+            <div class="campo">
+              <label for="pratico">Practical notes</label>
+              <textarea id="pratico" maxlength="1200" rows="3"
+                placeholder="What to wear, how much walking, child seats…"></textarea>
+            </div>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Questions guests ask</p>
+            <div class="rep" id="faq"></div>
+            <button type="button" class="rep-mais" id="mais-faq">Add a
+              question</button>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Photographs</p>
+            <p class="lado-nota" style="margin:0 0 .9rem">Your own
+              photographs of your own tour. Not stock, not the tourist
+              board's &mdash; guests notice, and so do we.</p>
+            <div class="rep" id="fotos"></div>
+            <button type="button" class="rep-mais" id="mais-foto">Add a
+              photograph</button>
+          </div>
+        </div>
+
+        <!-- --------------------------------------------------- barra -->
+        <aside class="lado">
+          <div class="cx">
+            <p class="cx-t">Publish</p>
+            <div class="acoes">
+              <button type="button" class="bt bt-p" id="bt-submeter">Submit
+                for review</button>
+              <button type="button" class="bt bt-s" id="bt-guardar">Save a
+                draft</button>
+            </div>
+            <p class="lado-nota" id="sinal" role="status"></p>
+            <p class="lado-nota">A draft stays on this device. Submitting
+              creates a new version; the one on the site stays up until
+              yours is approved.</p>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">What you receive</p>
+            <div class="conta" id="conta"></div>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Versions</p>
+            <div class="hist" id="hist">
+              <p class="lado-nota">Never submitted.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  if (!window.ewt || window.ewt.avariado) return;
+
+  var ID = new URLSearchParams(location.search).get('id');  // null = novo
+  var ESTADO = { anuncio: null, operador: null, versoes: [], sujo: false };
+
+  // ------------------------------------------------------------- campos
+  var contaLinhas = 0;
+  //
+  // Uma linha repetivel. Os indices nos `name` nao servem para nada: o
+  // que conta e a ordem no DOM, que e a ordem que o operador ve. Ler
+  // por indice dava listas com buracos depois de apagar uma linha.
+  function linha(tipo, v) {
+    v = v || {};
+    // Um numero que so cresce, para os ids dos campos. Apagar uma linha
+    // nao devolve o numero ao saco: se devolvesse, dois campos acabavam
+    // com o mesmo id e um label passava a apontar para o campo errado.
+    var k = 'r' + (++contaLinhas);
+    var d = document.createElement('div');
+    d.className = 'rep-l rep-' + tipo;
+    if (tipo === 'escalao') {
+      d.innerHTML =
+        '<div class="campo"><label for="' + k + '-1">Up to</label>'
+        + '<input id="' + k + '-1" type="number" data-c="max" min="1" max="199" value="'
+        + (v.max || '') + '" required></div>'
+        + '<div class="campo"><label for="' + k + '-2">Vehicle</label>'
+        + '<input id="' + k + '-2" type="text" data-c="vehicle" maxlength="80" value="'
+        + ewt.escapar(v.vehicle || '') + '" placeholder="Sedan, minivan…"></div>'
+        + '<div class="campo"><label for="' + k + '-3">Group price &euro;</label>'
+        + '<input id="' + k + '-3" type="number" data-c="price" min="0" step="0.01" value="'
+        + (v.price === 0 || v.price ? v.price : '') + '" required></div>'
+        + '<button type="button" class="rep-x">Remove</button>';
+    } else if (tipo === 'paragem') {
+      d.innerHTML =
+        '<div class="campo"><label for="' + k + '-4">Time</label>'
+        + '<input id="' + k + '-4" type="text" data-c="when" maxlength="12" value="'
+        + ewt.escapar(v.when || '') + '" placeholder="09:10"></div>'
+        + '<div class="campo"><label for="' + k + '-5">Stop</label>'
+        + '<input id="' + k + '-5" type="text" data-c="h" maxlength="140" value="'
+        + ewt.escapar(v.h || '') + '" placeholder="Bunratty Castle"></div>'
+        + '<div class="campo rep-p-t"><label for="' + k + '-6">What happens there</label>'
+        + '<textarea id="' + k + '-6" data-c="p" maxlength="900" rows="3">'
+        + ewt.escapar(v.p || '') + '</textarea></div>'
+        + '<button type="button" class="rep-x">Remove stop</button>';
+    } else if (tipo === 'texto') {
+      d.innerHTML =
+        '<div class="campo">'
+        + '<label class="so-leitor" for="' + k + '-7">Included item</label>'
+        + '<input id="' + k + '-7" type="text" data-c="v" maxlength="220" value="'
+        + ewt.escapar(v || '') + '"></div>'
+        + '<button type="button" class="rep-x">Remove</button>';
+    } else if (tipo === 'faq') {
+      d.innerHTML =
+        '<div class="campo"><label for="' + k + '-8">Question</label>'
+        + '<input id="' + k + '-8" type="text" data-c="q" maxlength="220" value="'
+        + ewt.escapar(v[0] || '') + '"></div>'
+        + '<div class="campo"><label for="' + k + '-9">Answer</label>'
+        + '<textarea id="' + k + '-9" data-c="a" maxlength="1200" rows="3">'
+        + ewt.escapar(v[1] || '') + '</textarea></div>'
+        + '<button type="button" class="rep-x">Remove</button>';
+    } else if (tipo === 'foto') {
+      d.innerHTML =
+        '<div class="campo"><label for="' + k + '-10">Photo address (URL)</label>'
+        + '<input id="' + k + '-10" type="url" data-c="url" maxlength="500" value="'
+        + ewt.escapar(v.url || '') + '" placeholder="https://…"></div>'
+        + '<div class="campo"><label for="' + k + '-11">What is in the photo</label>'
+        + '<input id="' + k + '-11" type="text" data-c="alt" maxlength="200" value="'
+        + ewt.escapar(v.alt || '') + '" placeholder="The cliffs above the Atlantic">'
+        + '<span class="ajuda">Written for someone who cannot see it. '
+        + 'Not a caption — a description.</span></div>'
+        + '<button type="button" class="rep-x">Remove</button>';
+    }
+    var x = d.querySelector('.rep-x');
+    // Cinco botoes a dizer "Remove" sao indistinguiveis num leitor de
+    // ecra. O rotulo acessivel diz qual deles e.
+    x.setAttribute('aria-label', x.textContent.trim() + ' (' + tipo + ' '
+      + contaLinhas + ')');
+    x.addEventListener('click', function () {
+      d.remove(); marcar();
+    });
+    return d;
+  }
+
+  function ligarMais(botao, caixa, tipo) {
+    botao.addEventListener('click', function () {
+      caixa.appendChild(linha(tipo));
+      var i = caixa.lastChild.querySelector('input, textarea');
+      if (i) i.focus();
+      marcar();
+    });
+  }
+
+  function encher(caixa, tipo, valores) {
+    caixa.innerHTML = '';
+    (valores || []).forEach(function (v) { caixa.appendChild(linha(tipo, v)); });
+  }
+
+  function ler(caixa) {
+    return [].slice.call(caixa.children).map(function (l) {
+      var o = {};
+      [].slice.call(l.querySelectorAll('[data-c]')).forEach(function (c) {
+        o[c.getAttribute('data-c')] = c.value.trim();
+      });
+      return o;
+    });
+  }
+
+  function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+  function pv(id, x) { var e = document.getElementById(id); if (e) e.value = x == null ? '' : x; }
+
+  // --------------------------------------------------------- o conteudo
+  //
+  // Exatamente a forma de uma entrada do tours.json. O gerador le isto
+  // sem traduzir.
+  function recolher() {
+    var escaloes = ler(document.getElementById('escaloes'))
+      .filter(function (x) { return x.max && x.price !== ''; })
+      .map(function (x) {
+        var o = { max: parseInt(x.max, 10), price: Number(x.price) };
+        if (x.vehicle) o.vehicle = x.vehicle;
+        return o;
+      })
+      .sort(function (a, b) { return a.max - b.max; });
+
+    var horas = v('partidas').split(',').map(function (s) { return s.trim(); })
+      .filter(Boolean);
+
+    var p = {
+      slug: v('slug'),
+      title: v('titulo'),
+      kicker: v('kicker'),
+      lede: v('lede'),
+      city: v('cidade'),
+      country: v('pais_cod'),
+      countryName: v('pais'),
+      ticketTo: v('entrada_para'),
+      metaDesc: v('meta'),
+      durations: [{
+        h: v('duracao'),
+        price: escaloes.length ? Math.min.apply(null, escaloes.map(function (x) { return x.price; })) : 0,
+        tiers: escaloes,
+        startTimes: horas
+      }],
+      stopsIntro: v('paragens_intro'),
+      stops: ler(document.getElementById('paragens'))
+        .filter(function (x) { return x.h; }),
+      includedIntro: v('inclui_intro'),
+      included: ler(document.getElementById('inclui'))
+        .map(function (x) { return x.v; }).filter(Boolean),
+      notIncluded: v('nao_inclui'),
+      practical: v('pratico'),
+      faq: ler(document.getElementById('faq'))
+        .filter(function (x) { return x.q && x.a; })
+        .map(function (x) { return [x.q, x.a]; }),
+      photos: ler(document.getElementById('fotos'))
+        .filter(function (x) { return x.url; })
+    };
+    return p;
+  }
+
+  function espalhar(p) {
+    p = p || {};
+    pv('titulo', p.title); pv('slug', p.slug); pv('kicker', p.kicker);
+    pv('lede', p.lede); pv('cidade', p.city); pv('pais', p.countryName);
+    pv('pais_cod', p.country); pv('entrada_para', p.ticketTo);
+    pv('meta', p.metaDesc);
+    var d = (p.durations && p.durations[0]) || {};
+    pv('duracao', d.h);
+    pv('partidas', (d.startTimes || []).join(', '));
+    encher(document.getElementById('escaloes'), 'escalao', d.tiers || [{}]);
+    pv('paragens_intro', p.stopsIntro);
+    encher(document.getElementById('paragens'), 'paragem', p.stops || []);
+    pv('inclui_intro', p.includedIntro);
+    encher(document.getElementById('inclui'), 'texto', p.included || []);
+    pv('nao_inclui', p.notIncluded);
+    pv('pratico', p.practical);
+    encher(document.getElementById('faq'), 'faq', p.faq || []);
+    encher(document.getElementById('fotos'), 'foto', p.photos || []);
+    contar();
+  }
+
+  // -------------------------------------------------------- verificacao
+  //
+  // A base recusa o que esta mal, mas uma recusa da base e uma mensagem
+  // tecnica. Vale a pena dizer antes, no campo, o que falta.
+  function faltas() {
+    var f = [];
+    if (v('titulo').length < 6) f.push(['titulo', 'Give the tour a title.']);
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v('slug'))) {
+      f.push(['slug', 'Lowercase letters, numbers and hyphens only.']);
+    }
+    if (!v('cidade')) f.push(['cidade', 'Which city does it start from?']);
+    if (!v('pais')) f.push(['pais', 'Which country?']);
+    if (!v('duracao')) f.push(['duracao', 'How long does the day last?']);
+    var esc = ler(document.getElementById('escaloes'))
+      .filter(function (x) { return x.max && x.price !== ''; });
+    if (!esc.length) f.push(['escaloes', 'Add at least one price tier.']);
+    if (v('lede').length < 40) {
+      f.push(['lede', 'Write a couple of sentences — this is what people read first.']);
+    }
+    return f;
+  }
+
+  function marcarFaltas(f) {
+    ['titulo','slug','cidade','pais','duracao','lede'].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (e) e.removeAttribute('aria-invalid');
+    });
+    f.forEach(function (x) {
+      var e = document.getElementById(x[0]);
+      if (e) e.setAttribute('aria-invalid', 'true');
+    });
+    if (f.length) {
+      var e = document.getElementById(f[0][0]);
+      if (e && e.focus) e.focus();
+    }
+  }
+
+  // ----------------------------------------------------------- o estado
+  function marcar() { ESTADO.sujo = true; sinal(); }
+  function sinal() {
+    var s = document.getElementById('sinal');
+    if (s) {
+      s.textContent = ESTADO.sujo
+        ? 'Not saved yet.'
+        : (ESTADO.anuncio ? 'Everything saved.' : '');
+    }
+  }
+  window.addEventListener('beforeunload', function (ev) {
+    if (!ESTADO.sujo) return;
+    ev.preventDefault(); ev.returnValue = '';
+  });
+
+  function contar() {
+    // Quanto fica para o operador. Nao e um numero que eu invento: e a
+    // comissao que esta na ficha dele, aplicada ao escalao mais barato.
+    var c = document.getElementById('conta');
+    if (!c) return;
+    var taxa = ESTADO.operador && ESTADO.operador.comissao != null
+      ? Number(ESTADO.operador.comissao) : null;
+    var esc = ler(document.getElementById('escaloes'))
+      .filter(function (x) { return x.price !== ''; })
+      .map(function (x) { return Number(x.price); });
+    if (taxa === null || !esc.length) { c.innerHTML = ''; return; }
+    var menor = Math.min.apply(null, esc);
+    var com = Math.round(menor * taxa * 100) / 100;
+    c.innerHTML = 'On your lowest tier of <b>&euro;' + ewt.euros(menor)
+      + '</b>:<br>commission ' + (taxa * 100).toFixed(0) + '% = <b>&euro;'
+      + ewt.euros(com) + '</b><br>you receive <b>&euro;'
+      + ewt.euros(menor - com) + '</b>';
+  }
+
+  // ----------------------------------------------------------- gravar
+  async function guardar(submeter) {
+    var av = 'av-ed';
+    ewt.dizer(av, '', '');
+
+    var f = faltas();
+    marcarFaltas(f);
+    if (f.length) {
+      ewt.dizer(av, f.length === 1 ? f[0][1]
+        : 'There are ' + f.length + ' things to fix: ' + f[0][1], 'mal');
+      return;
+    }
+
+    var p = recolher();
+    var bts = [].slice.call(document.querySelectorAll('.lado .bt'));
+    bts.forEach(function (b) { b.disabled = true; });
+
+    try {
+      if (!ESTADO.anuncio) {
+        // O anuncio nasce agora. Fica em `draft`: existir no portal e
+        // estar no site sao duas coisas diferentes.
+        var r = await ewt.sb.from('listings').insert({
+          operator_id: ESTADO.operador.id,
+          slug: p.slug, city: p.city, country: p.countryName, status: 'draft'
+        }).select('id, slug, status, city, country').single();
+        if (r.error) throw r.error;
+        ESTADO.anuncio = r.data;
+        history.replaceState({}, '', '/portal/listing/?id=' + r.data.id);
+      } else {
+        var u = await ewt.sb.from('listings').update({
+          slug: p.slug, city: p.city, country: p.countryName
+        }).eq('id', ESTADO.anuncio.id);
+        if (u.error) throw u.error;
+      }
+
+      if (submeter) {
+        var s = await ewt.sb.rpc('submeter_versao', {
+          p_listing: ESTADO.anuncio.id, p_payload: p
+        });
+        if (s.error) throw s.error;
+        ESTADO.sujo = false;
+        ewt.dizer(av, 'Sent for review. Your live version — if you have '
+          + 'one — stays on the site until this one is approved. We write '
+          + 'to you either way.', 'bem');
+        await historico();
+      } else {
+        // Um rascunho fica no browser e nao na base: a base guarda
+        // versoes, e uma versao e uma coisa que alguem vai ler. Enchê-la
+        // de rascunhos tornava a fila de revisao inutil.
+        try {
+          localStorage.setItem('ewt-rascunho-' + (ESTADO.anuncio.id || 'novo'),
+            JSON.stringify(p));
+        } catch (e) { /* modo privado; nao e grave */ }
+        ESTADO.sujo = false;
+        ewt.dizer(av, 'Saved as a draft on this device. Nothing was sent '
+          + 'for review and nothing changed on the site.', 'bem');
+      }
+      sinal();
+    } catch (err) {
+      ewt.dizer(av, ewt.legivel(err), 'mal');
+    } finally {
+      bts.forEach(function (b) { b.disabled = false; });
+    }
+  }
+
+  // ---------------------------------------------------------- historico
+  async function historico() {
+    var h = document.getElementById('hist');
+    if (!h || !ESTADO.anuncio) return;
+    var r = await ewt.sb.from('listing_versions')
+      .select('version, status, submitted_at, review_note')
+      .eq('listing_id', ESTADO.anuncio.id)
+      .order('version', { ascending: false });
+    var vs = r.data || [];
+    ESTADO.versoes = vs;
+    if (!vs.length) {
+      h.innerHTML = '<p class="lado-nota">Never submitted.</p>';
+      return;
+    }
+    h.innerHTML = vs.map(function (x) {
+      var d = new Date(x.submitted_at);
+      return '<div><span>v' + x.version + ' &middot; '
+        + d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+        + '</span><span class="est est-' + x.status + '">' + x.status
+        + '</span></div>'
+        + (x.status === 'rejected' && x.review_note
+            ? '<p class="lado-nota">' + ewt.escapar(x.review_note) + '</p>' : '');
+    }).join('');
+  }
+
+  // ----------------------------------------------------------- arranque
+  (async function () {
+    var pp = await ewt.exigir_entrada();
+    if (!pp) return;
+
+    if (!pp.operadores.length) {
+      document.getElementById('conteudo').innerHTML =
+        '<div class="vazio"><h3>Your account is not linked to a company</h3>'
+        + '<p>Only an approved operator can add tours.</p>'
+        + '<a class="bt bt-s" href="/portal/">Back to the portal</a></div>';
+      return;
+    }
+    ESTADO.operador = pp.operadores[0];
+
+    document.getElementById('carrega').hidden = true;
+    document.getElementById('ed').hidden = false;
+
+    // Os botoes de acrescentar linha.
+    [['mais-escalao','escaloes','escalao'], ['mais-paragem','paragens','paragem'],
+     ['mais-inclui','inclui','texto'], ['mais-faq','faq','faq'],
+     ['mais-foto','fotos','foto']].forEach(function (x) {
+      ligarMais(document.getElementById(x[0]),
+                document.getElementById(x[1]), x[2]);
+    });
+
+    document.getElementById('ed').addEventListener('input', function (ev) {
+      marcar();
+      if (ev.target.closest('#escaloes')) contar();
+    });
+
+    // O endereco web sugere-se a partir do titulo, mas so enquanto o
+    // operador nao mexer nele: reescrever um endereco que ele escolheu
+    // e mudar-lhe o URL do tour sem ele pedir.
+    var slugTocado = false;
+    document.getElementById('slug').addEventListener('input', function () {
+      slugTocado = true;
+    });
+    document.getElementById('titulo').addEventListener('input', function (ev) {
+      if (slugTocado || ESTADO.anuncio) return;
+      pv('slug', ev.target.value.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70));
+    });
+
+    document.getElementById('bt-guardar')
+      .addEventListener('click', function () { guardar(false); });
+    document.getElementById('bt-submeter')
+      .addEventListener('click', function () { guardar(true); });
+
+    if (ID) {
+      var r = await ewt.sb.from('listings')
+        .select('id, slug, status, city, country').eq('id', ID).single();
+      if (r.error || !r.data) {
+        ewt.dizer('av-ed', 'That tour could not be opened. It may belong to '
+          + 'another account.', 'mal');
+        return;
+      }
+      ESTADO.anuncio = r.data;
+      document.getElementById('t-ed').textContent = 'Edit tour';
+      document.getElementById('est-ed').innerHTML =
+        '<span class="est est-' + r.data.status + '">' + r.data.status + '</span>';
+
+      // O que se abre e a ultima versao que existe — pendente ou
+      // aprovada. Abrir a aprovada quando ha uma pendente fazia o
+      // operador reescrever as alteracoes que acabou de enviar.
+      var vv = await ewt.sb.from('listing_versions')
+        .select('version, status, payload')
+        .eq('listing_id', ID).order('version', { ascending: false }).limit(1);
+      if (vv.data && vv.data.length) {
+        espalhar(vv.data[0].payload);
+      } else {
+        espalhar({ city: r.data.city, countryName: r.data.country,
+                   slug: r.data.slug });
+      }
+      await historico();
+    } else {
+      espalhar({});
+    }
+    ESTADO.sujo = false;
+    sinal();
+  })();
+})();
+
+(function () {
+  // O email e o botao de sair, iguais em todas as paginas do portal.
+  if (!window.ewt || window.ewt.avariado) {
+    var c = document.getElementById('conteudo');
+    if (c) {
+      c.innerHTML = '<div class="aviso aviso-mal">The portal could not '
+        + 'load. Reload the page; if it keeps happening, write to us.</div>';
+    }
+    return;
+  }
+  var b = document.getElementById('sair');
+  if (b) {
+    b.addEventListener('click', function () { ewt.sair(); });
+  }
+  ewt.utilizador().then(function (u) {
+    var q = document.getElementById('quem');
+    if (u && q) { q.textContent = u.email; }
+    if (u && b) { b.hidden = false; }
+    // A navegacao do portal leva a paginas que exigem sessao. Mostra-la
+    // a quem ainda nao entrou era oferecer quatro ligacoes que todas
+    // devolvem a pessoa a esta mesma pagina.
+    var nav = document.querySelector('.pt-nav');
+    if (nav && !u) { nav.hidden = true; }
+  });
+})();
+
+(function () {
+  // Os menus: um botao, um painel, e o estado todo no aria-expanded — que
+  // e o que um leitor de ecra le. Escape fecha, clicar fora fecha, e o
+  // foco volta ao botao, senao quem navega por teclado fica no limbo.
+  var bs = [].slice.call(document.querySelectorAll('[data-menu]'));
+  if (!bs.length) return;
+
+  function fechar(b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    p.hidden = true;
+    b.setAttribute('aria-expanded', 'false');
+  }
+  function fecharTodos(excepto) {
+    bs.forEach(function (b) { if (b !== excepto) fechar(b); });
+  }
+
+  bs.forEach(function (b) {
+    var p = document.getElementById(b.getAttribute('data-menu'));
+    if (!p) return;
+    b.addEventListener('click', function () {
+      var aberto = b.getAttribute('aria-expanded') === 'true';
+      fecharTodos(b);
+      p.hidden = aberto;
+      b.setAttribute('aria-expanded', aberto ? 'false' : 'true');
+    });
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape') return;
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') === 'true') { fechar(b); b.focus(); }
+    });
+  });
+
+  document.addEventListener('click', function (ev) {
+    bs.forEach(function (b) {
+      if (b.getAttribute('aria-expanded') !== 'true') return;
+      var p = document.getElementById(b.getAttribute('data-menu'));
+      if (!b.contains(ev.target) && p && !p.contains(ev.target)) fechar(b);
+    });
+  });
+})();
+
+(function () {
+  // A revelacao ao percorrer. Quem tem 'reduzir movimento' ligado no
+  // sistema nao ve nada disto: o conteudo aparece logo, inteiro.
+  var q = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var alvos = [].slice.call(document.querySelectorAll('[data-rev]'));
+  if (!alvos.length) return;
+  if (q.matches || !('IntersectionObserver' in window)) {
+    alvos.forEach(function (x) { x.classList.add('vis'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('vis');
+      obs.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+  alvos.forEach(function (x) { obs.observe(x); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "axe-core": "^4.13.0"
+  }
+}

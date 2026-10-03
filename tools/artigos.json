@@ -1,0 +1,120 @@
+{
+  "_nota": "Os artigos do /journal/. Cada um tem de ser verificavel: ou sai dos dados em tours.json, ou e uma decisao tomada (a comissao, a politica de cancelamento). Nao se escrevem aqui factos sobre horarios de monumentos, precos de bilhetes ou epocas do ano que ninguem confirmou.",
+  "artigos": [
+    {
+      "slug": "why-we-price-the-vehicle",
+      "titulo": "Why we price the vehicle and not the seat",
+      "kicker": "How this works",
+      "data": "2026-10-03",
+      "lede": "Every price on this site is for the whole vehicle. Four people pay what one person pays. That is not a promotion — it is the only honest way to price a car with a driver in it.",
+      "secoes": [
+        {
+          "h": "The cost of a day does not depend on the headcount",
+          "p": [
+            "A private day costs what it costs: one vehicle, one driver, the fuel, the tolls, the parking, and the driver's day. None of those get cheaper because three of you stayed at the hotel.",
+            "So when a marketplace shows you a price per person for a private tour, one of two things is happening. Either the price assumes a full vehicle and climbs when it is not full, or it is a per-person price for a shared tour being described as private. Both leave you finding out at the end."
+          ]
+        },
+        {
+          "h": "What that looks like in practice",
+          "p": [
+            "A price tier here is a vehicle. Up to three of you is one car; up to six is a minivan; up to eight is a van. The price changes when the vehicle has to change, and not before.",
+            "On every tour page we also show the per-person arithmetic at the fullest tier, because that is the number you want when you are comparing us with a site that sells seats. It is a division, not a promise: it comes from the same two numbers that are already in the table."
+          ],
+          "dados": "exemplos_preco"
+        },
+        {
+          "h": "Where this costs you more",
+          "p": [
+            "If you are two people and you want the cheapest possible way to see a place, a coach seat will beat us and we are not going to pretend otherwise. Thirty people in a bus split the driver thirty ways.",
+            "What you buy here is the day itself: your departure time, your stops, the length of each one, and a driver who is only talking to you. For two people that is a luxury. For four, five or six it is usually also the cheaper arithmetic."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "what-private-actually-means",
+      "titulo": "What \"private\" actually means on a day tour",
+      "kicker": "How this works",
+      "data": "2026-10-03",
+      "lede": "The word is used for at least three different products. Here is the one we sell, and the two we do not.",
+      "secoes": [
+        {
+          "h": "Three things called private",
+          "p": [
+            "A <b>private transfer</b> is a car that takes you from A to B. The driver is a driver. You will not stop anywhere that is not on the way.",
+            "A <b>small group tour</b> is a tour with eight or twelve strangers in it. It is often excellent and often good value. It is not private: you leave when the group leaves and you look at what the group looks at.",
+            "A <b>private day tour</b> is a vehicle, a driver-guide and a day that belongs to your group alone. That is what every page on this site is."
+          ]
+        },
+        {
+          "h": "The part that matters on the day",
+          "p": [
+            "The itinerary on a tour page is a plan, not a timetable. If you love a stop, your driver stretches it and shortens the next one. If the weather turns, the order changes. If someone is tired, you go back early.",
+            "That flexibility is the whole product. It is also why availability here is a conversation rather than a button: a private day runs on the day you choose, with a vehicle that has to be free, so we check it with the operator and come back with a yes or a no."
+          ]
+        },
+        {
+          "h": "What we do not do",
+          "p": [
+            "We do not sell seats on someone else's day. We do not combine two bookings into one vehicle to fill it. If a page says up to six, it means your six and nobody else's."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "the-early-start",
+      "titulo": "The early start is the whole trick",
+      "kicker": "On the road",
+      "data": "2026-10-03",
+      "lede": "Look at the departure times on these tours and a pattern appears. The ones that leave first are the ones that go where the coaches go.",
+      "secoes": [
+        {
+          "h": "Why the hour is in the data",
+          "p": [
+            "Every tour on this site carries its departure time, and we show it on the card before you click. It is not a detail. On a route with a famous stop, the difference between leaving at seven and leaving at nine is the difference between a cliff edge and a car park.",
+            "A coach cannot leave at seven. It has to collect from four hotels first, and it has to be back for the evening run. A private vehicle collects from one door."
+          ],
+          "dados": "partidas"
+        },
+        {
+          "h": "What you give up",
+          "p": [
+            "An early start costs you the morning. Some days that is the wrong trade and the right answer is a later departure and a quieter route — which is a thing you can ask for, because the day is yours.",
+            "If the departure time on a page does not suit you, say so when you ask about the date. It is a starting point written by the operator who drives the route, not a rule."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "how-a-tour-gets-onto-this-site",
+      "titulo": "How a tour gets onto this site",
+      "kicker": "For operators",
+      "data": "2026-10-03",
+      "lede": "Somebody reads every listing before it goes live, and reads it again every time it changes. The calendar is the one thing nobody reviews — on purpose.",
+      "secoes": [
+        {
+          "h": "Content is read. Availability is not.",
+          "p": [
+            "The text, the stops, the photographs and the prices are slow data: they change rarely and they are what a guest decides on. Those go through a person before they are published, and a new submission never displaces the version already online until it is approved.",
+            "The calendar is fast data. An operator closing tomorrow at eleven at night needs that to be true immediately, not after we have read it. A day shown open when the operator has already closed it is not a delay — it is a booking that will have to be cancelled."
+          ]
+        },
+        {
+          "h": "What the operator keeps",
+          "p": [
+            "The operator sets the price. We do not change it and we do not discount their tour to win a sale. Commission is 20% of what the guest pays; there is no listing fee, no fee per tour, and no fee to be seen.",
+            "On a &euro;790 day that is &euro;158 to us and &euro;632 to the operator, and the arithmetic sits next to every price they type into the portal."
+          ]
+        },
+        {
+          "h": "Why read anything at all",
+          "p": [
+            "Because the page is the product. A marketplace that publishes whatever is uploaded ends up with nine hundred listings that all say \"unforgettable experience\" and none that say what time you leave.",
+            "When we send something back, we say exactly what to change, and the operator reads that sentence in their own portal. We answer every application, including the ones we turn down."
+          ]
+        }
+      ]
+    }
+  ]
+}

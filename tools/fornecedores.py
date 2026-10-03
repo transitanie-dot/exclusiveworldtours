@@ -12,9 +12,12 @@ O que esta pagina NAO diz, de proposito:
   nenhum, e um numero inventado numa pagina de angariacao e a primeira
   coisa que um operador experiente vai verificar;
 - prazos de pagamento concretos, enquanto o Ricardo nao decidir o fluxo
-  do dinheiro;
-- a percentagem exata da comissao, pela mesma razao. Onde ela entra esta
-  marcado no codigo com COMISSAO, e muda-se num sitio so.
+  do dinheiro.
+
+A comissao ja esta decidida — 20%, a 2 de outubro de 2026 — e aparece na
+pagina a partir da constante COMISSAO, num sitio so. O mesmo numero esta
+em `commission_rate` na base, por operador, porque ha sempre um caso
+especial e o caso especial nao deve obrigar a publicar codigo.
 
     python3 tools/fornecedores.py      # escreve suppliers/index.html
 """
@@ -28,8 +31,9 @@ import procura  # noqa: E402
 from pagina import (cabecalho, carregar, e, envolver, escrever,  # noqa: E402
                     por_pais, rodape)
 
-# Quando o Ricardo decidir, troca-se aqui e so aqui.
-COMISSAO = None          # ex.: '15%'
+# Decidido pelo Ricardo a 2 de outubro de 2026. Troca-se aqui e so aqui;
+# o valor por operador vive em `operators.commission_rate` na base.
+COMISSAO = '20%'
 
 CSS = '''
 .capa-f{background:var(--tinta);color:rgba(255,255,255,.86);
@@ -207,6 +211,16 @@ def main():
       <p class="rot"><b>03</b> What you get</p>
       <h2>And what we are not pretending</h2>
       <div class="quadro" style="margin-top:var(--e3)">
+        <h3>Commission is %(com)s</h3>
+        <p>Of the price the guest pays. You set that price and we do not
+          touch it &mdash; we do not discount your tour to win a sale, and
+          there is no fee to be listed, no fee per listing and no
+          fee to be seen.</p>
+        <p>On a &euro;790 day that is &euro;158 to us and &euro;632 to
+          you, and the arithmetic is in the portal next to every price
+          you type.</p>
+      </div>
+      <div class="quadro" style="margin-top:var(--e3)">
         <h3>Being straight with you</h3>
         <p>We are new. We are not going to show you visitor numbers or
           booking volumes, because they would not be impressive and a
@@ -226,19 +240,20 @@ def main():
     <p class="rot"><b>04</b> Apply</p>
     <h2>Tell us what you run</h2>
     <p>Send us your company, the city you operate from, and one tour you
-      are proud of. If it fits, we will open an account and walk you
-      through the first listing.</p>
-    <a class="botao" href="/contact/?from=operator">Start an application</a>
-    <p class="aviso">The operator portal &mdash; listings, calendar, bookings
-      &mdash; is being built now. Early operators get set up by hand, by us,
-      and keep their place when it opens.</p>
+      are proud of. If it fits, we open your account and walk you through
+      the first listing. Commission is %(com)s of what the guest pays, and
+      you set the price.</p>
+    <a class="botao" href="/suppliers/apply/">Start an application</a>
+    <p class="aviso">The operator portal is open: you write your own
+      listings, submit them for reading, and run your own calendar.
+      <a href="/portal/">Sign in</a> if you already have an account.</p>
   </div>
 </section>
 
 </main>
 %(rodape)s''' % {
         'cabecalho': cabecalho(paises=paises),
-        'v': VISTO,
+        'v': VISTO, 'com': COMISSAO,
         'nt': len(tours), 'np': len(paises),
         'rodape': rodape(paises),
     }
