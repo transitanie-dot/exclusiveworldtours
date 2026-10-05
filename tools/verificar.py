@@ -23,10 +23,12 @@ import glob
 PAGINAS = (['index.html', 'tours/index.html', 'search/index.html',
             'suppliers/index.html', 'suppliers/apply/index.html',
             'contact/index.html', 'journal/index.html',
-            'cancellation/index.html',
+            'cancellation/index.html', 'reviews-policy/index.html',
+            'review/index.html',
             'portal/index.html', 'portal/listing/index.html',
             'portal/calendar/index.html', 'portal/account/index.html',
             'portal/fleet/index.html', 'portal/places/index.html',
+            'portal/reviews/index.html',
             'admin/index.html', 'admin/operators/index.html',
             'admin/searches/index.html']
            + sorted(os.path.relpath(x, RAIZ)
@@ -43,10 +45,11 @@ COM_BASE = ['portal/index.html', 'portal/listing/index.html',
             'portal/calendar/index.html', 'portal/account/index.html',
             'portal/fleet/index.html', 'portal/places/index.html',
             'portal/fleet/index.html', 'portal/places/index.html',
+            'portal/reviews/index.html',
             'admin/index.html', 'admin/operators/index.html',
             'admin/searches/index.html', 'contact/index.html',
             'suppliers/apply/index.html', 'tours/index.html',
-            'search/index.html',
+            'search/index.html', 'review/index.html',
             'tours/cliffs-of-moher-galway/index.html']
 
 # As paginas do portal e da administracao nunca podem sair sem noindex,
@@ -75,7 +78,12 @@ EXIGIDAS = ['botao', 'tour', 'tours', 'painel', 'paragem', 'galeria',
             'jcapa', 'jart', 'jtopo', 'jcorpo', 'jdados', 'jfim',
             'joutros', 'joutro', 'migalhas', 'botao-s',
             # as paginas de texto
-            'pcapa', 'ptexto', 'pregra', 'pnota']
+            'pcapa', 'ptexto', 'pregra', 'pnota',
+            # as avaliacoes
+            'av-capa', 'av-corpo', 'av-cx', 'av-campo', 'av-bt', 'estrelas',
+            'estrela', 'av-sec', 'av-nota', 'av-item', 'av-lista',
+            'av-tema', 'av-barra', 'av-resposta', 'av-estrelas',
+            'rv-c', 'rv-l', 'rv-est', 'rv-resp', 'rv-form', 'rv-resumo']
 
 
 def classes_usadas(html):

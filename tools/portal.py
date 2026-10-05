@@ -27,6 +27,7 @@ NAV = [('My tours', '/portal/'),
        ('Calendar', '/portal/calendar/'),
        ('Fleet', '/portal/fleet/'),
        ('Meeting points', '/portal/places/'),
+       ('Reviews', '/portal/reviews/'),
        ('Account', '/portal/account/')]
 
 

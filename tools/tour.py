@@ -74,6 +74,51 @@ CSS = '''
 .encontro-foto{background:var(--papel);min-height:9rem}
 .encontro-foto img{width:100%;height:100%;object-fit:cover;display:block}
 
+/* ------------------------------------------------------- avaliacoes
+   Um tour sem avaliacoes NAO desenha estrelas vazias. Cinco estrelas
+   apagadas lem-se como um dia que correu mal, e um espaco em branco
+   le-se como o que e: ainda nao ha. */
+.av-sec{background:var(--branco);border-top:1px solid var(--risco);
+  padding:var(--e6) 0}
+.av-topo{display:grid;gap:var(--e3);margin-bottom:var(--e4)}
+@media(min-width:760px){.av-topo{grid-template-columns:auto 1fr;
+  align-items:center;gap:var(--e5)}}
+.av-nota{display:flex;align-items:baseline;gap:10px}
+.av-nota b{font-family:var(--tipo-titulo);font-size:3rem;line-height:1;
+  color:var(--tinta);font-variant-numeric:tabular-nums}
+.av-nota span{font-size:.92rem;color:var(--mudo)}
+.av-estrelas{color:var(--cor-escura);font-size:1.1rem;letter-spacing:2px;
+  line-height:1}
+.av-de-quem{font-size:.9rem;line-height:1.6;color:var(--texto);margin:6px 0 0}
+.av-de-quem a{color:var(--cor-escura)}
+
+.av-temas-l{display:grid;gap:10px}
+@media(min-width:560px){.av-temas-l{grid-template-columns:1fr 1fr}}
+.av-tema{display:flex;align-items:center;gap:10px;font-size:.88rem;
+  color:var(--texto)}
+.av-tema b{margin-left:auto;font-variant-numeric:tabular-nums;
+  color:var(--tinta)}
+.av-barra{flex:0 0 5rem;height:6px;border-radius:3px;background:var(--risco);
+  overflow:hidden}
+.av-barra i{display:block;height:100%;background:var(--cor)}
+
+.av-lista{display:grid;gap:var(--e3)}
+@media(min-width:900px){.av-lista{grid-template-columns:1fr 1fr}}
+.av-item{border:1px solid var(--risco);border-radius:var(--raio);
+  padding:var(--e3);background:var(--papel)}
+.av-item .cab{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  flex-wrap:wrap}
+.av-item .cab .q{font-weight:600;color:var(--tinta);font-size:.95rem}
+.av-item .cab .d{font-size:.82rem;color:var(--mudo);margin-left:auto}
+.av-item h4{margin:0 0 6px;font-family:var(--tipo-titulo);font-size:1rem;
+  color:var(--tinta)}
+.av-item p{margin:0;font-size:.93rem;line-height:1.65;color:var(--texto)}
+.av-resposta{margin-top:12px;padding:10px 12px;background:var(--branco);
+  border-left:3px solid var(--cor);border-radius:0 4px 4px 0}
+.av-resposta b{display:block;font-size:.78rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mudo);margin-bottom:4px}
+.av-resposta p{font-size:.9rem}
+
 .sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
   color:var(--tinta);margin:var(--e3) 0 var(--e2);
   padding-top:var(--e3);border-top:1px solid var(--risco)}
@@ -459,6 +504,95 @@ def faq(t, assinalados):
             '<p class="rot"><b>04</b> Questions</p>'
             '<h2>Before you ask</h2>%s</section>'
             % '\n'.join(linhas))
+
+
+def estrelas_texto(n):
+    """As estrelas em texto, com o numero ao lado para quem nao as ve.
+
+    Arredonda-se para a mais proxima, e o numero exato fica escrito ao
+    lado — desenhar meias estrelas e dar uma precisao que a figura nao
+    tem."""
+    cheias = int(round(n))
+    return ('<span class="av-estrelas" role="img" aria-label="%s out of 5">'
+            '%s</span>' % (('%.1f' % n), '&#9733;' * cheias + '&#9734;' * (5 - cheias)))
+
+
+def avaliacoes_html(t):
+    """A seccao das avaliacoes, ou nada.
+
+    Nada e uma resposta legitima e e a mais frequente num site novo. O
+    que nao se faz e desenhar cinco estrelas apagadas: lem-se como um
+    tour que correu mal, e nao como um tour que ainda nao foi avaliado.
+    """
+    nota = t.get('_nota')
+    if not nota:
+        return ''
+
+    lista = t.get('_avaliacoes') or []
+
+    if nota['mostrar'] == 'operador':
+        # A nota e verdadeira, so nao e deste tour. Dize-lo e a diferenca
+        # entre pedir emprestado e mentir.
+        valor = nota.get('op_ponderada') or nota.get('op_media')
+        cabeca = (
+            '<div class="av-nota"><b>%(v).1f</b>%(e)s'
+            '<span>from %(n)d %(p)s</span></div>'
+            '<p class="av-de-quem">This is <b>%(op)s</b>\u2019s rating across '
+            'all their tours \u2014 this particular day has not been reviewed '
+            'yet. <a href="/reviews-policy/">How reviews work here</a>.</p>'
+            % {'v': valor, 'e': estrelas_texto(valor), 'n': nota['op_n'],
+               'p': 'review' if nota['op_n'] == 1 else 'reviews',
+               'op': e(nota['operador'])})
+    else:
+        valor = nota.get('ponderada') or nota.get('media')
+        media = nota.get('media')
+        cabeca = (
+            '<div class="av-nota"><b>%(v).1f</b>%(e)s'
+            '<span>from %(n)d %(p)s</span></div>'
+            '<p class="av-de-quem">Recent days count for more, so this is '
+            '%(v).1f weighted and %(m).1f as a plain average. '
+            '<a href="/reviews-policy/">How reviews work here</a>.</p>'
+            % {'v': valor, 'e': estrelas_texto(valor), 'n': nota['n'],
+               'p': 'review' if nota['n'] == 1 else 'reviews', 'm': media})
+
+    temas = ''
+    nomes = {'driver': 'Driver-guide', 'vehicle': 'Vehicle',
+             'value': 'Worth the money', 'organising': 'Organisation'}
+    linhas = []
+    for chave, rotulo in nomes.items():
+        v = (nota.get('temas') or {}).get(chave)
+        if v is None:
+            continue
+        linhas.append('<span class="av-tema">%s'
+                      '<span class="av-barra"><i style="width:%d%%"></i></span>'
+                      '<b>%.1f</b></span>' % (rotulo, int(v / 5 * 100), v))
+    if linhas:
+        temas = '<div class="av-temas-l">%s</div>' % '\n'.join(linhas)
+
+    itens = []
+    for a in lista:
+        quem = e(a['name']) + (' &middot; ' + e(a['country']) if a['country'] else '')
+        itens.append(
+            '<article class="av-item">'
+            '<p class="cab">%(est)s<span class="q">%(quem)s</span>'
+            '<span class="d">%(on)s</span></p>'
+            '%(titulo)s%(texto)s%(resposta)s</article>'
+            % {'est': estrelas_texto(a['rating']), 'quem': quem,
+               'on': e(a['on']),
+               'titulo': ('<h4>%s</h4>' % e(a['title'])) if a['title'] else '',
+               'texto': ('<p>%s</p>' % e(a['body'])) if a['body'] else '',
+               'resposta': ('<div class="av-resposta"><b>The operator replied'
+                            '</b><p>%s</p></div>' % e(a['reply']))
+                           if a['reply'] else ''})
+
+    return ('<section class="av-sec" data-rev><div class="folha">'
+            '<p class="rot"><b>06</b> Reviews</p>'
+            '<h2>What guests said</h2>'
+            '<div class="av-topo">%(cabeca)s%(temas)s</div>'
+            '%(lista)s</div></section>'
+            % {'cabeca': cabeca, 'temas': temas,
+               'lista': ('<div class="av-lista">%s</div>' % '\n'.join(itens))
+                        if itens else ''})
 
 
 def encontro_html(t):
@@ -977,6 +1111,7 @@ def main():
   </div>
 </div>
 
+%(avaliacoes)s
 %(relacionados)s
 </main>
 %(rodape)s''' % {
@@ -1007,6 +1142,7 @@ def main():
             'faq': faq(t, assinalados), 'mapa': mapa_cidade(t),
             'slug_b': e(t['slug']),
             'encontro': encontro_html(t),
+            'avaliacoes': avaliacoes_html(t),
             'politica': '\n        '.join(
                 '<p class="intro">%s</p>' % x for x in politica.PARAGRAFOS),
             'painel': painel(t),

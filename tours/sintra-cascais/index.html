@@ -348,6 +348,51 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .encontro-foto{background:var(--papel);min-height:9rem}
 .encontro-foto img{width:100%;height:100%;object-fit:cover;display:block}
 
+/* ------------------------------------------------------- avaliacoes
+   Um tour sem avaliacoes NAO desenha estrelas vazias. Cinco estrelas
+   apagadas lem-se como um dia que correu mal, e um espaco em branco
+   le-se como o que e: ainda nao ha. */
+.av-sec{background:var(--branco);border-top:1px solid var(--risco);
+  padding:var(--e6) 0}
+.av-topo{display:grid;gap:var(--e3);margin-bottom:var(--e4)}
+@media(min-width:760px){.av-topo{grid-template-columns:auto 1fr;
+  align-items:center;gap:var(--e5)}}
+.av-nota{display:flex;align-items:baseline;gap:10px}
+.av-nota b{font-family:var(--tipo-titulo);font-size:3rem;line-height:1;
+  color:var(--tinta);font-variant-numeric:tabular-nums}
+.av-nota span{font-size:.92rem;color:var(--mudo)}
+.av-estrelas{color:var(--cor-escura);font-size:1.1rem;letter-spacing:2px;
+  line-height:1}
+.av-de-quem{font-size:.9rem;line-height:1.6;color:var(--texto);margin:6px 0 0}
+.av-de-quem a{color:var(--cor-escura)}
+
+.av-temas-l{display:grid;gap:10px}
+@media(min-width:560px){.av-temas-l{grid-template-columns:1fr 1fr}}
+.av-tema{display:flex;align-items:center;gap:10px;font-size:.88rem;
+  color:var(--texto)}
+.av-tema b{margin-left:auto;font-variant-numeric:tabular-nums;
+  color:var(--tinta)}
+.av-barra{flex:0 0 5rem;height:6px;border-radius:3px;background:var(--risco);
+  overflow:hidden}
+.av-barra i{display:block;height:100%;background:var(--cor)}
+
+.av-lista{display:grid;gap:var(--e3)}
+@media(min-width:900px){.av-lista{grid-template-columns:1fr 1fr}}
+.av-item{border:1px solid var(--risco);border-radius:var(--raio);
+  padding:var(--e3);background:var(--papel)}
+.av-item .cab{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  flex-wrap:wrap}
+.av-item .cab .q{font-weight:600;color:var(--tinta);font-size:.95rem}
+.av-item .cab .d{font-size:.82rem;color:var(--mudo);margin-left:auto}
+.av-item h4{margin:0 0 6px;font-family:var(--tipo-titulo);font-size:1rem;
+  color:var(--tinta)}
+.av-item p{margin:0;font-size:.93rem;line-height:1.65;color:var(--texto)}
+.av-resposta{margin-top:12px;padding:10px 12px;background:var(--branco);
+  border-left:3px solid var(--cor);border-radius:0 4px 4px 0}
+.av-resposta b{display:block;font-size:.78rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mudo);margin-bottom:4px}
+.av-resposta p{font-size:.9rem}
+
 .sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
   color:var(--tinta);margin:var(--e3) 0 var(--e2);
   padding-top:var(--e3);border-top:1px solid var(--risco)}
@@ -888,6 +933,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     </div>
   </div>
 </div>
+
 
 <section class="relacionados">
   <div class="folha">
