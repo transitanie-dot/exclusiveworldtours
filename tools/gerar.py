@@ -69,13 +69,19 @@ def main():
             print('  %-30s %d ficheiros' % (nome, n))
 
     print('\nA verificar.\n')
-    r = subprocess.run([sys.executable, os.path.join(AQUI, 'verificar.py')],
-                       capture_output=True, text=True)
-    print(r.stdout.rstrip())
-    if r.returncode != 0:
-        print(r.stderr)
-        sys.exit(1)
+    for nome, guiao in [('o que sai da base', 'testar_puxar.py'),
+                        ('as paginas geradas', 'verificar.py')]:
+        r = subprocess.run([sys.executable, os.path.join(AQUI, guiao)],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(r.stdout.rstrip())
+            print(r.stderr)
+            sys.exit(1)
+        print('  %-24s %s' % (nome, r.stdout.strip().splitlines()[-1]))
 
+    print('\nAntes de gerar, se houver tours novos de operadores:')
+    print('  python3 tools/puxar.py --ver    o que mudaria')
+    print('  python3 tools/puxar.py          puxa da base')
     print('\nFalta o que corre no browser (precisa de node):')
     print('  node tools/testar_portal.mjs      o portal, com a base simulada')
     print('  node tools/acessibilidade.mjs     o axe em 3 tamanhos')

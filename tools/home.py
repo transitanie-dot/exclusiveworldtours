@@ -39,7 +39,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 
 from pagina import (CORES, cabecalho, cartao_tour, carregar, e,  # noqa: E402
-                    envolver, escrever, euros, img, por_pais, rodape,
+                    envolver, escrever, euros, foto_html, img, por_pais, rodape,
                     verificar_contraste)
 
 def mapa_svg(tours):
@@ -75,9 +75,8 @@ def mapa_svg(tours):
 
 def cartao_pais(p, i):
     foto = p['foto']
-    media = (img(foto['id'], foto['alt'], (400, 800),
-                 '(min-width:1100px) 25vw, (min-width:700px) 33vw, 50vw')
-             if foto else '')
+    media = foto_html(foto, (400, 800),
+                      '(min-width:1100px) 25vw, (min-width:700px) 33vw, 50vw')
     return '''<a class="pais" href="/tours/?country=%(cod)s">
   <span class="pais-foto">%(media)s</span>
   <span class="pais-txt">

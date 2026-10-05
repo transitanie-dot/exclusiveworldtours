@@ -33,7 +33,7 @@ import ligacao  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
 from pagina import (CORES, cabecalho, carregar, cartao_tour, e, envolver,  # noqa: E402
-                    escrever, euros, img, por_pais, rodape)
+                    escrever, euros, foto_html, img, por_pais, rodape)
 
 # Houve um tempo em que estas palavras eram retiradas das FAQ, porque a
 # marca ainda nao tinha politica de cancelamento e prometer uma que nao
@@ -793,8 +793,8 @@ def main():
         # a primeira fotografia e o heroi, a sangrar; as outras ficam numa
         # tira por baixo. A Viator e a GetYourGuide poem uma grelha de
         # miniaturas; quem compra um dia quer ver o sitio grande primeiro.
-        heroi_img = (img(fotos[0]['id'], fotos[0]['alt'], (900, 1600, 2200),
-                         '100vw', eager=True) if fotos else '')
+        heroi_img = (foto_html(fotos[0], (900, 1600, 2200), '100vw',
+                               eager=True) if fotos else '')
         tira = ''
         if len(fotos) > 1:
             figs = []
@@ -802,13 +802,17 @@ def main():
                 figs.append(
                     '<figure data-foto tabindex="0" role="button" '
                     'aria-label="Open photograph" data-grande="%s" '
-                    'data-alt="%s" data-credito="Photo %s">'
-                    '%s<figcaption>Photo %s</figcaption>'
+                    'data-alt="%s" data-credito="%s">'
+                    '%s<figcaption>%s</figcaption>'
                     '<span class="lupa" aria-hidden="true">&#8599;</span>'
                     '</figure>'
-                    % (e(grande_url(f['id'])), e(f['alt']), e(f['by']),
-                       img(f['id'], f['alt'], (500, 900),
-                           '(min-width:700px) 33vw, 50vw'), e(f['by'])))
+                    % (e(grande_url(f['id']) if f.get('id') and not f.get('url')
+                         else f.get('url', '')),
+                       e(f.get('alt', '')),
+                       e('Photo %s' % f['by']) if f.get('by') else '',
+                       foto_html(f, (500, 900),
+                                 '(min-width:700px) 33vw, 50vw'),
+                       e('Photo %s' % f['by']) if f.get('by') else ''))
             tira = ('<div class="folha"><div class="tira">%s</div></div>'
                     % '\n'.join(figs))
 
