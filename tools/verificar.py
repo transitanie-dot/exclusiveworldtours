@@ -236,6 +236,55 @@ def main():
                 falhas.append('%s: liga para %s e essa pagina nao existe'
                               % (nome, destino))
 
+    # ---------------------------------------------------------------
+    # O MANIFESTO DO QUE ESTA PUBLICADO
+    #
+    # O portal do operador le o /assets/publicado.json para dizer se o
+    # tour dele esta no site. Se este ficheiro deixar de ser escrito, o
+    # portal nao da erro: cala-se sobre o site (e isso e deliberado). Mas
+    # calar-se para sempre por um gerador que parou de escrever e um
+    # silencio que ninguem nota.
+    #
+    # Tem de existir, ter um tour por cada pagina de tour gerada, e ter
+    # sido escrito nesta corrida.
+    # ---------------------------------------------------------------
+    import datetime
+    import json as _json
+
+    caminho = os.path.join(RAIZ, 'assets', 'publicado.json')
+    paginas_tour = {x.split(os.sep)[1] for x in PAGINAS
+                    if x.startswith('tours' + os.sep) and os.sep in x
+                    and x != os.path.join('tours', 'index.html')}
+    if not os.path.exists(caminho):
+        falhas.append('assets/publicado.json nao existe — o portal do '
+                    'operador fica sem saber o que esta no site')
+    else:
+        try:
+            m = _json.load(open(caminho))
+            faltam = paginas_tour - set(m.get('tours', {}))
+            se_mais = set(m.get('tours', {})) - paginas_tour
+            if faltam:
+                falhas.append('publicado.json nao conhece %d tour(s) que tem '
+                            'pagina: %s' % (len(faltam),
+                                            ', '.join(sorted(faltam)[:4])))
+            if se_mais:
+                falhas.append('publicado.json fala de %d tour(s) sem pagina '
+                            'nenhuma: %s' % (len(se_mais),
+                                             ', '.join(sorted(se_mais)[:4])))
+            quando = m.get('gerado_em', '')
+            try:
+                d = datetime.datetime.fromisoformat(quando)
+                idade = (datetime.datetime.now(datetime.timezone.utc)
+                         - d).total_seconds()
+                if idade > 3600:
+                    falhas.append('publicado.json tem %d horas: o gerador '
+                                'escreveu as paginas e nao o reescreveu'
+                                % (idade / 3600))
+            except (TypeError, ValueError):
+                falhas.append('publicado.json sem data valida em gerado_em')
+        except (ValueError, OSError) as erro:
+            falhas.append('publicado.json nao se le: %s' % erro)
+
     if falhas:
         print('FALHOU:')
         for f in falhas:

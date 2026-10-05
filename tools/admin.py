@@ -33,6 +33,17 @@ NAV = [('Review queue', '/admin/'),
        ('Searches', '/admin/searches/')]
 
 CSS = """
+.pub-l { margin: .5rem 0 .6rem; padding-left: 1.1rem; }
+.pub-l li { margin-bottom: .2rem; }
+.pub-l code {
+  font: 600 .84rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.pub-c {
+  margin: 0; padding: .6rem .7rem; border-radius: 4px;
+  background: %(tinta)s; color: %(papel)s; overflow-x: auto;
+  font: 400 .8rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+  -webkit-user-select: all; user-select: all;
+}
 .abas {
   display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;
   border-bottom: 2px solid %(risco)s;
@@ -277,7 +288,7 @@ JS = r"""
         + 'placeholder="The operator reads this exactly as you write it."></div>'
         + '<div class="acoes">'
         + '<button type="button" class="bt bt-p" data-sim="' + v.id
-        + '">Approve and publish</button>'
+        + '">Approve</button>'
         + '<button type="button" class="bt bt-mal" data-nao="' + v.id
         + '">Send back</button>'
         + '</div>'
@@ -439,6 +450,9 @@ JS = r"""
         + '</p></div>';
     }
     contar();
+    // Acabou de aprovar: a faixa tem de dizer logo que ha mais um a
+    // espera de publicacao. Dizer so na proxima visita era tarde.
+    porPublicar();
   }
 
   async function pedidoFeito(id) {
@@ -451,6 +465,75 @@ JS = r"""
       if (l) l.remove();
     }
     contar();
+  }
+
+  // ============================================================
+  // APROVADO NAO E PUBLICADO
+  //
+  // O botao dizia "Approve and publish" e nao publicava nada: aprovar
+  // escreve na base, e o site e estatico. Entre aprovar e correr o
+  // gerador podem passar dias, e o operador fica com o tour aprovado e
+  // invisivel sem saber porque.
+  //
+  // Esta faixa compara o que a base aprovou com o /assets/publicado.json
+  // que o gerador escreveu, e diz quantos estao a espera — com os
+  // comandos, para nao se andar a procura deles.
+  // ============================================================
+  async function porPublicar() {
+    var cx = document.getElementById('publicar');
+    if (!cx) return;
+
+    var pub = null;
+    try {
+      var r = await fetch('/assets/publicado.json', { cache: 'no-store' });
+      if (r.ok) pub = await r.json();
+    } catch (e) { /* sem manifesto, cala-se */ }
+    if (!pub || !pub.tours) { cx.hidden = true; return; }
+
+    // A ultima versao aprovada de cada anuncio que esta 'live'.
+    var r2 = await ewt.sb.from('listings')
+      .select('slug, status, listing_versions(version, status)')
+      .eq('status', 'live');
+    if (r2.error) { cx.hidden = true; return; }
+
+    var atrasados = [];
+    (r2.data || []).forEach(function (l) {
+      var vs = (l.listing_versions || [])
+        .filter(function (v) { return v.status === 'approved'; })
+        .map(function (v) { return v.version; });
+      if (!vs.length) return;
+      var aprovada = Math.max.apply(null, vs);
+      var p = pub.tours[l.slug];
+      if (!p || p.versao !== aprovada) {
+        atrasados.push({ slug: l.slug, aprovada: aprovada,
+                         no_site: p ? p.versao : null });
+      }
+    });
+
+    if (!atrasados.length) {
+      cx.className = 'aviso aviso-bem';
+      cx.innerHTML = '<b>The site is up to date.</b> Everything approved is '
+        + 'published' + (pub.gerado_em
+            ? ' — last publish ' + new Date(pub.gerado_em)
+                .toLocaleString(undefined, { day: 'numeric', month: 'short',
+                  hour: '2-digit', minute: '2-digit' })
+            : '') + '.';
+      cx.hidden = false;
+      return;
+    }
+
+    cx.className = 'aviso aviso-nota';
+    cx.innerHTML = '<b>' + atrasados.length + ' tour'
+      + (atrasados.length === 1 ? ' is' : 's are')
+      + ' approved and not on the site yet.</b> Approving writes to the '
+      + 'database; the site is static and only changes when you publish it.'
+      + '<ul class="pub-l">' + atrasados.map(function (x) {
+          return '<li><code>' + ewt.escapar(x.slug) + '</code> — approved v'
+            + x.aprovada + ', site shows '
+            + (x.no_site === null ? 'nothing' : 'v' + x.no_site) + '</li>';
+        }).join('') + '</ul>'
+      + '<pre class="pub-c">python3 tools/puxar.py\npython3 tools/gerar.py\ngit add -A \u0026\u0026 git commit -m \'Publicar os tours aprovados\' \u0026\u0026 git push</pre>';
+    cx.hidden = false;
   }
 
   // --------------------------------------------------------- as contagens
@@ -505,6 +588,10 @@ JS = r"""
 
     document.getElementById('ad').hidden = false;
 
+    // A faixa do que esta aprovado e nao publicado. Nao se espera por ela
+    // para desenhar a fila: e informacao de contexto, nao o conteudo.
+    porPublicar();
+
     document.getElementById('abas').addEventListener('click', function (ev) {
       var b = ev.target.closest('.aba');
       if (b) mostrar(b.getAttribute('data-aba'));
@@ -558,6 +645,8 @@ def corpo():
           already online, so you read what changed and not the whole
           thing again.</p>
       </div>
+
+      <p class="aviso" id="publicar" role="status" hidden></p>
 
       <div class="abas" id="abas" role="tablist">
         <button type="button" class="aba" id="aba-tours" data-aba="tours"

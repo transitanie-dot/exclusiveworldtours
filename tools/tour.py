@@ -23,6 +23,7 @@ Duas coisas ficam deliberadamente de fora:
 """
 
 import json
+from datetime import datetime, timezone
 import os
 import re
 import sys
@@ -33,8 +34,9 @@ import ligacao  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
 import reserva  # noqa: E402
-from pagina import (CORES, cabecalho, carregar, cartao_tour, e, envolver,  # noqa: E402
-                    escrever, euros, foto_html, img, por_pais, rodape)
+from pagina import (CORES, RAIZ, cabecalho, carregar, cartao_tour, e,  # noqa: E402
+                    envolver, escrever, euros, foto_html, img, por_pais,
+                    rodape)
 
 # Houve um tempo em que estas palavras eram retiradas das FAQ, porque a
 # marca ainda nao tinha politica de cancelamento e prometer uma que nao
@@ -1172,9 +1174,22 @@ def main():
 
     print('%d paginas de tour' % len(tours))
 
-    # As respostas que falam de cancelamento pelas palavras do tour. Nao
-    # sao um erro: sao para ler uma vez e confirmar que nao contradizem
-    # as %d horas da casa.
+    # O MANIFESTO DO QUE ESTA PUBLICADO
+    #
+    # Isto existe para tirar uma mentira do portal do operador. O portal
+    # lia a base e escrevia "live version 3" — mas o site e estatico, e a
+    # versao 3 so esta no site depois de alguem correr o puxar.py, o
+    # gerar.py e fazer push. Entre aprovar e publicar podem passar dias, e
+    # durante esses dias o portal dizia ao operador que o tour dele estava
+    # no ar quando nao estava.
+    #
+    # Quem sabe a verdade e este gerador, porque e ele que escreve as
+    # paginas. Escreve aqui o que ACABOU de publicar, e o portal le este
+    # ficheiro e compara com a base. Nao e uma cache nem um registo: e a
+    # unica fonte que pode dizer "esta no site", porque e a mesma corrida
+    # que o poe la.
+    manifesto(tours)
+
     if assinalados:
         print('\nRespostas que falam de cancelamento ou reembolso pelas '
               'palavras do tour (%d) — confirmar que batem com as %d horas '
@@ -1185,6 +1200,35 @@ def main():
                 continue
             vistos.add(q)
             print('  %-34s %s' % (q, a[:96] + ('...' if len(a) > 96 else '')))
+
+
+def manifesto(tours):
+    """/assets/publicado.json — que versao de cada tour esta no site.
+
+    So os tours que vieram da base levam versao (o `_versao`); os escritos
+    a mao nao tem versao nenhuma e aparecem com `null`, que e a verdade.
+    """
+    dados = {
+        '_nota': ('Gerado por tools/tour.py. Diz que versao de cada tour '
+                  'esta REALMENTE publicada neste site, que e coisa '
+                  'diferente de que versao esta aprovada na base. O portal '
+                  'do operador le isto para nao prometer o que nao esta no '
+                  'ar.'),
+        'gerado_em': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+        'tours': {t['slug']: {'versao': t.get('_versao'),
+                              'url': '/tours/%s/' % t['slug']}
+                  for t in tours},
+    }
+    destino = os.path.join(RAIZ, 'assets', 'publicado.json')
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    with open(destino, 'w') as f:
+        json.dump(dados, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+    print('escrito: assets/publicado.json (%d tours)' % len(tours))
+
+    # As respostas que falam de cancelamento pelas palavras do tour. Nao
+    # sao um erro: sao para ler uma vez e confirmar que nao contradizem
+    # as %d horas da casa.
 
 
 if __name__ == '__main__':

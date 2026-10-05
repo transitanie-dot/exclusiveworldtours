@@ -1,0 +1,150 @@
+{
+  "_nota": "Gerado por tools/tour.py. Diz que versao de cada tour esta REALMENTE publicada neste site, que e coisa diferente de que versao esta aprovada na base. O portal do operador le isto para nao prometer o que nao esta no ar.",
+  "gerado_em": "2026-10-05T15:59:44+00:00",
+  "tours": {
+    "cliffs-of-moher-galway": {
+      "versao": null,
+      "url": "/tours/cliffs-of-moher-galway/"
+    },
+    "belfast-titanic-giants-causeway": {
+      "versao": null,
+      "url": "/tours/belfast-titanic-giants-causeway/"
+    },
+    "wicklow-glendalough": {
+      "versao": null,
+      "url": "/tours/wicklow-glendalough/"
+    },
+    "dublin-private-chauffeur": {
+      "versao": null,
+      "url": "/tours/dublin-private-chauffeur/"
+    },
+    "dublin-photography-walk": {
+      "versao": null,
+      "url": "/tours/dublin-photography-walk/"
+    },
+    "central-london": {
+      "versao": null,
+      "url": "/tours/central-london/"
+    },
+    "stonehenge-oxford": {
+      "versao": null,
+      "url": "/tours/stonehenge-oxford/"
+    },
+    "london-photography-walk": {
+      "versao": null,
+      "url": "/tours/london-photography-walk/"
+    },
+    "sintra-cascais": {
+      "versao": null,
+      "url": "/tours/sintra-cascais/"
+    },
+    "lisbon-city": {
+      "versao": null,
+      "url": "/tours/lisbon-city/"
+    },
+    "porto-douro-valley": {
+      "versao": null,
+      "url": "/tours/porto-douro-valley/"
+    },
+    "madrid-highlights": {
+      "versao": null,
+      "url": "/tours/madrid-highlights/"
+    },
+    "barcelona-gaudi-gothic": {
+      "versao": null,
+      "url": "/tours/barcelona-gaudi-gothic/"
+    },
+    "seville-day-tour": {
+      "versao": null,
+      "url": "/tours/seville-day-tour/"
+    },
+    "rome-city-tour": {
+      "versao": null,
+      "url": "/tours/rome-city-tour/"
+    },
+    "pompeii-amalfi-coast": {
+      "versao": null,
+      "url": "/tours/pompeii-amalfi-coast/"
+    },
+    "tivoli-villa-deste-hadrians-villa": {
+      "versao": null,
+      "url": "/tours/tivoli-villa-deste-hadrians-villa/"
+    },
+    "chianti-wine-tour": {
+      "versao": null,
+      "url": "/tours/chianti-wine-tour/"
+    },
+    "siena-san-gimignano": {
+      "versao": null,
+      "url": "/tours/siena-san-gimignano/"
+    },
+    "paris-city-tour": {
+      "versao": null,
+      "url": "/tours/paris-city-tour/"
+    },
+    "versailles-giverny": {
+      "versao": null,
+      "url": "/tours/versailles-giverny/"
+    },
+    "normandy-d-day-beaches": {
+      "versao": null,
+      "url": "/tours/normandy-d-day-beaches/"
+    },
+    "loire-valley-castles": {
+      "versao": null,
+      "url": "/tours/loire-valley-castles/"
+    },
+    "highlands-loch-ness": {
+      "versao": null,
+      "url": "/tours/highlands-loch-ness/"
+    },
+    "bath-cotswolds": {
+      "versao": null,
+      "url": "/tours/bath-cotswolds/"
+    },
+    "windsor-castle": {
+      "versao": null,
+      "url": "/tours/windsor-castle/"
+    },
+    "amalfi-coast-positano-ravello": {
+      "versao": null,
+      "url": "/tours/amalfi-coast-positano-ravello/"
+    },
+    "etna-taormina": {
+      "versao": null,
+      "url": "/tours/etna-taormina/"
+    },
+    "palermo-monreale-cefalu": {
+      "versao": null,
+      "url": "/tours/palermo-monreale-cefalu/"
+    },
+    "costa-smeralda-gallura": {
+      "versao": null,
+      "url": "/tours/costa-smeralda-gallura/"
+    },
+    "cagliari-south-sardinia": {
+      "versao": null,
+      "url": "/tours/cagliari-south-sardinia/"
+    },
+    "algarve-coast-benagil-sagres": {
+      "versao": null,
+      "url": "/tours/algarve-coast-benagil-sagres/"
+    },
+    "tavira-ria-formosa": {
+      "versao": null,
+      "url": "/tours/tavira-ria-formosa/"
+    },
+    "madeira-west-porto-moniz": {
+      "versao": null,
+      "url": "/tours/madeira-west-porto-moniz/"
+    },
+    "madeira-east-pico-arieiro": {
+      "versao": null,
+      "url": "/tours/madeira-east-pico-arieiro/"
+    },
+    "azores-sao-miguel": {
+      "versao": null,
+      "url": "/tours/azores-sao-miguel/"
+    }
+  }
+}
