@@ -51,11 +51,14 @@ CSS = """
   display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
   color: %(tinta)s; margin-bottom: .15rem;
 }
+/* A etiqueta estava a colar-se a morada: "Eyre Square, Galway1 TOUR".
+   Um bloco proprio resolve, e e o que ela e — uma linha a parte. */
 .p-usos {
-  display: inline-block; margin-top: .3rem;
+  display: block; margin-top: .35rem;
   font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
   letter-spacing: .08em; text-transform: uppercase; color: %(cor_escura)s;
 }
+.p-usos + .p-usos { margin-top: .2rem; }
 
 /* ------------------------------------------------------- a fotografia */
 .foto-cx { display: grid; gap: .7rem; }
@@ -78,9 +81,13 @@ CSS = """
   position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%%;
 }
 
+/* O mapa e para confirmar que o pino caiu onde devia, nao para navegar.
+   Com 16/9 num ecra largo ficava com 500px de altura e empurrava as
+   coordenadas — que sao o que a pessoa esta a editar — para fora do
+   ecra. */
 .mapa-mini {
   border: 1px solid %(risco)s; border-radius: 6px; overflow: hidden;
-  background: %(papel)s; aspect-ratio: 16 / 9;
+  background: %(papel)s; aspect-ratio: 16 / 9; max-height: 15rem;
 }
 .mapa-mini iframe { width: 100%%; height: 100%%; border: 0; display: block; }
 .coord { display: grid; gap: .8rem; }
