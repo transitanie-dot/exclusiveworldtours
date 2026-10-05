@@ -101,6 +101,18 @@ def main():
         # o preco nunca pode sair com uma casa decimal so
         for m in re.finditer(r'&euro;([0-9 ,]+\.[0-9])(?![0-9])', html):
             falhas.append('%s: preco com uma casa decimal: %s' % (nome, m.group(0)))
+        # <div> a mais ou a menos. Um browser fecha-as sozinho e a pagina
+        # parece bem ate uma seccao aparecer dentro de outra num ecra
+        # estreito. Aconteceu-me ao trocar um campo por uma lista: ficou
+        # um </div> orfao e nada deu erro.
+        corpo = html[html.index('<body'):] if '<body' in html else ''
+        corpo = re.sub(r'<script.*?</script>', '', corpo, flags=re.S)
+        abertas = len(re.findall(r'<div\b', corpo))
+        fechadas = len(re.findall(r'</div>', corpo))
+        if abertas != fechadas:
+            falhas.append('%s: %d <div> abertas e %d fechadas'
+                          % (nome, abertas, fechadas))
+
         # um <style> dentro de outro: o browser engole a regra seguinte
         # sem dar erro nenhum. Custou-me uma seccao com o fundo errado
         # para descobrir, por isso passa a ser verificado.

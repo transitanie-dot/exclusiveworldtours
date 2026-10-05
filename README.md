@@ -12,7 +12,9 @@ gerado vai para o Git como qualquer outro ficheiro.
 
 ```
 tools/gerar.py        gera o site todo, pela ordem certa, e verifica-o
-tools/tours.json      o catalogo: 36 tours, 6 paises, precos, itinerarios
+tools/puxar.py        puxa da base os tours dos operadores aprovados
+tools/tours.json      o catalogo escrito a mao: 36 tours, 6 paises
+tools/tours-operadores.json   o que veio da base. GERADO, nao editar
 tools/artigos.json    os artigos do /journal/
 tools/politica.py     a politica de cancelamento (24h), num sitio so
 tools/ligacao.py      o endereco da base e a chave publica
@@ -23,14 +25,20 @@ sql/                  o modelo de dados, por ordem de aplicacao
 ### Gerar
 
 ```bash
-python3 tools/gerar.py          # tudo, e verifica no fim
+python3 tools/puxar.py --ver    # o que mudaria, sem escrever nada
+python3 tools/puxar.py          # puxa os tours dos operadores
+python3 tools/gerar.py          # gera tudo, e verifica no fim
 python3 tools/gerar.py -v       # com a lista de ficheiros
 ```
+
+O `puxar.py` e um passo a parte e nao entra no `gerar.py` de proposito:
+precisa de rede, e gerar o site tem de funcionar sem ela. Correr so o
+`gerar.py` reaproveita o que o ultimo `puxar.py` escreveu.
 
 Depois, o que so corre no browser:
 
 ```bash
-node tools/testar_portal.mjs    # 15 testes ao portal, com a base simulada
+node tools/testar_portal.mjs    # 31 testes ao portal, com a base simulada
 node tools/acessibilidade.mjs   # axe em 1440, 768 e 390 px
 ```
 
@@ -171,6 +179,42 @@ A regra esta nos dois sitios onde tem de estar: `dias_abertos()` esconde
 o dia, e `registar_pedido()` recusa o pedido. Se so estivesse na pagina,
 bastava abrir as ferramentas do browser para a saltar.
 
+### Como um tour de um operador chega ao site
+
+Este era o buraco mais grave do sistema: um operador submetia, era
+aprovado, e o tour dele nao aparecia em lado nenhum, porque nenhum
+gerador lia da base. O portal e a fila de revisao eram teatro.
+
+```
+  operador submete  ->  listing_versions (pending)
+  Ricardo aprova    ->  listing_versions (approved)  [/admin/]
+  python3 tools/puxar.py   ->  tools/tours-operadores.json
+  python3 tools/gerar.py   ->  tours/<slug>/index.html
+  git push                 ->  no ar
+```
+
+`catalogo_publico()` e a unica porta por onde o conteudo sai da base. E
+uma funcao e nao uma vista aberta pela razao de sempre: por baixo de
+`public_listings` esta `operators`, que tem email, telefone e a taxa de
+comissao. Ha um teste que verifica que nenhuma dessas coisas sai
+(`sql/011_teste_catalogo.sql`).
+
+**O gerador nao precisa de chave de servico.** Tudo o que ele le vai
+acabar numa pagina publica, por isso corre com a chave publicavel, como
+o resto do site.
+
+Dois ficheiros e nao um: `tours.json` e escrito a mao e nunca e tocado
+por um guiao; `tours-operadores.json` e substituido inteiro em cada
+corrida. Se fossem um so, um erro de rede podia apagar conteudo escrito
+a mao, e isso descobria-se tarde.
+
+O que vem da base passa por `limpar()` antes de ser escrito: cortes de
+tamanho, escaloes de preco absurdos descartados um a um, fotografias so
+por https. O conteudo foi escrito por um operador, e um gerador que
+confia em texto de fora e um gerador que publica o que lhe mandarem.
+`tools/testar_puxar.py` poe isso a prova, incluindo um titulo de quatro
+mil caracteres e uma etiqueta `<script>` no meio da descricao.
+
 ### O caminho publico
 
 Com RLS ligado, o visitante nao le nenhuma tabela. O que ele pode fazer
@@ -181,6 +225,8 @@ sao quatro funcoes, e nada mais:
 | `dias_abertos` | que dias posso ir — a consulta do calendario |
 | `frota_no_dia` | o que ha neste dia: veiculos livres, maior lotacao, preco |
 | `partidas_no_dia` | que partidas desse dia ainda estao dentro do prazo |
+| `catalogo_publico` | os tours no ar, para o gerador do site |
+| `catalogo_mudou_em` | quando foi a ultima aprovacao, para saber se vale a pena gerar |
 | `registar_procura` | regista o que foi procurado (escreve, nao le) |
 | `registar_pedido` | o formulario de contacto |
 | `candidatar_operador` | a candidatura de um operador |

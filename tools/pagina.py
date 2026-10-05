@@ -103,6 +103,36 @@ def img(fid, alt, larguras, sizes, classe='', eager=False):
                'fetchpriority="high"' if eager else 'loading="lazy"'))
 
 
+def foto_html(f, larguras, sizes, classe='', eager=False):
+    """Uma fotografia, venha ela de onde vier.
+
+    Ha duas origens e elas nao se parecem nada:
+
+      {'id': '1588952917149-...'}   do Unsplash, provisoria, com srcset
+                                    montado a partir do identificador;
+      {'url': 'https://...'}        do operador, a morada que ele deu.
+
+    A do operador nao leva srcset porque nao ha como pedir outro tamanho
+    a um servidor que nao e nosso — pedir-lhe 2200px e receber 2200px e
+    melhor do que inventar um parametro que ele nao entende e receber um
+    404.
+
+    Quando houver armazenamento proprio, as do operador passam a ter
+    srcset como as outras e esta funcao e o unico sitio que muda.
+    """
+    if not f:
+        return ''
+    if f.get('id') and not f.get('url'):
+        return img(f['id'], f.get('alt', ''), larguras, sizes, classe, eager)
+    url = f.get('url')
+    if not url or not url.startswith('https://'):
+        return ''
+    return ('<img class="%s" src="%s" alt="%s" %s decoding="async" '
+            'onerror="this.style.display=&quot;none&quot;">'
+            % (classe, e(url), e(f.get('alt', '')),
+               'fetchpriority="high"' if eager else 'loading="lazy"'))
+
+
 def euros(v):
     """Com separador de milhares fino e com os centimos quando existem.
 
@@ -119,7 +149,33 @@ def euros(v):
 
 
 def carregar():
+    """O catalogo: o escrito a mao mais o que veio da base.
+
+    Sao dois ficheiros e nao um. `tours.json` e escrito a mao e nunca e
+    tocado por um guiao; `tours-operadores.json` e gerado pelo
+    tools/puxar.py a partir do que os operadores submeteram e eu aprovei,
+    e e substituido inteiro em cada corrida.
+
+    Se fossem um so, uma corrida do puxar.py podia apagar conteudo
+    escrito a mao por causa de um erro de rede — e isso descobria-se
+    tarde. Assim o pior que uma corrida pode fazer e esvaziar o ficheiro
+    que ela propria escreve.
+
+    O ficheiro dos operadores pode nao existir: quem clona o repositorio
+    e gera o site sem nunca ter corrido o puxar.py tem de obter as 36
+    paginas escritas a mao na mesma.
+    """
     tours = json.load(open(os.path.join(AQUI, 'tours.json')))['tours']
+
+    dos_operadores = os.path.join(AQUI, 'tours-operadores.json')
+    if os.path.exists(dos_operadores):
+        vindos = json.load(open(dos_operadores))['tours']
+        # O slug e unico: em caso de choque ganha o escrito a mao, que e
+        # o que ja esta indexado e ligado de fora. O puxar.py ja avisa
+        # quando isto acontece, e nao devia acontecer.
+        ja = {t['slug'] for t in tours}
+        tours += [t for t in vindos if t['slug'] not in ja]
+
     for t in tours:
         d = t['durations'][0]
         t['_h'] = d['h']
@@ -159,11 +215,13 @@ def cartao_tour(t, destaque=False):
     sai dos mesmos numeros que ja estao na tabela.
     """
     foto = t['_foto']
-    media = (img(foto['id'], foto['alt'], (420, 760),
-                 '(min-width:1100px) 25vw, (min-width:700px) 50vw, 100vw',
-                 eager=destaque)
-             if foto else '')
-    credito = ('<span class="credito">%s</span>' % e(foto['by'])) if foto else ''
+    media = foto_html(foto, (420, 760),
+                      '(min-width:1100px) 25vw, (min-width:700px) 50vw, 100vw',
+                      eager=destaque)
+    # O credito e do fotografo do Unsplash. Uma fotografia do proprio
+    # operador nao leva credito a ninguem: e dele.
+    credito = ('<span class="credito">%s</span>' % e(foto['by'])
+               if foto and foto.get('by') else '')
     tier = t['_menor']
     cheio = max(t['durations'][0]['tiers'], key=lambda x: x['max'])
     por_pessoa = cheio['price'] / cheio['max']

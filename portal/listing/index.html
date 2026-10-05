@@ -578,7 +578,7 @@ table.tab a { color: #A85426; font-weight: 500; }
                  align-items: end; }
   .rep-paragem { grid-template-columns: 7rem 1fr; }
   .rep-paragem .rep-p-t, .rep-paragem .rep-x { grid-column: 1 / -1; }
-  .rep-faq { grid-template-columns: 1fr; }
+  .rep-faq, .rep-pratico { grid-template-columns: 1fr; }
 }
 
 /* ------------------------------------------------------------- barra */
@@ -764,11 +764,17 @@ table.tab a { color: #A85426; font-weight: 500; }
               <span class="ajuda">Say it plainly here and nobody argues
                 about it on the day.</span>
             </div>
-            <div class="campo">
-              <label for="pratico">Practical notes</label>
-              <textarea id="pratico" maxlength="1200" rows="3"
-                placeholder="What to wear, how much walking, child seats…"></textarea>
-            </div>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Practical notes</p>
+            <p class="lado-nota" style="margin:0 0 .9rem">One row per thing
+              a guest needs to know before the day. These are shown as a
+              table, so keep the label short &mdash; Pick-up,
+              Accessibility, Weather, Children.</p>
+            <div class="rep" id="pratico"></div>
+            <button type="button" class="rep-mais" id="mais-pratico">Add a
+              note</button>
           </div>
 
           <div class="cx">
@@ -876,6 +882,15 @@ table.tab a { color: #A85426; font-weight: 500; }
         + '<label class="so-leitor" for="' + k + '-7">Included item</label>'
         + '<input id="' + k + '-7" type="text" data-c="v" maxlength="220" value="'
         + ewt.escapar(v || '') + '"></div>'
+        + '<button type="button" class="rep-x">Remove</button>';
+    } else if (tipo === 'pratico') {
+      d.innerHTML =
+        '<div class="campo"><label for="' + k + '-pr1">Label</label>'
+        + '<input id="' + k + '-pr1" type="text" data-c="r" maxlength="60" '
+        + 'value="' + ewt.escapar(v[0] || '') + '" placeholder="Pick-up"></div>'
+        + '<div class="campo"><label for="' + k + '-pr2">What to say</label>'
+        + '<textarea id="' + k + '-pr2" data-c="t" maxlength="600" rows="2">'
+        + ewt.escapar(v[1] || '') + '</textarea></div>'
         + '<button type="button" class="rep-x">Remove</button>';
     } else if (tipo === 'faq') {
       d.innerHTML =
@@ -991,7 +1006,13 @@ table.tab a { color: #A85426; font-weight: 500; }
       included: ler(document.getElementById('inclui'))
         .map(function (x) { return x.v; }).filter(Boolean),
       notIncluded: v('nao_inclui'),
-      practical: v('pratico'),
+      // Pares rotulo/texto, nao um paragrafo: e assim que o gerador os
+      // desenha, numa tabela. Uma string aqui rebentava a geracao das
+      // paginas — e rebentava ao gerar, nao ao submeter, o que e a pior
+      // altura possivel para descobrir.
+      practical: ler(document.getElementById('pratico'))
+        .filter(function (x) { return x.r && x.t; })
+        .map(function (x) { return [x.r, x.t]; }),
       faq: ler(document.getElementById('faq'))
         .filter(function (x) { return x.q && x.a; })
         .map(function (x) { return [x.q, x.a]; }),
@@ -1016,7 +1037,10 @@ table.tab a { color: #A85426; font-weight: 500; }
     pv('inclui_intro', p.includedIntro);
     encher(document.getElementById('inclui'), 'texto', p.included || []);
     pv('nao_inclui', p.notIncluded);
-    pv('pratico', p.practical);
+    encher(document.getElementById('pratico'), 'pratico',
+           typeof p.practical === 'string'
+             ? (p.practical ? [['Good to know', p.practical]] : [])
+             : (p.practical || []));
     encher(document.getElementById('faq'), 'faq', p.faq || []);
     encher(document.getElementById('fotos'), 'foto', p.photos || []);
     contar();
@@ -1205,6 +1229,7 @@ table.tab a { color: #A85426; font-weight: 500; }
     // Os botoes de acrescentar linha.
     [['mais-escalao','escaloes','escalao'], ['mais-paragem','paragens','paragem'],
      ['mais-inclui','inclui','texto'], ['mais-faq','faq','faq'],
+     ['mais-pratico','pratico','pratico'],
      ['mais-foto','fotos','foto']].forEach(function (x) {
       ligarMais(document.getElementById(x[0]),
                 document.getElementById(x[1]), x[2]);
