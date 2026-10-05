@@ -29,29 +29,9 @@ CSS = """
   .ed { grid-template-columns: minmax(0,1fr) 19rem; align-items: start; }
 }
 
-/* --------------------------------------------------- linhas repetiveis */
-.rep { display: grid; gap: .7rem; }
-.rep-l {
-  display: grid; gap: .6rem; align-items: start;
-  padding: .8rem; border: 1px solid %(risco)s; border-radius: 5px;
-  background: %(papel)s;
-}
-.rep-l > .campo { margin: 0; }
-.rep-x {
-  justify-self: start;
-  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
-  color: #8C1D18; background: none; border: 1px solid #B3261E;
-  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
-}
-.rep-x:hover { background: #FCEEEC; }
-.rep-mais {
-  justify-self: start; margin-top: .3rem;
-  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
-  color: %(tinta)s; background: %(branco)s;
-  border: 1px dashed %(mudo)s; border-radius: 4px;
-  padding: .6rem .85rem; cursor: pointer;
-}
-.rep-mais:hover { border-style: solid; border-color: %(tinta)s; }
+/* As linhas repetiveis vivem no portal_base: nao sao so deste editor —
+   os pontos de encontro tambem as usam, e uma classe usada em duas
+   paginas e definida numa so e um estilo que falta numa delas. */
 @media (min-width: 700px) {
   .rep-escalao { grid-template-columns: 5.5rem 5.5rem 1fr 8rem auto;
                  align-items: end; }

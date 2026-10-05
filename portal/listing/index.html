@@ -467,6 +467,43 @@ legend {
 }
 .obrig { color: #8C1D18; }
 
+/* --------------------------------------------------- linhas repetiveis
+   Uma lista onde se acrescentam e apagam linhas: escaloes de preco,
+   paragens, perguntas, fotografias. Vive aqui e nao no editor porque
+   mais do que uma pagina do portal a usa. */
+.rep { display: grid; gap: .7rem; }
+.rep-l {
+  display: grid; gap: .6rem; align-items: start;
+  padding: .8rem; border: 1px solid #D5D8D5; border-radius: 5px;
+  background: #F6F4F1;
+}
+.rep-l > .campo { margin: 0; }
+.rep-x {
+  justify-self: start;
+  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
+  color: #8C1D18; background: none; border: 1px solid #B3261E;
+  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
+}
+.rep-x:hover { background: #FCEEEC; }
+.rep-mais {
+  justify-self: start; margin-top: .3rem;
+  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
+  color: #0B2B2A; background: #FFFFFF;
+  border: 1px dashed #5B6F6E; border-radius: 4px;
+  padding: .6rem .85rem; cursor: pointer;
+}
+.rep-mais:hover { border-style: solid; border-color: #0B2B2A; }
+
+/* Os tours ligados a um recurso (um veiculo, um ponto de encontro). */
+.v-tours { display: grid; gap: .45rem; margin-top: .3rem; }
+.v-t {
+  display: flex; align-items: flex-start; gap: .55rem;
+  font: 400 .88rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
+  padding: .45rem .55rem; border-radius: 4px; background: #F6F4F1;
+}
+.v-t input { margin: .15rem 0 0; width: 1.05rem; height: 1.05rem; flex: none; }
+.v-t span span { color: #5B6F6E; }
+
 /* --------------------------------------------------------------- avisos */
 .aviso {
   margin: .9rem 0; padding: .8rem .9rem; border-radius: 4px;
@@ -550,29 +587,9 @@ table.tab a { color: #A85426; font-weight: 500; }
   .ed { grid-template-columns: minmax(0,1fr) 19rem; align-items: start; }
 }
 
-/* --------------------------------------------------- linhas repetiveis */
-.rep { display: grid; gap: .7rem; }
-.rep-l {
-  display: grid; gap: .6rem; align-items: start;
-  padding: .8rem; border: 1px solid #D5D8D5; border-radius: 5px;
-  background: #F6F4F1;
-}
-.rep-l > .campo { margin: 0; }
-.rep-x {
-  justify-self: start;
-  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
-  color: #8C1D18; background: none; border: 1px solid #B3261E;
-  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
-}
-.rep-x:hover { background: #FCEEEC; }
-.rep-mais {
-  justify-self: start; margin-top: .3rem;
-  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
-  color: #0B2B2A; background: #FFFFFF;
-  border: 1px dashed #5B6F6E; border-radius: 4px;
-  padding: .6rem .85rem; cursor: pointer;
-}
-.rep-mais:hover { border-style: solid; border-color: #0B2B2A; }
+/* As linhas repetiveis vivem no portal_base: nao sao so deste editor —
+   os pontos de encontro tambem as usam, e uma classe usada em duas
+   paginas e definida numa so e um estilo que falta numa delas. */
 @media (min-width: 700px) {
   .rep-escalao { grid-template-columns: 5.5rem 5.5rem 1fr 8rem auto;
                  align-items: end; }
@@ -622,6 +639,7 @@ table.tab a { color: #A85426; font-weight: 500; }
     <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
 <a href="/portal/calendar/">Calendar</a>
 <a href="/portal/fleet/">Fleet</a>
+<a href="/portal/places/">Meeting points</a>
 <a href="/portal/account/">Account</a></div>
   </nav><main id="principal" class="pt-corpo">
   <div class="folha" id="conteudo">

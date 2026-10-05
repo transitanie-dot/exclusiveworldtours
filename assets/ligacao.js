@@ -140,6 +140,46 @@
     return s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
+  // ------------------------------------------------------------ fotos
+  //
+  // Antes disto, "por uma fotografia" queria dizer: ter um sitio onde
+  // alojar imagens, saber o que e uma URL directa, e perceber porque e
+  // que a do Facebook nao serve. Na pratica queria dizer nao ter
+  // fotografias.
+  //
+  // O caminho e sempre <operator_id>/<nome>, e a politica do balde
+  // verifica a primeira pasta: um operador nao consegue escrever por
+  // cima das fotografias de outro nem que tente.
+  var FOTO_MAX = 5 * 1024 * 1024;
+  var FOTO_TIPOS = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
+  async function enviar_foto(ficheiro, operador) {
+    if (!ficheiro) return { erro: 'Pick a file first.' };
+    if (FOTO_TIPOS.indexOf(ficheiro.type) < 0) {
+      return { erro: 'That has to be a JPEG, PNG, WebP or AVIF image.' };
+    }
+    if (ficheiro.size > FOTO_MAX) {
+      return { erro: 'That image is ' + Math.round(ficheiro.size / 1048576)
+                     + ' MB. The limit is 5 MB \u2014 most phones can export '
+                     + 'a smaller one.' };
+    }
+
+    // Um nome que nao colide e nao revela o nome do ficheiro original,
+    // que as vezes e o nome de uma pessoa ou de um cliente.
+    var ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png',
+                 'image/webp': 'webp', 'image/avif': 'avif' })[ficheiro.type];
+    var nome = operador + '/' + Date.now() + '-'
+             + Math.random().toString(36).slice(2, 8) + '.' + ext;
+
+    var r = await sb.storage.from('fotos').upload(nome, ficheiro, {
+      cacheControl: '31536000', upsert: false, contentType: ficheiro.type
+    });
+    if (r.error) return { erro: legivel(r.error) };
+
+    var u = sb.storage.from('fotos').getPublicUrl(nome);
+    return { url: u.data.publicUrl, caminho: nome };
+  }
+
   function escapar(s) {
     return String(s === null || s === undefined ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -150,6 +190,7 @@
     sb: sb, legivel: legivel, dizer: dizer,
     sessao: sessao, utilizador: utilizador, sair: sair,
     papel: papel, exigir_entrada: exigir_entrada,
-    hoje: hoje, iso: iso, euros: euros, escapar: escapar
+    hoje: hoje, iso: iso, euros: euros, escapar: escapar,
+    enviar_foto: enviar_foto
   };
 })(window);

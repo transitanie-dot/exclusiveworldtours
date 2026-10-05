@@ -26,7 +26,7 @@ PAGINAS = (['index.html', 'tours/index.html', 'search/index.html',
             'cancellation/index.html',
             'portal/index.html', 'portal/listing/index.html',
             'portal/calendar/index.html', 'portal/account/index.html',
-            'portal/fleet/index.html',
+            'portal/fleet/index.html', 'portal/places/index.html',
             'admin/index.html', 'admin/operators/index.html',
             'admin/searches/index.html']
            + sorted(os.path.relpath(x, RAIZ)
@@ -41,8 +41,8 @@ PAGINAS = (['index.html', 'tours/index.html', 'search/index.html',
 # faz nada, e parece lenta.
 COM_BASE = ['portal/index.html', 'portal/listing/index.html',
             'portal/calendar/index.html', 'portal/account/index.html',
-            'portal/fleet/index.html',
-            'portal/fleet/index.html',
+            'portal/fleet/index.html', 'portal/places/index.html',
+            'portal/fleet/index.html', 'portal/places/index.html',
             'admin/index.html', 'admin/operators/index.html',
             'admin/searches/index.html', 'contact/index.html',
             'suppliers/apply/index.html', 'tours/index.html',
@@ -66,6 +66,8 @@ EXIGIDAS = ['botao', 'tour', 'tours', 'painel', 'paragem', 'galeria',
             'aviso', 'est', 'bt', 'vazio', 'tab', 'rep-l', 'rep-mais',
             'dia', 'grelha', 'aba', 'rv', 'dif-l', 'conta',
             'dia-estado', 'fr', 'v-lista', 'vgrelha', 'vd', 'vleg',
+            'lg', 'p-lista', 'foto-pre', 'mapa-mini', 'encontro',
+            'encontro-txt', 'encontro-foto', 'hora', 'horas',
             # os formularios publicos
             'fcapa', 'fcorpo', 'fcx', 'fcampo', 'faviso', 'flado',
             'bgrande', 'sub-h',
@@ -101,6 +103,13 @@ def main():
         # o preco nunca pode sair com uma casa decimal so
         for m in re.finditer(r'&euro;([0-9 ,]+\.[0-9])(?![0-9])', html):
             falhas.append('%s: preco com uma casa decimal: %s' % (nome, m.group(0)))
+        # Um & cru dentro de um href e HTML invalido. Os browsers
+        # perdoam-no hoje; o verificador nao, porque e exatamente o tipo
+        # de coisa que funciona ate um dia deixar de funcionar.
+        for m in re.finditer(r'href="([^"]*&(?!amp;|lt;|gt;|quot;|#)[^"]*)"', html):
+            falhas.append('%s: & por escapar num href: %s'
+                          % (nome, m.group(1)[:70]))
+
         # <div> a mais ou a menos. Um browser fecha-as sozinho e a pagina
         # parece bem ate uma seccao aparecer dentro de outra num ecra
         # estreito. Aconteceu-me ao trocar um campo por uma lista: ficou

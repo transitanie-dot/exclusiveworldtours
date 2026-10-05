@@ -38,7 +38,7 @@ precisa de rede, e gerar o site tem de funcionar sem ela. Correr so o
 Depois, o que so corre no browser:
 
 ```bash
-node tools/testar_portal.mjs    # 31 testes ao portal, com a base simulada
+node tools/testar_portal.mjs    # 35 testes ao portal, com a base simulada
 node tools/acessibilidade.mjs   # axe em 1440, 768 e 390 px
 ```
 
@@ -75,6 +75,7 @@ cp node_modules/@supabase/supabase-js/dist/umd/supabase.js assets/lib/supabase.j
 | `/portal/listing/` | o editor de anuncios | `portal_anuncio.py` |
 | `/portal/calendar/` | o calendario dos tours | `portal_calendario.py` |
 | `/portal/fleet/` | a frota e o calendario de cada veiculo | `portal_frota.py` |
+| `/portal/places/` | os pontos de encontro, com fotografia | `portal_lugares.py` |
 | `/portal/account/` | a conta do operador | `portal_conta.py` |
 | `/admin/` | a fila de revisao | `admin.py` |
 | `/admin/operators/`, `/admin/searches/` | as listas | `admin_listas.py` |
@@ -215,6 +216,28 @@ confia em texto de fora e um gerador que publica o que lhe mandarem.
 `tools/testar_puxar.py` poe isso a prova, incluindo um titulo de quatro
 mil caracteres e uma etiqueta `<script>` no meio da descricao.
 
+### Os pontos de encontro, e onde as fotografias vivem
+
+Pertencem ao **operador** e nao ao anuncio, pela mesma razao que os
+veiculos: quem parte sempre da mesma praca nao deve escrever a mesma
+morada em seis tours, nem corrigi-la em seis sitios quando uma obra
+fechar a rua. E sao dados rapidos — nao passam por revisao, porque um
+ponto de encontro errado no dia e um cliente parado no sitio errado.
+
+Nao ter ponto de encontro **nao e uma falta**: num dia privado o normal e
+a recolha ao hotel, e a pagina diz isso em vez de nao dizer nada.
+
+Ha um balde no Supabase Storage (`fotos`), publico para leitura e com
+escrita so na pasta do proprio operador — o caminho e
+`<operator_id>/<ficheiro>` e a politica verifica a primeira pasta. Antes
+disto, "por uma fotografia" queria dizer ter onde alojar imagens e saber
+o que e uma URL directa; na pratica queria dizer nao ter fotografias.
+
+A fotografia do ponto de encontro e o item mais barato de todo o portal
+com retorno operacional directo. Um "canto nordeste da praca, ao pe do
+quiosque verde" explica-se em duas linhas e falha; uma fotografia nao
+falha.
+
 ### O caminho publico
 
 Com RLS ligado, o visitante nao le nenhuma tabela. O que ele pode fazer
@@ -227,6 +250,8 @@ sao quatro funcoes, e nada mais:
 | `partidas_no_dia` | que partidas desse dia ainda estao dentro do prazo |
 | `catalogo_publico` | os tours no ar, para o gerador do site |
 | `catalogo_mudou_em` | quando foi a ultima aprovacao, para saber se vale a pena gerar |
+| `pontos_de_encontro` | os pontos de encontro dos tours no ar, para o gerador |
+| `ponto_de_encontro` | o de um tour so |
 | `registar_procura` | regista o que foi procurado (escreve, nao le) |
 | `registar_pedido` | o formulario de contacto |
 | `candidatar_operador` | a candidatura de um operador |

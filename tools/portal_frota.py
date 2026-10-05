@@ -69,15 +69,8 @@ CSS = """
   .v-form .v-linha { display: grid; grid-template-columns: 1fr 7rem; gap: .8rem; }
 }
 
-/* --------------------------------------------------- os tours ligados */
-.v-tours { display: grid; gap: .45rem; margin-top: .3rem; }
-.v-t {
-  display: flex; align-items: flex-start; gap: .55rem;
-  font: 400 .88rem/1.45 'Inter', system-ui, sans-serif; color: %(texto)s;
-  padding: .45rem .55rem; border-radius: 4px; background: %(papel)s;
-}
-.v-t input { margin: .15rem 0 0; width: 1.05rem; height: 1.05rem; flex: none; }
-.v-t span { color: %(mudo)s; }
+/* Os tours ligados a um veiculo usam o .v-t do portal_base: tambem sao
+   usados na pagina dos pontos de encontro. */
 
 /* ------------------------------------------------------ o calendario */
 .vc-topo {
