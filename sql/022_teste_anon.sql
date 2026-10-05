@@ -1,7 +1,7 @@
 -- =====================================================================
 -- ESTE FICHEIRO CORRE SEMPRE EM ULTIMO, E E DE PROPOSITO
 --
--- Chamava-se 016 e corria antes do 017. O 017 trouxe a cotar(), que e
+-- Chamou-se 016, depois 019, e agora 022. O 017 trouxe a cotar(), que e
 -- publica, e o varrimento do anon passou a acusar uma funcao que ainda
 -- nao existia — a dizer que estava partida quando o que estava errado
 -- era a ordem.
@@ -92,6 +92,14 @@ begin
   perform catalogo_mudou_em();
   perform registar_procura('dublin', 3, 'Dublin', 'Ireland');
 
+  -- As publicas que a 020 trouxe.
+  begin
+    perform count(*) from janela_no_dia('x-que-nao-existe', current_date);
+  exception when others then maus := maus || ('janela_no_dia: ' || sqlerrm); end;
+  begin
+    perform count(*) from promocao_para(gen_random_uuid(), current_date);
+  exception when others then maus := maus || ('promocao_para: ' || sqlerrm); end;
+
   -- A cotar() tambem e publica: e a pagina do tour que a chama para
   -- mostrar o preco do grupo escolhido. Se devolvesse zero linhas ao
   -- anon — o erro da 010 — a pagina mostrava "sem preco" a todos os
@@ -107,7 +115,7 @@ begin
     raise exception 'FUNCOES PUBLICAS PARTIDAS PARA O ANON: %',
       array_to_string(maus, '; ');
   end if;
-  raise notice 'ok: as 11 funcoes publicas respondem ao anon';
+  raise notice 'ok: as 13 funcoes publicas respondem ao anon';
 end $$;
 
 \echo ''
@@ -141,6 +149,18 @@ begin
         mal := mal || 'chama registar_cobranca'; exception when others then null; end;
   begin perform limpar_marcas();
         mal := mal || 'chama limpar_marcas'; exception when others then null; end;
+
+  -- E as da 020. A epoca_do_dia() devolve o id da epoca, a
+  -- marcar_falta() escreve na reserva, e nenhuma das duas e assunto de
+  -- quem nao assinou.
+  begin perform count(*) from epoca_do_dia(gen_random_uuid(), current_date);
+        mal := mal || 'chama epoca_do_dia'; exception when others then null; end;
+  begin perform marcar_falta(gen_random_uuid(), 10, 'texto suficientemente longo');
+        mal := mal || 'chama marcar_falta'; exception when others then null; end;
+  begin perform count(*) from listing_seasons;
+        mal := mal || 'le listing_seasons'; exception when others then null; end;
+  begin perform count(*) from promotions;
+        mal := mal || 'le promotions'; exception when others then null; end;
 
   if array_length(mal, 1) > 0 then
     raise exception 'O ANON VE DEMAIS: %', array_to_string(mal, '; ');

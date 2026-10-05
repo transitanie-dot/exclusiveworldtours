@@ -59,7 +59,8 @@ for f in 000_supabase_simulado.sql 001_marketplace.sql 002_teste_regras.sql \
          010_catalogo_publico.sql 011_teste_catalogo.sql \
          012_pontos_de_encontro.sql 013_avaliacoes.sql \
          014_avaliacoes_publicas.sql 015_teste_avaliacoes.sql \
-         017_reservas.sql 018_teste_reservas.sql 019_teste_anon.sql; do
+         017_reservas.sql 018_teste_reservas.sql \
+         020_epocas.sql 021_teste_epocas.sql 022_teste_anon.sql; do
   psql -h . -p 5433 -U postgres -v ON_ERROR_STOP=1 -f "$f" || break
 done
 ```
@@ -75,10 +76,10 @@ avaliação — esse teste passava quando corria sozinho e falhava depois do
 `002`, porque depois do `002` aquele utilizador era administrador. Um
 teste cujo resultado depende da ordem em que corre não é um teste.
 
-**O varrimento do `anon` é o último ficheiro.** O `019_teste_anon.sql`
+**O varrimento do `anon` é o último ficheiro.** O `022_teste_anon.sql`
 corre *todas* as funções públicas como `anon`, por isso tem de vir depois
-de todas elas. Chamava-se `016` e deu um falso alarme no dia em que o
-`017` trouxe uma função pública nova. Quando acrescentares uma migração
+de todas elas. Chamou-se `016`, depois `019`, e agora `022` — muda de número sempre que
+uma migração nova traz funções públicas. Quando acrescentares uma migração
 com funções públicas, muda o número deste ficheiro para continuar a ser o
 último, e acrescenta lá a função nova.
 
@@ -97,3 +98,42 @@ que a Edge Function que fala com o Stripe tenha um erro:
 | 8 | Um evento repetido do Stripe não dá duas reservas | O Stripe repete sempre |
 | 10-11 | Tentativas espaçadas, e esgotadas voltam o dia à venda | O cron queimava as três tentativas em três horas |
 | 12-13 | O operador vê o que recebe, e só as reservas dele | A taxa de comissão de um operador não é assunto de outro |
+
+## Épocas, promoções e faltas (020 / 021)
+
+O `020_epocas.sql` troca o modelo do calendário: deixa de ser uma linha
+por dia e passa a ser **aberto por regra, fechado por excepção** — o
+modelo da Viator, que está certo. Uma época é um intervalo de datas ×
+dias da semana × horas de partida, e "segunda a sexta, Junho a Setembro,
+às 09:00 e às 14:00" passa a ser uma linha em vez de noventa cliques.
+
+Três coisas que não se mudam sem bom motivo:
+
+**Uma época sem data de fim rola para a frente, 400 dias.** É a única
+defesa contra o modo de falha mais comum de um marketplace: o anúncio
+cuja disponibilidade se esgota em silêncio e ninguém dá por isso até as
+vendas pararem.
+
+**A migração não parte quem ainda não tem épocas.** Um anúncio só com
+`listing_times` continua a responder exactamente como antes, e a `020`
+cria-lhe uma época aberta a partir das horas que já tinha. A
+`listing_times` **não se apaga** — fica sem ninguém a ler até se
+confirmar que as épocas correm bem. Apagar a fonte no mesmo dia em que se
+muda o leitor é cortar o ramo onde se está sentado.
+
+**O modo do horário muda-se a qualquer momento.** A Viator torna a
+escolha irreversível, e isso é uma decisão tomada no dia 1 com a menor
+informação que a pessoa vai ter na vida.
+
+| | O que o `021` prova | Porque interessa |
+|---|---|---|
+| 1-2 | Uma frase produz o calendário certo, e as horas são da época | Ninguém faz a mesma hora em Janeiro e em Agosto |
+| 3 | Uma época sem fim abre até ao fim do calendário | O anúncio não se esgota em silêncio |
+| 4 | Um dia fechado é uma excepção e não mexe na regra | |
+| 5 | Um bebé ao colo não ocupa lugar nem muda o preço | O preço é do veículo — é o argumento central do site |
+| 6 | A promoção precisa das **duas** janelas (reserva e viagem) | "Reserva até sexta, viaja no Verão" |
+| 7 | Quem paga o desconto muda a repartição | Uma campanha nossa não corta a margem do operador |
+| 8 | Motorista à disposição devolve uma janela, não uma hora inventada | |
+| 9-10 | Uma falta exige minutos e texto, e não se regista antes do tour | É o registo feito no dia que ganha uma disputa de cartão |
+| 11 | Um operador não vê nem mexe nas épocas de outro | |
+| 12 | Quem ainda não migrou continua a vender | |

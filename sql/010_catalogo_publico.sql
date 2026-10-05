@@ -44,7 +44,7 @@
 -- dele desapareceu.
 --
 -- Por isso a "ultima versao aprovada" e calculada aqui dentro, sobre a
--- tabela, e nao pedida a vista. O sql/019_teste_anon.sql corre todas as
+-- tabela, e nao pedida a vista. O sql/022_teste_anon.sql corre todas as
 -- funcoes publicas como `anon` justamente para isto nao voltar a passar.
 -- ---------------------------------------------------------------------
 create or replace function catalogo_publico()
