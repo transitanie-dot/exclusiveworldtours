@@ -1180,9 +1180,11 @@ table.tab a { color: #A85426; font-weight: 500; }
         });
         if (s.error) throw s.error;
         ESTADO.sujo = false;
-        ewt.dizer(av, 'Sent for review. Your live version — if you have '
-          + 'one — stays on the site until this one is approved. We write '
-          + 'to you either way.', 'bem');
+        // "aprovada e publicada", e nao so "aprovada": o site e estatico
+        // e muda quando o gerador corre, nao quando o botao e carregado.
+        ewt.dizer(av, 'Sent for review. Whatever is on the site now — if '
+          + 'anything — stays there until this one is approved and '
+          + 'published. We write to you either way.', 'bem');
         await historico();
       } else {
         // Um rascunho fica no browser e nao na base: a base guarda

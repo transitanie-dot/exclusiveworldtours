@@ -647,6 +647,24 @@ table.tab a { color: #A85426; font-weight: 500; }
   font: 400 .84rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
 }
 
+/* O QUE ESTA NO SITE, E O QUE ESTA SO APROVADO
+   Duas coisas diferentes, duas cores diferentes. Um operador que ve
+   "approved" e nao ve o tour no site liga a perguntar. */
+.an-site {
+  margin-top: .5rem; display: flex; flex-wrap: wrap; gap: .4rem .8rem;
+  align-items: center;
+  font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+.an-site a { color: #A85426; font-weight: 600; }
+.an-ar {
+  display: inline-block; padding: .14rem .45rem; border-radius: 3px;
+  font: 700 .7rem/1.5 'Inter', system-ui, sans-serif; letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.an-ar-no { background: #E6F2EA; color: #1D5C35; }
+.an-ar-espera { background: #FFF4E0; color: #7A4C05; }
+.an-ar-fora { background: #D5D8D5; color: #354F4E; }
+
 </style>
 <script src="/assets/lib/supabase.js"></script>
 <script src="/assets/ligacao.js"></script>
@@ -847,12 +865,77 @@ table.tab a { color: #A85426; font-weight: 500; }
       + 'opens the portal straight away.', 'bem');
   });
 
+  // ============================================================
+  // O QUE ESTA REALMENTE NO SITE
+  //
+  // A base diz que versao esta APROVADA. O site e estatico: a versao
+  // aprovada so la chega quando alguem corre o gerador e faz push. Entre
+  // uma coisa e outra podem passar dias, e durante esses dias este painel
+  // dizia ao operador "live version 3" com a versao 2 no ar.
+  //
+  // O /assets/publicado.json e escrito pelo proprio gerador, na mesma
+  // corrida que escreve as paginas. E a unica coisa que pode dizer "esta
+  // no site" sem adivinhar.
+  //
+  // Se o ficheiro nao carregar, nao se inventa: o painel deixa de falar
+  // do site e so diz o que a base sabe. Melhor calar-se do que mentir.
+  // ============================================================
+  var PUBLICADO = null;
+
+  async function lerPublicado() {
+    try {
+      var r = await fetch('/assets/publicado.json', { cache: 'no-store' });
+      if (!r.ok) return;
+      PUBLICADO = await r.json();
+    } catch (e) { /* fica a null, e o painel cala-se sobre o site */ }
+  }
+
+  /** O que dizer a este operador sobre este anuncio e o site. */
+  function noSite(a) {
+    if (!PUBLICADO || !PUBLICADO.tours) return '';
+
+    var p = PUBLICADO.tours[a.slug];
+    var quandoGerado = PUBLICADO.gerado_em
+      ? quando(PUBLICADO.gerado_em) : null;
+
+    // Nunca foi aprovado: nao ha nada a dizer sobre o site.
+    if (a.versao === null) return '';
+
+    if (!p) {
+      return '<p class="an-site">'
+        + '<span class="an-ar an-ar-espera">not on the site yet</span>'
+        + '<span>Version ' + a.versao + ' is approved. It goes on the site '
+        + 'at the next publish.</span></p>';
+    }
+
+    var ligacao = '<a href="/tours/' + encodeURIComponent(a.slug)
+      + '/" target="_blank" rel="noopener">See it on the site</a>';
+
+    if (p.versao === a.versao) {
+      return '<p class="an-site">'
+        + '<span class="an-ar an-ar-no">on the site</span>'
+        + '<span>Version ' + a.versao
+        + (quandoGerado ? ', published ' + quandoGerado : '') + '.</span>'
+        + ligacao + '</p>';
+    }
+
+    // Esta no site, mas com uma versao antiga. E o caso que mais confunde
+    // um operador: ele mudou o texto, foi aprovado, e o site continua a
+    // mostrar o antigo.
+    return '<p class="an-site">'
+      + '<span class="an-ar an-ar-espera">older version on the site</span>'
+      + '<span>The site shows version ' + (p.versao === null ? '—' : p.versao)
+      + '; version ' + a.versao + ' is approved and goes up at the next '
+      + 'publish.</span>' + ligacao + '</p>';
+  }
+
   // -------------------------------------------------------------- painel
   function linhaAnuncio(a) {
     var pend = a.pendente
       ? '<p class="an-pend"><b>Waiting for review</b> — version '
         + a.pendente.version + ', sent ' + a.pendente.quando
-        + '. Your live version stays online until this one is approved.</p>'
+        + '. The version on the site stays up until this one is approved '
+        + 'and published.</p>'
       : '';
     var rec = a.recusada
       ? '<p class="an-pend"><b>Sent back</b> — '
@@ -864,9 +947,9 @@ table.tab a { color: #A85426; font-weight: 500; }
       + '<p class="an-m"><span class="est est-' + a.status + '">' + a.status
       + '</span>'
       + '<span>' + ewt.escapar(a.city) + ', ' + ewt.escapar(a.country) + '</span>'
-      + (a.versao ? '<span>live version ' + a.versao + '</span>'
-                  : '<span>never published</span>')
-      + '</p>' + pend + rec + '</div>'
+      + (a.versao ? '<span>approved version ' + a.versao + '</span>'
+                  : '<span>never approved</span>')
+      + '</p>' + noSite(a) + pend + rec + '</div>'
       + '<div class="acoes">'
       + '<a class="bt bt-s bt-pq" href="/portal/calendar/?tour=' + a.id + '">Calendar</a>'
       + '<a class="bt bt-p bt-pq" href="/portal/listing/?id=' + a.id + '">Edit</a>'
@@ -947,16 +1030,21 @@ table.tab a { color: #A85426; font-weight: 500; }
       if (x.status === 'rejected' && !o.recusada) o.recusada  = x;
     });
 
-    var nPend = 0, nVivos = 0;
+    // O "on the site now" conta o que o MANIFESTO confirma, nao o que a
+    // base aprovou. Antes contava `status === 'live'`, que e so uma
+    // coluna da base e nao diz nada sobre o que esta publicado.
+    var nPend = 0, nNoSite = 0;
     var lista = anuncios.map(function (a) {
       var o = porAnuncio[a.id] || {};
       if (o.pendente) nPend++;
-      if (a.status === 'live') nVivos++;
+      if (PUBLICADO && PUBLICADO.tours && PUBLICADO.tours[a.slug]
+          && o.aprovada
+          && PUBLICADO.tours[a.slug].versao === o.aprovada.version) nNoSite++;
       var titulo = (o.aprovada && o.aprovada.payload && o.aprovada.payload.title)
         || (o.pendente && o.pendente.payload && o.pendente.payload.title)
         || a.slug;
       return {
-        id: a.id, titulo: titulo, status: a.status,
+        id: a.id, slug: a.slug, titulo: titulo, status: a.status,
         city: a.city, country: a.country,
         versao: o.aprovada ? o.aprovada.version : null,
         pendente: o.pendente
@@ -972,7 +1060,7 @@ table.tab a { color: #A85426; font-weight: 500; }
     meus.innerHTML +=
       '<div class="resumo">'
       + '<div class="rs"><b>' + anuncios.length + '</b><span>tours in your account</span></div>'
-      + '<div class="rs"><b>' + nVivos + '</b><span>live on the site</span></div>'
+      + '<div class="rs"><b>' + nNoSite + '</b><span>on the site now</span></div>'
       + '<div class="rs"><b>' + nPend + '</b><span>waiting for review</span></div>'
       + '</div>'
       + '<div class="acoes" style="margin-bottom:1.1rem">'
@@ -993,6 +1081,9 @@ table.tab a { color: #A85426; font-weight: 500; }
     }
     elPainel.hidden = false;
     try {
+      // Antes de desenhar: sem isto, a primeira pintura dizia uma coisa e
+      // a segunda outra.
+      await lerPublicado();
       await painel(p);
     } catch (err) {
       elCorpo.innerHTML = '<div class="aviso aviso-mal">'

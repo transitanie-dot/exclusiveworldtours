@@ -85,6 +85,19 @@ function cenarioPadrao() {
       maxPax: 6, price: 555, currency: 'EUR', hoursToStart: 900,
       payLater: true, payLaterReason: null, payLaterCode: null
     },
+    // O MANIFESTO DO QUE ESTA PUBLICADO
+    //
+    // Nao vem do Supabase: e um ficheiro do site, escrito pelo gerador.
+    // Por isso tem rota propria. `null` faz o pedido falhar, que e o caso
+    // em que o portal se tem de CALAR sobre o site em vez de adivinhar.
+    // Faz a v2 passar de 'pending' a 'approved'. E a unica forma honesta
+    // de encenar "o site esta atrasado": a base tem a v2 aprovada e o
+    // manifesto ainda diz v1.
+    aprovadaV2: false,
+    publicado: {
+      gerado_em: '2026-10-05T12:00:00Z',
+      tours: { 'example-sintra': { versao: 1, url: '/tours/example-sintra/' } }
+    },
     // null = deixa responder o mock que ja existia.
     horas: null,
     reservar: { ok: true, url: 'http://localhost:' + PORTA + '/cancellation/',
@@ -190,16 +203,26 @@ function responder(url, metodo, corpo) {
   if (c === '/rest/v1/listings') {
     if (metodo !== 'GET') return [{ id: AN, slug: 'example-sintra',
       status: 'draft', city: 'Lisbon', country: 'Portugal' }];
-    return [{ id: AN, slug: 'example-sintra', status: 'live',
+    const linha = { id: AN, slug: 'example-sintra', status: 'live',
       city: 'Lisbon', country: 'Portugal', meeting_point_id: 'mp1',
       created_at: '2026-09-01T10:00:00Z',
       operators: { id: OP, name: 'Atlantic Private Tours',
-                   status: 'approved', commission_rate: 0.2 } }];
+                   status: 'approved', commission_rate: 0.2 } };
+    // A relacao incorporada, quando o select a pede. Sem isto o aviso do
+    // admin ("aprovado e nao publicado") nunca encontrava nada e ficava
+    // sempre a dizer que o site estava em dia — um teste a medir o mock.
+    if ((u.searchParams.get('select') || '').indexOf('listing_versions') > -1) {
+      linha.listing_versions = CENARIO.aprovadaV2
+        ? [{ version: 1, status: 'approved' }, { version: 2, status: 'approved' }]
+        : [{ version: 1, status: 'approved' }, { version: 2, status: 'pending' }];
+    }
+    return [linha];
   }
   if (c === '/rest/v1/listing_versions') {
     const q = u.searchParams.get('status') || '';
     const base = [
-      { id: 'v2', listing_id: AN, version: 2, payload: V2, status: 'pending',
+      { id: 'v2', listing_id: AN, version: 2, payload: V2,
+        status: CENARIO.aprovadaV2 ? 'approved' : 'pending',
         submitted_at: '2026-10-02T21:00:00Z', review_note: null,
         listings: { id: AN, slug: 'example-sintra', status: 'live',
           city: 'Lisbon', country: 'Portugal',
@@ -365,6 +388,20 @@ await ctx.addInitScript(() => {
   try {
     localStorage.setItem('sb-lmrvoakknsrypoeqmjbr-auth-token', JSON.stringify(sessao));
   } catch (e) {}
+});
+
+// O /assets/publicado.json e um ficheiro do site, e o servidor de teste
+// serve o que esta no repositorio. Para os testes poderem encenar "o
+// site esta atrasado" ou "o manifesto nao carrega", interceta-se aqui.
+await ctx.route('**/assets/publicado.json', async (rota) => {
+  if (CENARIO.publicado === null) {
+    await rota.fulfill({ status: 503, body: 'indisponivel' });
+    return;
+  }
+  await rota.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify(CENARIO.publicado)
+  });
 });
 
 await ctx.route('**://*.supabase.co/**', async (rota) => {
@@ -1241,6 +1278,132 @@ await t('a fila de pagamentos soma por operador e diz que nao transfere nada',
       // Uma pagina que diz "mark as paid" e facil de confundir com uma
       // pagina que paga. Esta diz, por escrito, que nao paga nada.
       ['avisa que nao transfere nada', /does not transfer/.test(txt)]
+    ];
+  });
+
+
+// =====================================================================
+// O PORTAL E O SITE, LIGADOS
+//
+// O que se testa aqui e uma coisa so: o portal nao pode prometer ao
+// operador que o tour dele esta no site quando nao esta. A base diz o
+// que esta APROVADO; o site e estatico e so muda quando alguem corre o
+// gerador. Eram duas coisas e o portal tratava-as como uma.
+// =====================================================================
+console.log('\nO PORTAL E O SITE\n');
+
+cenarioPadrao();
+await t('com a versao aprovada publicada, o portal diz que esta no site',
+  '/portal/', '.an-l', async (p) => {
+    const txt = await p.locator('.an-l').first().innerText();
+    const liga = p.locator('.an-site a');
+    return [
+      ['diz que esta no site', /on the site/i.test(txt)],
+      ['diz quando foi publicado', /published/i.test(txt)],
+      ['tem ligacao para a pagina do tour',
+        (await liga.getAttribute('href')) === '/tours/example-sintra/'],
+      ['a ligacao abre noutro separador',
+        (await liga.getAttribute('target')) === '_blank'],
+      // "live version" era a frase antiga, e dizia uma coisa que o portal
+      // nao sabia. Se voltar, este teste cai.
+      ['nao escreve "live version"', !/live version/i.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+// A base aprovou a v2; o manifesto diz que o site tem a v1.
+CENARIO.aprovadaV2 = true;
+await t('com o site atrasado, diz que o site mostra a versao antiga',
+  '/portal/', '.an-site', async (p) => {
+    const txt = await p.locator('.an-l').first().innerText();
+    return [
+      ['avisa que a versao no site e mais antiga',
+        /older version on the site/i.test(txt)],
+      ['diz qual esta no site', /shows version 1/.test(txt)],
+      // Este e o caso que mais confunde um operador: ele mudou o texto,
+      // foi aprovado, e o site continua igual. Tem de ler que falta um
+      // passo e que o passo nao e dele.
+      ['explica que falta publicar', /next publish/i.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.publicado = { gerado_em: '2026-10-05T12:00:00Z', tours: {} };
+await t('aprovado e nunca publicado diz exatamente isso',
+  '/portal/', '.an-site', async (p) => {
+    const txt = await p.locator('.an-l').first().innerText();
+    return [
+      ['diz que ainda nao esta no site', /not on the site yet/i.test(txt)],
+      ['nao finge uma ligacao para uma pagina que nao existe',
+        (await p.locator('.an-site a').count()) === 0]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.publicado = null;   // o ficheiro nao carrega
+await t('sem o manifesto, o portal CALA-SE sobre o site em vez de adivinhar',
+  '/portal/', '.an-l', async (p) => {
+    const txt = await p.locator('.an-l').first().innerText();
+    return [
+      ['nao aparece nenhuma linha sobre o site',
+        (await p.locator('.an-site').count()) === 0],
+      // Continua a dizer o que a base SABE. Calar-se sobre o site nao e
+      // calar-se sobre tudo.
+      ['continua a dizer a versao aprovada', /approved version/i.test(txt)],
+      // A frase "whatever is on the site now stays there" continua a
+      // aparecer, e esta certa: nao afirma QUAL versao esta no site. O
+      // que nao pode aparecer e uma etiqueta a dizer o estado, porque
+      // essa seria uma afirmacao sem fonte.
+      ['nenhuma etiqueta de estado do site',
+        (await p.locator('.an-ar').count()) === 0],
+      ['nao nomeia uma versao como estando no site',
+        !/shows version|goes on the site/i.test(txt)]
+    ];
+  }, /503|publicado\.json/);
+
+cenarioPadrao();
+CENARIO.publicado = {
+  gerado_em: '2026-10-05T12:00:00Z',
+  tours: { 'example-sintra': { versao: 1, url: '/tours/example-sintra/' } }
+};
+await t('o resumo conta o que esta no site, nao o que a base aprovou',
+  '/portal/', '.resumo', async (p) => {
+    const txt = await p.locator('.resumo').innerText();
+    return [
+      ['a etiqueta fala do agora', /on the site now/i.test(txt)],
+      // O anuncio esta 'live' na base mas com a v1 no site e a v1
+      // aprovada: conta 1. Antes contava o status da base, que dizia 1
+      // mesmo com o site vazio.
+      ['conta 1', /\b1\b[\s\S]*on the site now/i.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.publicado = { gerado_em: '2026-10-05T12:00:00Z', tours: {} };
+CENARIO.aprovadaV2 = true;
+await t('o admin avisa que ha tours aprovados fora do site, com os comandos',
+  '/admin/', '#publicar:not([hidden])', async (p) => {
+    const txt = await p.locator('#publicar').innerText();
+    return [
+      ['diz quantos faltam', /1 tour is approved and not on the site/i.test(txt)],
+      ['explica que aprovar nao publica',
+        /database[\s\S]*static/i.test(txt)],
+      ['diz o endereco em falta', /example-sintra/.test(txt)],
+      ['da o comando do gerador', /tools\/gerar\.py/.test(txt)],
+      // Antes o botao dizia "Approve and publish" e nao publicava nada.
+      // Foi essa frase que fez o passo da publicacao desaparecer.
+      ['o botao deixou de prometer que publica',
+        !/Approve and publish/i.test(await p.locator('#fila').innerText())]
+    ];
+  });
+
+cenarioPadrao();
+await t('com tudo publicado, o admin diz que o site esta em dia',
+  '/admin/', '#publicar:not([hidden])', async (p) => {
+    const txt = await p.locator('#publicar').innerText();
+    return [
+      ['diz que esta em dia', /site is up to date/i.test(txt)],
+      ['diz quando foi a ultima publicacao', /last publish/i.test(txt)]
     ];
   });
 
