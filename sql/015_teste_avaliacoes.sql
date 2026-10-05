@@ -143,6 +143,19 @@ select responder_avaliacao(:'rid'::uuid,
   'Thank you Maria — it was a good day to be out there.') is null as respondeu;
 select rating, reply is not null as tem_resposta from reviews;
 \echo '    e nao consegue mexer na nota (estava 4; tenta por 5)'
+-- Antes de provar que o operador nao consegue, prova-se que ele e so
+-- operador. Sem esta linha, o teste passava a dizer que a base e segura
+-- em qualquer caso em que a Ana NAO fosse administradora, e calava-se
+-- quando ela era — que foi exatamente o que aconteceu enquanto o 002
+-- gravava os dados dele e tornava este id administrador.
+do $$
+begin
+  if exists (select 1 from admins a
+             where a.user_id = '11111111-1111-1111-1111-111111111111') then
+    raise exception 'TESTE INVALIDO: a Ana e administradora, o teste a '
+      'seguir nao prova nada. Algum ficheiro antes deste gravou dados.';
+  end if;
+end $$;
 do $$
 declare n integer;
 begin

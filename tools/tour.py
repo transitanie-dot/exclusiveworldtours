@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ligacao  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
+import reserva  # noqa: E402
 from pagina import (CORES, cabecalho, carregar, cartao_tour, e, envolver,  # noqa: E402
                     escrever, euros, foto_html, img, por_pais, rodape)
 
@@ -1088,13 +1089,15 @@ def main():
 
       <section class="sec moldura reservar-bloco" id="book" data-rev>
         <p class="rot"><b>05</b> Booking</p>
-        <h2>How to book</h2>
-        <p class="intro">Tell us the day and how many of you there are.
-          We check it with the operator who runs that date and come back
-          within one working day with the exact price for your group and
-          a hold on the day. Nothing is charged until you say yes.</p>
-        <p class="intro"><a class="botao" href="/contact/?tour=%(slug_b)s">Ask
-          about a date</a></p>
+        <h2>Book this day</h2>
+        <p class="intro">The price is for the whole vehicle and the day is
+          yours alone. Pick the date, tell us how many of you there are,
+          and the total you see is the total you pay &mdash; it comes from
+          the operator who runs that date, not from an estimate.</p>
+        %(formulario)s
+        <p class="intro">Rather talk to someone first?
+          <a href="/contact/?tour=%(slug_b)s">Send us a message</a> and we
+          answer within one working day.</p>
         <h3 class="sub-h">Where we meet</h3>
         %(encontro)s
 
@@ -1141,6 +1144,7 @@ def main():
                                  % (e(a), e(b)) for a, b in t.get('practical', [])),
             'faq': faq(t, assinalados), 'mapa': mapa_cidade(t),
             'slug_b': e(t['slug']),
+            'formulario': reserva.html(t),
             'encontro': encontro_html(t),
             'avaliacoes': avaliacoes_html(t),
             'politica': '\n        '.join(
@@ -1159,7 +1163,8 @@ def main():
         html = envolver(
             '%s — Exclusive World Tours' % t['title'],
             t.get('metaDesc') or '',
-            CSS, corpo, js=procura.JS + JS_FIXA + JS_PAINEL + JS_GALERIA)
+            CSS + reserva.CSS, corpo,
+            js=procura.JS + JS_FIXA + JS_PAINEL + JS_GALERIA + reserva.JS)
         # A pagina do tour fala com a base para uma coisa so: perguntar
         # se o dia escolhido esta livre. O resto e tudo estatico.
         html = html.replace('</head>', ligacao.SCRIPTS + '\n</head>')

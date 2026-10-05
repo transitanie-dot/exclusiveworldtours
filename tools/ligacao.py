@@ -223,12 +223,77 @@ JS = r"""/* Exclusive World Tours — a ligacao a base de dados.
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+
+  // =================================================================
+  // O PAGAMENTO
+  //
+  // Tres chamadas, e nenhuma delas calcula um preco.
+  //
+  //   cotar()           pergunta a base quanto custa e se da para pagar
+  //                     depois. A base responde, e a resposta inclui a
+  //                     RAZAO quando nao da.
+  //   reservar()        chama a Edge Function, que cria a reserva na
+  //                     base e abre a pagina do Stripe. A chave do
+  //                     Stripe esta la e nunca aqui.
+  //   resumo_sessao()   o que a pagina de confirmacao mostra.
+  //
+  // Porque e que a cotar() vai a base e nao faz a conta aqui: a pagina
+  // ja tem os escaloes no HTML e podia multiplicar sozinha. Mas entao
+  // havia duas copias da regra do preco — esta e a da base — e no dia
+  // em que uma mudasse, o cliente via um numero e o Stripe cobrava
+  // outro. A pagina mostra exatamente o que vai ser cobrado porque
+  // pergunta a quem cobra.
+  // =================================================================
+
+  async function cotar(pedido) {
+    var r = await sb.rpc('cotar', { p: pedido });
+    if (r.error) throw new Error(legivel(r.error));
+    return r.data;
+  }
+
+  /** Chama uma Edge Function. A chave publicavel autentica o pedido; o
+   *  que protege o dinheiro e o que esta DENTRO da funcao, nao isto. */
+  async function funcao(nome, corpo, metodo) {
+    var r = await fetch(URL + '/functions/v1/' + nome, {
+      method: metodo || 'POST',
+      headers: {
+        'content-type': 'application/json',
+        apikey: CHAVE,
+        authorization: 'Bearer ' + CHAVE
+      },
+      body: metodo === 'GET' ? undefined : JSON.stringify(corpo || {})
+    });
+    var d = null;
+    try { d = await r.json(); } catch (e) { /* resposta sem corpo */ }
+    if (!r.ok) {
+      // A mensagem da funcao vale mais do que um codigo HTTP: ela sabe
+      // se o dia fechou, se o grupo nao cabe ou se o Stripe nao abriu.
+      var err = new Error((d && d.error) || ('HTTP ' + r.status));
+      err.codigo = d && d.code;
+      throw err;
+    }
+    return d;
+  }
+
+  async function reservar(pedido) {
+    return await funcao('reservar', pedido);
+  }
+
+  async function resumo_sessao(id) {
+    var r = await fetch(URL + '/functions/v1/sessao?id=' + encodeURIComponent(id), {
+      headers: { apikey: CHAVE, authorization: 'Bearer ' + CHAVE }
+    });
+    if (!r.ok) throw new Error('We could not find that booking.');
+    return await r.json();
+  }
+
   w.ewt = {
     sb: sb, legivel: legivel, dizer: dizer,
     sessao: sessao, utilizador: utilizador, sair: sair,
     papel: papel, exigir_entrada: exigir_entrada,
     hoje: hoje, iso: iso, euros: euros, escapar: escapar,
-    enviar_foto: enviar_foto
+    enviar_foto: enviar_foto,
+    cotar: cotar, reservar: reservar, resumo_sessao: resumo_sessao
   };
 })(window);
 """

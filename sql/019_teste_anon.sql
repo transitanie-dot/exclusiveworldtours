@@ -1,4 +1,18 @@
 -- =====================================================================
+-- ESTE FICHEIRO CORRE SEMPRE EM ULTIMO, E E DE PROPOSITO
+--
+-- Chamava-se 016 e corria antes do 017. O 017 trouxe a cotar(), que e
+-- publica, e o varrimento do anon passou a acusar uma funcao que ainda
+-- nao existia — a dizer que estava partida quando o que estava errado
+-- era a ordem.
+--
+-- A numeracao e a ordem de execucao. Este e o ficheiro que verifica
+-- TODAS as funcoes publicas de uma vez, por isso tem de vir depois de
+-- todas elas: sempre que se acrescentar uma migracao com funcoes
+-- publicas novas, este ficheiro muda de numero para continuar a ser o
+-- ultimo, e acrescenta-se aqui a funcao nova.
+-- =====================================================================
+-- =====================================================================
 -- Todas as funcoes publicas, corridas como `anon`
 --
 -- Existe por causa de um bug que quase passou: catalogo_publico() devolvia
@@ -78,11 +92,22 @@ begin
   perform catalogo_mudou_em();
   perform registar_procura('dublin', 3, 'Dublin', 'Ireland');
 
+  -- A cotar() tambem e publica: e a pagina do tour que a chama para
+  -- mostrar o preco do grupo escolhido. Se devolvesse zero linhas ao
+  -- anon — o erro da 010 — a pagina mostrava "sem preco" a todos os
+  -- visitantes e so funcionava para quem tivesse sessao aberta.
+  begin
+    if not (cotar('{"slug":"x-que-nao-existe","date":"2030-01-01","pax":2}'::jsonb)
+             ? 'ok') then
+      maus := maus || 'cotar nao devolve ok';
+    end if;
+  exception when others then maus := maus || ('cotar: ' || sqlerrm); end;
+
   if array_length(maus, 1) > 0 then
     raise exception 'FUNCOES PUBLICAS PARTIDAS PARA O ANON: %',
       array_to_string(maus, '; ');
   end if;
-  raise notice 'ok: as 10 funcoes publicas respondem ao anon';
+  raise notice 'ok: as 11 funcoes publicas respondem ao anon';
 end $$;
 
 \echo ''
@@ -98,6 +123,24 @@ begin
         mal := mal || 'le review_invites'; exception when others then null; end;
   begin perform count(*) from vehicles;
         mal := mal || 'le vehicles'; exception when others then null; end;
+  begin perform count(*) from bookings;
+        mal := mal || 'le bookings'; exception when others then null; end;
+  begin perform count(*) from payment_rules;
+        mal := mal || 'le payment_rules'; exception when others then null; end;
+  begin perform count(*) from charge_attempts;
+        mal := mal || 'le charge_attempts'; exception when others then null; end;
+
+  -- E as funcoes do dinheiro, nenhuma delas publica.
+  begin perform reservar('{}'::jsonb);
+        mal := mal || 'chama reservar'; exception when others then null; end;
+  begin perform confirmar_reserva('{}'::jsonb);
+        mal := mal || 'chama confirmar_reserva'; exception when others then null; end;
+  begin perform count(*) from reservas_a_cobrar();
+        mal := mal || 'chama reservas_a_cobrar'; exception when others then null; end;
+  begin perform registar_cobranca('{}'::jsonb);
+        mal := mal || 'chama registar_cobranca'; exception when others then null; end;
+  begin perform limpar_marcas();
+        mal := mal || 'chama limpar_marcas'; exception when others then null; end;
 
   if array_length(mal, 1) > 0 then
     raise exception 'O ANON VE DEMAIS: %', array_to_string(mal, '; ');
