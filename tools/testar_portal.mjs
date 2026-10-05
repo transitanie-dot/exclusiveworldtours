@@ -125,6 +125,15 @@ function responder(url, metodo, corpo) {
   }
   if (c === '/rest/v1/listing_vehicles') return [];
   if (c === '/rest/v1/rpc/marcar_veiculo') return 1;
+  if (c === '/rest/v1/listing_times') {
+    if (metodo !== 'GET') return [];
+    return [{ starts_at: '08:00:00' }, { starts_at: '17:00:00' }];
+  }
+  if (c === '/rest/v1/rpc/definir_partidas') return 2;
+  if (c === '/rest/v1/rpc/partidas_no_dia') {
+    if (RESPOSTA_DIAS === 'livre') return [{ starts_at: '17:00:00' }];
+    return [];
+  }
   if (c === '/rest/v1/rpc/frota_no_dia') {
     if (RESPOSTA_DIAS === 'livre') {
       return [{ disponivel: true, veiculos: 2, max_pax: 6, price: 520,
@@ -526,10 +535,47 @@ async function diaDiz(nome, modo, contem, daquiADias) {
 
 await diaDiz('a data livre diz que esta aberta', 'livre', 'that day is open');
 await diaDiz('a data livre diz quantos cabem nesse dia', 'livre', 'up to 6 people');
+await diaDiz('a data livre diz que partidas ainda dao', 'livre', 'departures still open');
+await diaDiz('e mostra a hora que sobrou', 'livre', '17:00');
 await diaDiz('a data cedo demais explica o aviso que falta', 'cedo', '3 days', 1);
 await diaDiz('a data fechada diz que esta tomada', 'fechado', 'that day is taken');
 await diaDiz('sem calendario nao afirma nada', 'sem', 'we confirm this date');
 RESPOSTA_DIAS = 'livre';
+
+// ------------------------------------------------ as horas de partida
+await t('o calendario mostra e aceita horas de partida',
+  '/portal/calendar/?tour=' + AN, '.hora', async (p) => [
+    ['lista as duas partidas', await p.locator('.hora').count() === 2],
+    ['mostra-as em hh:mm',
+      (await p.locator('.hora').first().innerText()).indexOf('08:00') > -1],
+    ['explica a regra com o aviso minimo',
+      (await p.locator('#horas-nota').innerText()).toLowerCase()
+        .indexOf('hours') > -1],
+    ['cada hora tem como ser tirada',
+      await p.locator('[data-tira]').count() === 2],
+    ['o botao de tirar diz qual e',
+      (await p.locator('[data-tira]').first().getAttribute('aria-label'))
+        .indexOf('08:00') > -1]
+  ]);
+
+await t('o calendario recusa uma partida repetida',
+  '/portal/calendar/?tour=' + AN, '.hora', async (p) => {
+    await p.locator('#hora-nova').fill('08:00');
+    await p.locator('#bt-hora').click();
+    await p.waitForTimeout(300);
+    return [['avisa que ja la esta',
+      (await p.locator('#av-horas').innerText()).toLowerCase()
+        .indexOf('already') > -1]];
+  });
+
+await t('o contacto recebe a partida pelo endereco',
+  '/contact/?tour=example-sintra&date=2026-11-20&time=17:00', '#f-ped',
+  async (p) => [
+    ['a hora ja esta preenchida',
+      (await p.locator('#a-que-horas').inputValue()).indexOf('17:00') === 0],
+    ['e e dita no topo',
+      (await p.locator('#sobre').innerText()).indexOf('17:00') > -1]
+  ]);
 
 // ------------------------------------------------------------- a frota
 await t('a frota lista os veiculos e o calendario do escolhido',

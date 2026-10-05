@@ -128,6 +128,32 @@ Um operador que ainda nao registou frota nenhuma continua a vender pelo
 calendario do anuncio: uma funcionalidade nova nao pode tirar vendas a
 quem ainda nao a usa.
 
+### As horas de partida, e o lead time exacto
+
+`listing_times` guarda as horas a que cada tour parte, e `listings.timezone`
+diz em que fuso essas horas sao lidas. Sem o fuso, "parte as 8h" nao quer
+dizer nada: o servidor corre em UTC e o cliente pode estar no Brasil.
+
+Com horas registadas, o aviso minimo deixa de arredondar: compara-se o
+INSTANTE da partida com o instante do pedido, partida a partida. O mesmo
+dia pode ter a das 8h fechada e a das 17h aberta — e e assim que um tour
+que parte ao fim da tarde deixa de perder um dia de calendario por causa
+de uma conta grosseira.
+
+Sem horas registadas, mantem-se a regra antiga do dia inteiro. Um
+operador que ainda nao as registou nao fica pior do que estava.
+
+**As horas sao disponibilidade, nao conteudo.** Vivem no calendario e nao
+no editor de anuncios, e nao passam por revisao. Um cliente ve a hora, por
+isso a tentacao e trata-la como conteudo — seria o mesmo erro que fazer o
+calendario passar pela revisao. Um operador que muda a partida de amanha
+das 8h para as 9h, porque o motorista adoeceu, nao pode esperar por
+ninguem. A GetYourGuide chega a mesma conclusao: os time slots deles
+vivem em Manage > Availability.
+
+Tirar uma hora desativa-a, nao a apaga: um pedido antigo pode apontar
+para ela, e a linha tem de continuar a fazer sentido daqui a um mes.
+
 ### O lead time nao tem tecto
 
 `listings.lead_time_hours`, por omissao 24. A GYG impoe que o cut-off
@@ -154,6 +180,7 @@ sao quatro funcoes, e nada mais:
 |---|---|
 | `dias_abertos` | que dias posso ir — a consulta do calendario |
 | `frota_no_dia` | o que ha neste dia: veiculos livres, maior lotacao, preco |
+| `partidas_no_dia` | que partidas desse dia ainda estao dentro do prazo |
 | `registar_procura` | regista o que foi procurado (escreve, nao le) |
 | `registar_pedido` | o formulario de contacto |
 | `candidatar_operador` | a candidatura de um operador |
