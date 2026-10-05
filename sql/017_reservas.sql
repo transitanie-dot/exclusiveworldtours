@@ -160,8 +160,16 @@ create index if not exists bookings_a_pagar_idx
 
 -- A referencia que o cliente le ao telefone. Curta, sem vogais (nao se
 -- forma uma palavra por acidente) e sem I, O, 0 e 1 (confundem-se).
+-- O `set search_path` NAO e cosmetico aqui.
+--
+-- Esta funcao nao e `security definer`, mas e CHAMADA de dentro da
+-- reservar(), que e. Com o search_path a mudar com quem chama, bastava
+-- criar um esquema proprio com uma tabela `bookings` a frente do public
+-- para esta funcao passar a ler outra coisa — e o que ela devolve e a
+-- referencia que vai para a reserva. O linter do Supabase apanhou isto.
 create or replace function nova_referencia()
-returns text language plpgsql as $$
+returns text language plpgsql
+set search_path = public as $$
 declare
   alfabeto text := 'ACDEFGHJKLMNPQRSTUVWXYZ23456789';
   r text;
@@ -198,6 +206,11 @@ alter table vehicle_days
   add column if not exists booking_id uuid references bookings(id) on delete set null,
   add column if not exists hold_expires_at timestamptz;
 
+-- A `note` NAO e escrita pela reserva, e isso e deliberado. A nota do
+-- dia e do operador ("oficina", "casamento", "so de manha"), e a reserva
+-- ja se identifica pelo booking_id. Escrever 'Reserva EWxxxx' na nota
+-- apagava o que o operador tinha escrito, e libertar o dia a seguir
+-- apagava-o de vez.
 comment on column vehicle_days.hold_expires_at is
   'So existe numa marca provisoria (reserva por pagar). Passada a hora, '
   'a veiculos_livres() ignora a linha. Quando o pagamento entra, a '
@@ -534,18 +547,29 @@ begin
     order  by vl.max_pax
   loop
     insert into vehicle_days (vehicle_id, day, status, booking_id,
-                              hold_expires_at, note)
+                              hold_expires_at)
     values (v_veic.vehicle_id, v_dia, 'booked', v_id,
-            now() + make_interval(mins => pr.hold_minutes),
-            'Reserva ' || v_ref)
+            now() + make_interval(mins => pr.hold_minutes))
     on conflict (vehicle_id, day) do update
       set status = 'booked', booking_id = v_id,
           hold_expires_at = now() + make_interval(mins => pr.hold_minutes),
-          note = 'Reserva ' || v_ref, updated_at = now()
-      -- So se a linha que la esta for uma marca ja caducada. Uma marca
-      -- definitiva, ou uma provisoria ainda valida, nao se pisa.
-      where vehicle_days.hold_expires_at is not null
-        and vehicle_days.hold_expires_at <= now();
+          updated_at = now()
+      -- QUEM E QUE SE PODE PISAR
+      --
+      -- Uma linha 'open' (o operador escreveu uma nota num dia que
+      -- continua a venda) ou uma marca provisoria que ja caducou. Uma
+      -- marca definitiva, ou uma provisoria ainda valida, nao.
+      --
+      -- A primeira metade desta condicao faltava, e o resultado era que
+      -- um operador que escrevesse uma nota num dia aberto tornava esse
+      -- dia IMPOSSIVEL de vender: a linha existia, o update nao a
+      -- tocava, nenhum veiculo ficava preso, e o cliente lia "someone
+      -- booked the last vehicle" num dia em que nao havia reserva
+      -- nenhuma. A veiculos_livres() dizia que o dia estava livre, e
+      -- dizia bem — era a reserva que nao o conseguia prender.
+      where vehicle_days.status = 'open'
+         or (vehicle_days.hold_expires_at is not null
+             and vehicle_days.hold_expires_at <= now());
 
     get diagnostics v_preso = row_count;
     if v_preso > 0 then
@@ -560,7 +584,15 @@ begin
   -- segundos em que esta pessoa escrevia o email. Desfaz-se tudo.
   if v_preso is null or v_preso = 0 then
     if exists (select 1 from listing_vehicles lx where lx.listing_id = a.id) then
-      delete from bookings where id = v_id;
+      -- Nao se apaga: marca-se. Uma reserva perdida numa corrida e
+      -- informacao — diz que houve procura para um dia que estava
+      -- esgotado, e e isso que justifica dizer ao operador que precisa
+      -- de mais um carro.
+      update bookings set status = 'cancelled', cancelled_at = now(),
+             cancel_reason = 'O ultimo veiculo foi vendido enquanto o '
+                             'cliente preenchia o formulario.',
+             updated_at = now()
+       where id = v_id;
       return jsonb_build_object('ok', false, 'code', 'justTaken',
         'error', 'Someone booked the last vehicle for that date while you '
                  'were filling this in. Pick another date.');
@@ -610,6 +642,26 @@ begin
   if b.status in ('confirmed', 'paid') then
     return jsonb_build_object('ok', true, 'repeated', true,
       'reference', b.reference, 'status', b.status);
+  end if;
+
+  -- UMA RESERVA CANCELADA NAO SE CONFIRMA
+  --
+  -- Isto faltava e era o pior buraco do ficheiro. Uma reserva pode ser
+  -- cancelada ENTRE abrir o Stripe e o pagamento entrar: perdeu a
+  -- corrida pelo ultimo veiculo, ou passou das duas horas e a
+  -- limpar_marcas() fechou-a. O webhook chegava a seguir e punha-a a
+  -- 'paid' — e ficava um cliente cobrado por um dia que nao esta preso
+  -- para ele, sem nada no ecra a dizer que algo correu mal.
+  --
+  -- Agora recusa, e devolve o payment_intent: e com ele que se devolve o
+  -- dinheiro. Quem trata disso e a Edge Function, que grita no registo.
+  if b.status in ('cancelled', 'refunded') then
+    return jsonb_build_object('ok', false, 'code', 'cancelled',
+      'reference', b.reference, 'status', b.status,
+      'cancel_reason', b.cancel_reason,
+      'payment_intent', coalesce(nullif(p->>'payment_intent',''),
+                                 b.stripe_payment_intent),
+      'amount', b.price_total);
   end if;
 
   v_novo := case when b.payment_mode = 'later'
@@ -679,8 +731,19 @@ begin
                       cancel_reason = trim(p_razao), updated_at = now()
   where  id = b.id;
 
-  -- O dia volta a ficar a venda.
-  delete from vehicle_days where booking_id = b.id;
+  -- LIBERTAR, E NAO APAGAR
+  --
+  -- A linha de vehicle_days nao e da reserva: e do dia. O operador pode
+  -- ter escrito ali uma nota, e apagar a linha apagava-lhe a nota. Por
+  -- isso solta-se a marca — o dia volta a 'open' e deixa de ter reserva —
+  -- e a linha fica.
+  --
+  -- Para a veiculos_livres() isto e exatamente o mesmo: ela so olha para
+  -- quem tem `status <> 'open'`.
+  update vehicle_days
+     set status = 'open', booking_id = null, hold_expires_at = null,
+         updated_at = now()
+   where booking_id = b.id;
 
   return jsonb_build_object('ok', true, 'reference', b.reference,
     'was', b.status, 'charged', b.charged_at is not null,
@@ -773,8 +836,14 @@ begin
         then 'O cartao foi recusado em ' || v_tent || ' tentativas.' end
     where id = v_id;
 
-    delete from vehicle_days
-    where booking_id = v_id and v_tent >= v_max;
+    -- Esgotadas as tentativas, o dia volta a ficar a venda. Solta-se a
+    -- marca em vez de apagar a linha: ver a nota na cancelar_reserva().
+    if v_tent >= v_max then
+      update vehicle_days
+         set status = 'open', booking_id = null, hold_expires_at = null,
+             updated_at = now()
+       where booking_id = v_id;
+    end if;
   end if;
 end $$;
 
@@ -799,8 +868,13 @@ begin
   where  status = 'pending'
     and  created_at < now() - interval '2 hours';
 
-  delete from vehicle_days
-  where  hold_expires_at is not null and hold_expires_at <= now();
+  -- As marcas caducadas soltam-se, nao se apagam: a linha pode ter uma
+  -- nota do operador. A veiculos_livres() ja ignorava uma marca caducada,
+  -- por isso o dia ja aparecia livre; isto e a arrumacao.
+  update vehicle_days
+     set status = 'open', booking_id = null, hold_expires_at = null,
+         updated_at = now()
+   where hold_expires_at is not null and hold_expires_at <= now();
   get diagnostics n = row_count;
   return n;
 end $$;
@@ -1142,3 +1216,22 @@ $$;
 
 revoke execute on function reservas_a_convidar() from public, anon;
 grant  execute on function reservas_a_convidar() to authenticated;
+
+-- ---------------------------------------------------------------------
+-- A promover_admin() NAO E PARA SER CHAMADA
+--
+-- E uma funcao de gatilho: devolve `trigger`. Estava executavel pelo
+-- anon e pelo authenticated — o que nao da acesso a nada (o Postgres
+-- recusa chamar uma funcao de gatilho diretamente) mas aparece na API
+-- exposta e no linter de seguranca do Supabase. Fecha-se, para a lista
+-- de avisos so ter o que e deliberado e um aviso novo se notar.
+--
+-- O `if exists` e porque a funcao nasceu numa migracao anterior e este
+-- ficheiro tem de poder correr numa base onde ela ainda nao exista.
+-- ---------------------------------------------------------------------
+do $$ begin
+  if exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+             where n.nspname = 'public' and p.proname = 'promover_admin') then
+    revoke execute on function promover_admin() from public, anon, authenticated;
+  end if;
+end $$;

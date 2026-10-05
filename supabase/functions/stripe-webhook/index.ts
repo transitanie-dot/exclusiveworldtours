@@ -87,6 +87,26 @@ Deno.serve(async (req) => {
         },
       });
 
+      // O PAGAMENTO QUE CHEGOU DEPOIS DE A RESERVA CAIR
+      //
+      // A reserva pode ser cancelada ENTRE abrir o Stripe e o pagamento
+      // entrar: perdeu a corrida pelo ultimo veiculo, ou passou das duas
+      // horas e a limpar_marcas() fechou-a. A base recusa confirma-la —
+      // e bem, senao ficava um cliente cobrado por um dia que nao esta
+      // preso para ele. Mas o dinheiro ENTROU, e tem de se devolver.
+      //
+      // Nao se reembolsa aqui. Um reembolso automatico dentro de um
+      // webhook e a melhor forma de devolver dinheiro duas vezes no dia
+      // em que o Stripe repetir o evento e a resposta se perder. O que
+      // se faz e deixar isto impossivel de nao ver.
+      if (r?.ok === false && r?.code === 'cancelled') {
+        console.error('[webhook] PAGAMENTO A DEVOLVER —', r.reference,
+          'estava', r.status, '(' + (r.cancel_reason ?? 'sem razao') + ').',
+          'Valor', r.amount, '— reembolsar no Stripe com',
+          r.payment_intent ?? '(sem payment_intent)');
+        return new Response('cancelled-booking-paid', { status: 200 });
+      }
+
       console.log('[webhook]', r?.reference, r?.status, r?.repeated ? '(repetido)' : '');
 
       // O CARTAO GUARDADO E A COBRANCA QUE NAO EXISTE

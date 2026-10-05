@@ -26,9 +26,14 @@
 
 -- A meia-vida, em meses. Num sitio so para ser discutivel: se amanha
 -- parecer curta demais, muda-se aqui.
+-- O `set search_path` aqui e pela mesma razao da nova_referencia na 017:
+-- esta funcao nao e `security definer`, mas e chamada de dentro da
+-- nota_anuncio() e da nota_operador(), que sao. Sem ele, o search_path e
+-- de quem chama.
 create or replace function peso_recencia(p_quando date)
 returns numeric
-language sql immutable as $$
+language sql immutable
+set search_path = public as $$
   select power(0.5, greatest(0, (current_date - p_quando)) / 547.0);  -- 18 meses
 $$;
 
