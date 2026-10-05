@@ -64,9 +64,56 @@ const dia = (n) => {
   return d.toISOString().slice(0, 10);
 };
 
+// O CENARIO DO PAGAMENTO
+//
+// A cotar() e a reservar() mudam de resposta de teste para teste — um
+// dia fechado, um "pagar depois" recusado, o Stripe que nao abre — e e
+// precisamente isso que precisa de ser verificado. Os testes escrevem
+// aqui antes de navegar.
+//
+// O preco e 555 e os escaloes da pagina dizem 390 e 490 DE PROPOSITO: e
+// a unica forma de provar que o numero que a pessoa ve veio da base e
+// nao de uma multiplicacao feita no browser.
+let CENARIO = {};
+
+function cenarioPadrao() {
+  CENARIO = {
+    cotar: {
+      ok: true, slug: 'example-sintra', title: 'Private Day in Sintra',
+      operator: 'Atlantic Private Tours', version: 1,
+      date: '2026-12-01', time: null, pax: 2, vehicle: 'Sedan',
+      maxPax: 6, price: 555, currency: 'EUR', hoursToStart: 900,
+      payLater: true, payLaterReason: null, payLaterCode: null
+    },
+    // null = deixa responder o mock que ja existia.
+    horas: null,
+    reservar: { ok: true, url: 'http://localhost:' + PORTA + '/cancellation/',
+                reference: 'EWABCD23', payment_mode: 'now', hold_minutes: 30 },
+    reservarEstado: 200,
+    sessao: {
+      confirmed: true, payment_mode: 'now', reference: 'EWABCD23',
+      tour: 'Private Day in Sintra', operator: 'Atlantic Private Tours',
+      date: '2026-12-01', time: '08:30', pax: 2, amount: 555,
+      currency: 'EUR', email: 'cliente@example.invalid'
+    }
+  };
+}
+cenarioPadrao();
+
 function responder(url, metodo, corpo) {
   const u = new URL(url);
   const c = u.pathname;
+
+  if (c === '/rest/v1/rpc/cotar') return CENARIO.cotar;
+  // So responde aqui se o cenario do pagamento tiver posto horas. A
+  // partidas_no_dia ja tinha um mock em baixo, usado pelos testes do
+  // painel do tour, e responder aqui sempre tapava-o — foi exatamente
+  // o que aconteceu, e dois testes que passavam comecaram a falhar.
+  if (c === '/rest/v1/rpc/partidas_no_dia' && Array.isArray(CENARIO.horas)) {
+    return CENARIO.horas;
+  }
+  if (c === '/functions/v1/reservar') return CENARIO.reservar;
+  if (c === '/functions/v1/sessao') return CENARIO.sessao;
 
   if (c === '/auth/v1/token') return { access_token: 'x', token_type: 'bearer',
     expires_in: 3600, refresh_token: 'y',
@@ -277,7 +324,12 @@ await ctx.route('**://*.supabase.co/**', async (rota) => {
   var contagem = (req.headers()['prefer'] || '').indexOf('count=') >= 0
                  || req.method() === 'HEAD';
   await rota.fulfill({
-    status: 200,
+    // Quase tudo responde 200. A excecao e a Edge Function do pagamento:
+    // o teste do Stripe em baixo
+    // precisa de um 502 para provar que a pagina mostra a mensagem dela
+    // em vez de uma pagina em branco.
+    status: req.url().includes('/functions/v1/reservar')
+            ? CENARIO.reservarEstado : 200,
     contentType: 'application/json',
     headers: { 'access-control-allow-origin': '*',
                'access-control-allow-headers': '*',
@@ -305,7 +357,12 @@ pag.on('pageerror', (e) => {
   if (!FORA.test(e.message)) erros.push('pageerror: ' + e.message);
 });
 
-async function ver(nome, caminho, esperar, teste) {
+// O quinto argumento: um padrao de erros de consola que ESTE teste
+// provoca de proposito. Sem ele, um teste que prova que a pagina se
+// porta bem quando a rede devolve 502 reprovava por causa do 502 que
+// ele mesmo pediu. Alargar o FORA global seria pior: passava a tapar
+// um 502 de verdade em qualquer outra pagina.
+async function ver(nome, caminho, esperar, teste, esperados) {
   erros.length = 0;
   await pag.goto('http://localhost:' + PORTA + caminho,
                  { waitUntil: 'networkidle' });
@@ -320,7 +377,8 @@ async function ver(nome, caminho, esperar, teste) {
   }
   const r = teste ? await teste(pag) : [];
   const maus = (r || []).filter(x => x && x[1] === false).map(x => x[0]);
-  if (erros.length) maus.push('erros de consola: ' + erros.join(' / '));
+  const sobram = esperados ? erros.filter(x => !esperados.test(x)) : erros;
+  if (sobram.length) maus.push('erros de consola: ' + sobram.join(' / '));
   if (maus.length) {
     console.log('  FALHOU  ' + nome);
     maus.forEach(m => console.log('          ' + m));
@@ -829,6 +887,229 @@ await t('a fila de revisao e usavel no telemovel',
     }
     return [['a pagina nao rola para o lado',
       culpado.scroll <= culpado.largura + 1]];
+  });
+
+
+// =====================================================================
+// A RESERVA E O PAGAMENTO
+//
+// O que se testa aqui nao e o caminho feliz. E o conjunto de casos em
+// que uma pagina de reserva mente ao cliente: um preco que nao e o que
+// vai ser cobrado, um "pagar depois" oferecido quando nao e permitido,
+// um "pago" escrito a quem nao pagou nada.
+// =====================================================================
+console.log('\nA RESERVA E O PAGAMENTO\n');
+
+/** Preenche o formulario com o minimo para poder submeter. */
+async function preencher(p) {
+  await p.fill('#rs-data', '2026-12-01');
+  await p.fill('#rs-pax', '2');
+  await p.fill('#rs-nome', 'Maria Oliveira');
+  await p.fill('#rs-email', 'maria@example.invalid');
+}
+
+cenarioPadrao();
+await t('o preco vem da base, nao dos escaloes que estao no HTML',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.fill('#rs-pax', '2');
+    await p.waitForFunction(
+      () => document.querySelector('[data-total]').dataset.estado === 'feito',
+      null, { timeout: 6000 });
+    const v = await p.locator('[data-valor]').innerText();
+    const d = await p.locator('[data-detalhe]').innerText();
+    return [
+      // 555 e o que o mock da base devolve. Qualquer numero dos escaloes
+      // da pagina (380, 420, 490...) aqui significava uma segunda copia
+      // da regra do preco a correr no browser.
+      ['o total mostrado e o da base (mostra "' + v + '")', v.includes('555')],
+      ['diz que e pelo veiculo inteiro', /whole vehicle/i.test(d)],
+      ['diz o veiculo do escalao', /Sedan/.test(d)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.cotar = Object.assign({}, CENARIO.cotar, {
+  payLater: false, payLaterCode: 'tooSoon',
+  payLaterReason: 'The tour starts in about 43 hours. Paying later needs at '
+    + "least 72 hours' notice, so this one is paid at booking."
+});
+await t('"pagar depois" fecha-se com a razao a vista, e nao em silencio',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.fill('#rs-pax', '2');
+    await p.waitForFunction(
+      () => document.querySelector('[data-modo-later]')
+              .getAttribute('aria-disabled') === 'true',
+      null, { timeout: 6000 });
+    const av = await p.locator('[data-aviso]').innerText();
+    return [
+      ['o radio do pagar depois fica travado',
+        await p.locator('[data-modo-later] input').isDisabled()],
+      ['o pagar agora fica escolhido',
+        await p.locator('[value=now]').isChecked()],
+      ['a razao diz o numero concreto de horas (diz "'
+        + av.slice(0, 40) + '")', /43 hours/.test(av)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.cotar = { ok: false, code: 'dayClosed',
+  error: 'That day is not available. Pick another one.' };
+await t('um dia fechado trava o botao em vez de deixar pagar',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.fill('#rs-pax', '2');
+    await p.waitForFunction(
+      () => document.querySelector('[data-enviar]').disabled === true,
+      null, { timeout: 6000 });
+    const d = await p.locator('[data-detalhe]').innerText();
+    const v = await p.locator('[data-valor]').innerText();
+    return [
+      ['diz porque e que nao da', /not available/i.test(d)],
+      // Deixar o preco antigo no ecra ao lado de "nao disponivel" e a
+      // forma mais rapida de alguem ligar a perguntar qual dos dois e
+      // verdade.
+      ['o preco antigo desaparece (mostra "' + v + '")', !/\d/.test(v)]
+    ];
+  });
+
+cenarioPadrao();
+await t('o formulario nao chega a rede sem email',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.fill('#rs-nome', 'Maria Oliveira');
+    await p.click('[data-enviar]');
+    await p.waitForTimeout(400);
+    return [['continuamos na pagina do tour',
+      p.url().includes('/tours/cliffs-of-moher-galway/')]];
+  });
+
+cenarioPadrao();
+await t('com tudo preenchido, abre a pagina do pagamento',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await preencher(p);
+    await p.waitForFunction(
+      () => document.querySelector('[data-enviar]').disabled === false,
+      null, { timeout: 6000 });
+    await p.click('[data-enviar]');
+    await p.waitForURL(/cancellation/, { timeout: 6000 });
+    return [['foi para onde o Stripe mandou', /cancellation/.test(p.url())]];
+  });
+
+cenarioPadrao();
+CENARIO.reservarEstado = 502;
+CENARIO.reservar = { error: 'The payment page did not open. Try again, or '
+  + 'send us a message.', reference: 'EWABCD23' };
+await t('se o Stripe nao abre, a mensagem aparece e o botao volta',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await preencher(p);
+    await p.waitForFunction(
+      () => document.querySelector('[data-enviar]').disabled === false,
+      null, { timeout: 6000 });
+    await p.click('[data-enviar]');
+    await p.waitForSelector('[data-erro]:not([hidden])', { timeout: 6000 });
+    const e = await p.locator('[data-erro]').innerText();
+    return [
+      ['mostra a mensagem da funcao', /did not open/i.test(e)],
+      // Sem isto, quem teve um erro de rede fica com um botao morto e a
+      // unica saida e recarregar a pagina e escrever tudo outra vez.
+      ['o botao volta a poder ser carregado',
+        (await p.locator('[data-enviar]').isDisabled()) === false]
+    ];
+  }, /502/);
+
+cenarioPadrao();
+CENARIO.horas = [{ starts_at: '08:30:00' }, { starts_at: '14:00:00' }];
+await t('as horas de partida vem da base, ao vivo',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.waitForSelector('[data-horas-campo]:not([hidden])', { timeout: 6000 });
+    const n = await p.locator('#rs-hora option').count();
+    return [
+      ['aparecem as duas horas (aparecem ' + n + ')', n === 2],
+      ['sem segundos no ecra',
+        (await p.locator('#rs-hora option').first().innerText()) === '08:30']
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.horas = [];   // uma lista VAZIA: a base respondeu e nao ha horas
+await t('sem horas configuradas, o campo da hora nao aparece',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.fill('#rs-data', '2026-12-01');
+    await p.waitForTimeout(600);
+    return [['o campo fica escondido',
+      await p.locator('[data-horas-campo]').isHidden()]];
+  });
+
+cenarioPadrao();
+await t('a confirmacao de quem pagou agora diz que pagou',
+  '/booking-confirmed/?session_id=cs_test_abcdefghij1234567890',
+  '[data-detalhe]:not([hidden])', async (p) => {
+    const txt = await p.locator('main').innerText();
+    return [
+      ['a referencia esta a vista', /EWABCD23/.test(txt)],
+      ['diz "Paid"', /\bPaid\b/.test(txt)],
+      ['nao promete uma cobranca futura', !/72 hours before/.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.sessao = Object.assign({}, CENARIO.sessao, { payment_mode: 'later' });
+await t('a confirmacao de quem vai pagar depois NAO diz que pagou',
+  '/booking-confirmed/?session_id=cs_test_abcdefghij1234567890',
+  '[data-detalhe]:not([hidden])', async (p) => {
+    const txt = await p.locator('main').innerText();
+    return [
+      // Dizer "paid" a quem nao pagou nada e uma mentira que se descobre
+      // 72 horas antes do tour, quando o cartao e cobrado e a pessoa
+      // acha que ja tinha pagado.
+      ['nao escreve "Paid" em sitio nenhum', !/\bPaid\b/.test(txt)],
+      ['diz que nada foi cobrado ainda', /[Nn]othing has been charged/.test(txt)],
+      ['diz quando sai o dinheiro', /72 hours before/.test(txt)],
+      ['a linha do valor diz "To be charged"', /To be charged/.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+CENARIO.sessao = { confirmed: false, payment_mode: 'now' };
+await t('um pagamento ainda a processar nao diz que falhou',
+  '/booking-confirmed/?session_id=cs_test_abcdefghij1234567890',
+  '.cerro', async (p) => {
+    const txt = await p.locator('.cerro').innerText();
+    return [
+      // O Stripe manda para esta pagina assim que a sessao termina, e o
+      // webhook pode ainda nao ter chegado. "Falhou" nessa janela e um
+      // telefonema desnecessario.
+      ['diz que esta a processar', /still being processed/i.test(txt)],
+      ['nao diz que falhou', !/failed|error/i.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+await t('o formulario de reserva e usavel no telemovel',
+  '/tours/cliffs-of-moher-galway/', '[data-reserva]', async (p) => {
+    await p.setViewportSize({ width: 390, height: 844 });
+    await p.waitForTimeout(250);
+    const r = await p.evaluate(() => {
+      const f = document.querySelector('[data-reserva]');
+      const b = f.querySelector('[data-enviar]').getBoundingClientRect();
+      const campos = [...f.querySelectorAll('input,select,textarea')]
+        .filter((el) => el.type !== 'radio' && el.offsetParent)
+        .map((el) => Math.round(el.getBoundingClientRect().height));
+      return {
+        estica: f.getBoundingClientRect().right > window.innerWidth + 1,
+        botao: Math.round(b.height),
+        menor: Math.min(...campos)
+      };
+    });
+    await p.setViewportSize({ width: 1280, height: 900 });
+    return [
+      ['o formulario nao estica para fora do ecra', !r.estica],
+      ['o botao tem altura de dedo (' + r.botao + 'px)', r.botao >= 44],
+      ['os campos tem altura de dedo (' + r.menor + 'px)', r.menor >= 40]
+    ];
   });
 
 console.log('\n' + bem + '/' + total + ' passaram\n');

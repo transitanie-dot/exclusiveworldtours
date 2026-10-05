@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How reviews work — Exclusive World Tours</title>
-<meta name="description" content="Only people who travelled can leave a review here. What the operator can and cannot do, and the narrow reasons a review is ever removed.">
+<title>Booking confirmed — Exclusive World Tours</title>
+<meta name="description" content="Your private day is booked. Your reference, what happens next, and how to change or cancel it.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/inter-latin-400-normal.woff2">
@@ -371,6 +371,8 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   border-radius:var(--raio);padding:var(--e3);font-size:.98rem;line-height:1.6}
 
 </style>
+<script src="/assets/lib/supabase.js"></script>
+<script src="/assets/ligacao.js"></script>
 </head>
 <body>
 <a class="saltar" href="#principal">Skip to content</a>
@@ -445,80 +447,44 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 <main id="principal">
 
 <section class="pcapa">
-  <div class="folha">
-    <h1>How reviews work here</h1>
-    <p class="lede">We have very few, because we are new. What we will
-      not do is make that look better than it is.</p>
+  <div class="dentro">
+    <h1 data-titulo>Thank you &mdash; your day is booked</h1>
+    <p class="lede" data-lede>We are just confirming it with the payment
+      provider.</p>
   </div>
 </section>
 
 <section class="ptexto">
-  <div class="folha">
-    <div class="dentro">
+  <div class="dentro">
+    <div class="cestado" data-estado>
+      <p>One moment&hellip;</p>
+    </div>
+
+    <div data-detalhe hidden>
+      <p class="cref" data-ref></p>
+      <p class="cref-r">Your booking reference &mdash; keep it</p>
+
+      <ul class="clinhas" data-linhas></ul>
 
       <div class="pregra">
-        <b>Only people who travelled can leave one</b>
-        <span>There is no open review form on this site, and there will
-          not be one. A review link is sent by email after a day out, it
-          works once, and it is tied to that booking.</span>
+        <b>What happens next</b>
+        <span data-proximo></span>
       </div>
 
-      <h2>What that rules out</h2>
-      <p>It rules out an operator reviewing himself, a competitor
-        reviewing him, and us writing a few to fill the page. It also
-        rules out a happy guest leaving five reviews, however much they
-        enjoyed the day.</p>
-      <p>The trade is that we will always have fewer reviews than a site
-        that asks everyone who visits. We would rather have twenty you
-        can trust than two hundred you cannot.</p>
+      <h2>Changing or cancelling</h2>
+      <p>Free cancellation up to 24 hours before departure. Reply to
+        the confirmation email with your reference and we take care of it.
+        The full rules are on the
+        <a href="/cancellation/">cancellation page</a>.</p>
 
-      <h2>What the operator can and cannot do</h2>
-      <ul>
-        <li>They <b>can</b> reply in public, under the review, and we
-          encourage it &mdash; a good reply to a bad review tells you
-          more than ten good reviews.</li>
-        <li>They <b>cannot</b> change the rating or the words.</li>
-        <li>They <b>cannot</b> contact you privately about a review you
-          left, or offer you anything to change it.</li>
-      </ul>
+      <h2>On the day</h2>
+      <p>The operator who runs your tour will be in touch to agree the exact
+        pick-up point and time. Keep your phone reachable &mdash; it is how
+        the driver finds you.</p>
 
-      <h2>When we remove a review</h2>
-      <p>Rarely, and only for these reasons:</p>
-      <ul>
-        <li>the day did not actually happen;</li>
-        <li>it is abusive, or it identifies a person;</li>
-        <li>the words and the rating contradict each other so plainly
-          that one of them must be a mistake;</li>
-        <li>it is advertising something;</li>
-        <li>whoever wrote it has an interest in the outcome.</li>
-      </ul>
-      <p><b>"It is negative and it is true" is not on that list, and it
-        is not going to be.</b> Every removal is recorded with the
-        written reason, which is the thing that stops this from quietly
-        becoming a button for deleting whatever stings.</p>
-
-      <h2>How the score is worked out</h2>
-      <p>A review from two years ago describes a vehicle that has since
-        been sold and a driver who has since left. So recent reviews
-        count for more: a review loses half its weight after about
-        eighteen months, and half again after three years. We show the
-        plain average as well, because a weighted average nobody can
-        check is just a nicer number.</p>
-      <p>A tour with fewer than three reviews of its own shows the
-        <b>operator’s</b> rating instead, and says so. The rating is
-        real; it just is not that tour’s yet.</p>
-      <p>A tour with no reviews at all, and an operator with none,
-        shows <b>nothing</b>. Not five empty stars, not "no reviews
-        yet" in large type. An empty space is honest; empty stars read
-        like a day that went badly.</p>
-
-      <div class="pnota">
-        <p style="margin:0">We do not pay for reviews, we do not offer
-          anything in return for one, and we do not have a way to buy a
-          better position on this site. If that ever changes, it will be
-          written here before it happens.</p>
-      </div>
-
+      <p class="pnota">Nothing was saved on this page. Your booking lives in
+        our system under the reference above, and the confirmation email is
+        the copy you keep.</p>
     </div>
   </div>
 </section>
@@ -837,6 +803,87 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 
   document.addEventListener('click', function (ev) {
     if (!raiz.contains(ev.target)) fechar();
+  });
+})();
+
+(function () {
+  'use strict';
+  var est = document.querySelector('[data-estado]');
+  var det = document.querySelector('[data-detalhe]');
+  if (!est) return;
+
+  function falhar(msg) {
+    est.innerHTML = '<div class="cerro"></div>';
+    est.firstChild.textContent = msg;
+  }
+
+  if (!window.ewt || window.ewt.avariado) {
+    return falhar('We could not load your booking. Check the confirmation ' +
+      'email, or send us a message with the reference from it.');
+  }
+
+  var id = new URLSearchParams(location.search).get('session_id');
+  if (!id) {
+    return falhar('This page needs the link from your payment. Check the ' +
+      'confirmation email.');
+  }
+
+  function linha(rot, v) {
+    if (!v) return '';
+    var li = document.createElement('li');
+    var b = document.createElement('b');
+    b.textContent = rot;
+    var s = document.createElement('span');
+    s.textContent = v;
+    li.appendChild(b); li.appendChild(s);
+    return li;
+  }
+
+  window.ewt.resumo_sessao(id).then(function (d) {
+    if (!d || !d.confirmed) {
+      // O Stripe manda para ca assim que a sessao termina, e o webhook
+      // pode ainda nao ter chegado. Nao se diz que falhou: diz-se o que
+      // se sabe, que e que o pagamento esta a ser processado.
+      return falhar('Your payment is still being processed. Give it a ' +
+        'minute and reload this page. If it stays like this, send us a ' +
+        'message and we will check it.');
+    }
+
+    var depois = d.payment_mode === 'later';
+
+    document.querySelector('[data-titulo]').textContent = depois
+      ? 'Your day is booked'
+      : 'Paid \u2014 your day is booked';
+    document.querySelector('[data-lede]').textContent = depois
+      ? 'Nothing has been charged yet. We take the payment 72 hours before the tour.'
+      : 'The payment went through and the day is held for you alone.';
+
+    document.querySelector('[data-ref]').textContent = d.reference || '\u2014';
+
+    var ul = document.querySelector('[data-linhas]');
+    [
+      linha('Tour', d.tour),
+      linha('Operator', d.operator),
+      linha('Date', d.date),
+      linha('Start time', d.time),
+      linha('Group', d.pax ? (d.pax + (d.pax === 1 ? ' person' : ' people')) : ''),
+      linha(depois ? 'To be charged' : 'Paid',
+            d.amount != null ? (d.currency + ' ' + Number(d.amount).toFixed(2)) : ''),
+      linha('Confirmation sent to', d.email)
+    ].forEach(function (li) { if (li) ul.appendChild(li); });
+
+    document.querySelector('[data-proximo]').textContent = depois
+      ? 'We hold your card and charge it 72 hours before the tour. You will ' +
+        'get an email before that happens. Until then nothing has left your ' +
+        'account, and you can cancel free of charge.'
+      : 'You will get a confirmation email with everything on it. The ' +
+        'operator will contact you to agree the pick-up point.';
+
+    est.hidden = true;
+    det.hidden = false;
+  }).catch(function () {
+    falhar('We could not find that booking. Check the confirmation email, ' +
+      'or send us a message with the reference from it.');
   });
 })();
 

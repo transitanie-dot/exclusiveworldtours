@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import ligacao  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
 from pagina import (cabecalho, carregar, envolver, escrever,  # noqa: E402
@@ -52,6 +53,23 @@ CSS = '''
 .pnota{background:var(--papel);border:1px solid var(--risco);
   border-radius:var(--raio);padding:var(--e3);margin:var(--e4) 0 0;
   font-size:.92rem;line-height:1.65;color:var(--mudo)}
+
+/* A pagina de confirmacao. A referencia e o que a pessoa le ao telefone,
+   por isso e o maior elemento da pagina depois do titulo. */
+.cref{font-family:var(--tipo-titulo);font-size:clamp(1.8rem,1.4rem + 2vw,2.6rem);
+  letter-spacing:.06em;color:var(--tinta);margin:0 0 6px;
+  -webkit-user-select:all;user-select:all}
+.cref-r{font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--mudo);font-weight:600;margin:0 0 var(--e3)}
+.clinhas{list-style:none;margin:0 0 var(--e4);padding:0;
+  border-top:1px solid var(--risco)}
+.clinhas li{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;
+  padding:11px 0;border-bottom:1px solid var(--risco);font-size:1rem}
+.clinhas dt,.clinhas b{color:var(--mudo);font-weight:500;font-size:.93rem}
+.clinhas span{color:var(--tinta);font-weight:600;text-align:right}
+.cestado{min-height:3rem}
+.cerro{background:#fdf1f1;border:1px solid #e7c3c3;color:#8a2a2a;
+  border-radius:var(--raio);padding:var(--e3);font-size:.98rem;line-height:1.6}
 '''
 
 
@@ -240,10 +258,175 @@ def avaliacoes(paises):
         CSS, corpo, js=procura.JS), 'reviews-policy/index.html')
 
 
+def confirmada(paises):
+    """/booking-confirmed/ — para onde o Stripe manda o cliente.
+
+    A pagina nao sabe nada sozinha: le o `session_id` do endereco e
+    pergunta a Edge Function `sessao`. Nada do que aparece aqui esta no
+    HTML gerado, e e assim que tem de ser — esta pagina e a mesma para
+    todas as reservas.
+
+    DUAS FRASES DIFERENTES, E NAO UMA
+    ---------------------------------
+    Quem pagou agora leu "paid". Quem escolheu pagar depois NAO pagou
+    nada, e dizer-lhe "paid" seria mentira que se descobre 72 horas antes
+    do tour, quando o cartao e cobrado e a pessoa acha que ja tinha
+    pagado. A pagina diz exatamente o que aconteceu e quando sai o
+    dinheiro.
+    """
+    corpo = '''%(cabecalho)s
+<main id="principal">
+
+<section class="pcapa">
+  <div class="dentro">
+    <h1 data-titulo>Thank you &mdash; your day is booked</h1>
+    <p class="lede" data-lede>We are just confirming it with the payment
+      provider.</p>
+  </div>
+</section>
+
+<section class="ptexto">
+  <div class="dentro">
+    <div class="cestado" data-estado>
+      <p>One moment&hellip;</p>
+    </div>
+
+    <div data-detalhe hidden>
+      <p class="cref" data-ref></p>
+      <p class="cref-r">Your booking reference &mdash; keep it</p>
+
+      <ul class="clinhas" data-linhas></ul>
+
+      <div class="pregra">
+        <b>What happens next</b>
+        <span data-proximo></span>
+      </div>
+
+      <h2>Changing or cancelling</h2>
+      <p>Free cancellation up to %(horas)d hours before departure. Reply to
+        the confirmation email with your reference and we take care of it.
+        The full rules are on the
+        <a href="/cancellation/">cancellation page</a>.</p>
+
+      <h2>On the day</h2>
+      <p>The operator who runs your tour will be in touch to agree the exact
+        pick-up point and time. Keep your phone reachable &mdash; it is how
+        the driver finds you.</p>
+
+      <p class="pnota">Nothing was saved on this page. Your booking lives in
+        our system under the reference above, and the confirmation email is
+        the copy you keep.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+%(rodape)s''' % {'cabecalho': cabecalho(paises=paises),
+                 'rodape': rodape(paises),
+                 'horas': politica.HORAS}
+
+    html = envolver(
+        'Booking confirmed — Exclusive World Tours',
+        'Your private day is booked. Your reference, what happens next, '
+        'and how to change or cancel it.',
+        CSS, corpo, js=procura.JS + JS_CONFIRMADA)
+    # Esta pagina nao sabe nada sozinha: tudo o que mostra vem da Edge
+    # Function. A biblioteca TEM de estar carregada antes do script da
+    # pagina, e o verificar.py confirma essa ordem — ao contrario, o
+    # `window.ewt` ainda nao existe quando o script corre.
+    html = html.replace('</head>', ligacao.SCRIPTS + '\n</head>')
+    escrever(html, 'booking-confirmed/index.html')
+
+
+JS_CONFIRMADA = r"""
+(function () {
+  'use strict';
+  var est = document.querySelector('[data-estado]');
+  var det = document.querySelector('[data-detalhe]');
+  if (!est) return;
+
+  function falhar(msg) {
+    est.innerHTML = '<div class="cerro"></div>';
+    est.firstChild.textContent = msg;
+  }
+
+  if (!window.ewt || window.ewt.avariado) {
+    return falhar('We could not load your booking. Check the confirmation ' +
+      'email, or send us a message with the reference from it.');
+  }
+
+  var id = new URLSearchParams(location.search).get('session_id');
+  if (!id) {
+    return falhar('This page needs the link from your payment. Check the ' +
+      'confirmation email.');
+  }
+
+  function linha(rot, v) {
+    if (!v) return '';
+    var li = document.createElement('li');
+    var b = document.createElement('b');
+    b.textContent = rot;
+    var s = document.createElement('span');
+    s.textContent = v;
+    li.appendChild(b); li.appendChild(s);
+    return li;
+  }
+
+  window.ewt.resumo_sessao(id).then(function (d) {
+    if (!d || !d.confirmed) {
+      // O Stripe manda para ca assim que a sessao termina, e o webhook
+      // pode ainda nao ter chegado. Nao se diz que falhou: diz-se o que
+      // se sabe, que e que o pagamento esta a ser processado.
+      return falhar('Your payment is still being processed. Give it a ' +
+        'minute and reload this page. If it stays like this, send us a ' +
+        'message and we will check it.');
+    }
+
+    var depois = d.payment_mode === 'later';
+
+    document.querySelector('[data-titulo]').textContent = depois
+      ? 'Your day is booked'
+      : 'Paid \u2014 your day is booked';
+    document.querySelector('[data-lede]').textContent = depois
+      ? 'Nothing has been charged yet. We take the payment 72 hours before the tour.'
+      : 'The payment went through and the day is held for you alone.';
+
+    document.querySelector('[data-ref]').textContent = d.reference || '\u2014';
+
+    var ul = document.querySelector('[data-linhas]');
+    [
+      linha('Tour', d.tour),
+      linha('Operator', d.operator),
+      linha('Date', d.date),
+      linha('Start time', d.time),
+      linha('Group', d.pax ? (d.pax + (d.pax === 1 ? ' person' : ' people')) : ''),
+      linha(depois ? 'To be charged' : 'Paid',
+            d.amount != null ? (d.currency + ' ' + Number(d.amount).toFixed(2)) : ''),
+      linha('Confirmation sent to', d.email)
+    ].forEach(function (li) { if (li) ul.appendChild(li); });
+
+    document.querySelector('[data-proximo]').textContent = depois
+      ? 'We hold your card and charge it 72 hours before the tour. You will ' +
+        'get an email before that happens. Until then nothing has left your ' +
+        'account, and you can cancel free of charge.'
+      : 'You will get a confirmation email with everything on it. The ' +
+        'operator will contact you to agree the pick-up point.';
+
+    est.hidden = true;
+    det.hidden = false;
+  }).catch(function () {
+    falhar('We could not find that booking. Check the confirmation email, ' +
+      'or send us a message with the reference from it.');
+  });
+})();
+"""
+
+
 def main():
     paises = por_pais(carregar())
     cancelamento(paises)
     avaliacoes(paises)
+    confirmada(paises)
 
 
 if __name__ == '__main__':

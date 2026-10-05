@@ -50,6 +50,22 @@ function responder(url) {
   const c = new URL(url).pathname;
   if (c === '/auth/v1/user') return { id: UID, email: 'ricardo@example.invalid', aud: 'authenticated' };
   if (c === '/rest/v1/rpc/is_admin') return true;
+
+  // A cotacao e a confirmacao, para o axe poder ver o formulario com o
+  // preco preenchido e a pagina de confirmacao com as linhas todas — e
+  // nao a pagina vazia a dizer "One moment".
+  if (c === '/rest/v1/rpc/cotar') {
+    return { ok: true, slug: 'example-sintra', title: 'Private Day in Sintra',
+      operator: 'Atlantic Private Tours', date: '2026-12-01', time: null,
+      pax: 2, vehicle: 'Sedan', maxPax: 6, price: 555, currency: 'EUR',
+      hoursToStart: 900, payLater: true };
+  }
+  if (c === '/functions/v1/sessao') {
+    return { confirmed: true, payment_mode: 'later', reference: 'EWABCD23',
+      tour: 'Private Day in Sintra', operator: 'Atlantic Private Tours',
+      date: '2026-12-01', time: '08:30', pax: 2, amount: 555,
+      currency: 'EUR', email: 'cliente@example.invalid' };
+  }
   if (c === '/rest/v1/operator_users') {
     return [{ operator_id: OP, role: 'owner',
       operators: { id: OP, name: 'Atlantic Private Tours', status: 'approved', commission_rate: 0.2 } }];
@@ -133,7 +149,12 @@ const PAGINAS = [
   ['pontos de encontro', '/portal/places/', '.p[data-p]'],
   ['fila de revisao', '/admin/', '.rv'],
   ['operadores', '/admin/operators/', 'table.tab'],
-  ['procuras', '/admin/searches/', '.cx']
+  ['procuras', '/admin/searches/', '.cx'],
+  // A reserva confirmada: o estado que o cliente ve a seguir a pagar, e
+  // nao o "One moment" de antes da resposta.
+  ['reserva confirmada',
+   '/booking-confirmed/?session_id=cs_test_abcdefghij1234567890',
+   '[data-detalhe]:not([hidden])']
 ];
 
 const TAMANHOS = [[1440, 900], [768, 1024], [390, 844]];
