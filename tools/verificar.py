@@ -20,37 +20,79 @@ RAIZ = os.path.dirname(AQUI)
 
 import glob
 
-PAGINAS = (['index.html', 'tours/index.html', 'search/index.html',
-            'suppliers/index.html', 'suppliers/apply/index.html',
-            'contact/index.html', 'journal/index.html',
-            'cancellation/index.html', 'reviews-policy/index.html',
-            'review/index.html',
-            'portal/index.html', 'portal/listing/index.html',
-            'portal/calendar/index.html', 'portal/account/index.html',
-            'portal/fleet/index.html', 'portal/places/index.html',
-            'portal/reviews/index.html',
-            'admin/index.html', 'admin/operators/index.html',
-            'admin/searches/index.html']
-           + sorted(os.path.relpath(x, RAIZ)
-                    for x in glob.glob(os.path.join(RAIZ, 'tours', '*',
-                                                    'index.html')))
-           + sorted(os.path.relpath(x, RAIZ)
-                    for x in glob.glob(os.path.join(RAIZ, 'journal', '*',
-                                                    'index.html'))))
+# TODAS as paginas geradas, e nao uma lista a mao
+#
+# Isto era uma lista escrita a mao e falhou exatamente como se esperava:
+# acrescentei tres paginas novas (/booking-confirmed/, /admin/bookings/ e
+# /portal/bookings/) e nenhuma delas entrou na lista. As paginas
+# existiam, estavam publicadas, e nao eram verificadas por ninguem — e o
+# numero no fim continuava a dizer 60, que parecia bem.
+#
+# Agora varre-se a arvore. Uma pagina nova e verificada no dia em que
+# nasce, sem ninguem se lembrar de nada. O que fica de fora e so o que
+# nao e uma pagina do site: as dependencias, as provas dos logotipos e as
+# paginas de trabalho.
+FORA = ('node_modules', 'assets', 'sql', 'tools', '.git')
+
+# Ficheiros na RAIZ que nao sao paginas do site: provas de desenho que
+# ficaram la de quando se escolheu o logotipo e a maquete antiga do
+# marketplace. Nao se apagam (nao sao meus para apagar), mas tambem nao
+# sao verificados: tem links para paginas que nunca existiram e
+# atributos que nao passam, e deixa-los na lista fazia o verificar.py
+# reclamar para sempre de coisas que ninguem vai corrigir.
+#
+# ATENCAO: estao na raiz, e a raiz e servida ao publico (publishPath ".").
+# https://exclusiveworldtours.com/logos3.html abre para qualquer pessoa,
+# e as logos3 a 6 nao tem noindex. Vale a pena apaga-las ou mete-las numa
+# pasta fora do publishPath — e uma decisao do Ricardo, nao minha.
+RASCUNHOS = ('index-marketplace.html', 'logos.html', 'logos2.html',
+             'logos3.html', 'logos4.html', 'logos5.html', 'logos6.html')
+
+# As mesmas provas tambem estao em pastas proprias (/logos/, /logos2/...).
+RASCUNHO_PASTAS = ('logos', 'logos2', 'logos3', 'logos4', 'logos5', 'logos6')
+
+
+def _todas():
+    achadas = []
+    for raiz, pastas, ficheiros in os.walk(RAIZ):
+        pastas[:] = [d for d in pastas
+                     if not d.startswith('.') and d not in FORA]
+        for f in ficheiros:
+            if not f.endswith('.html'):
+                continue
+            rel = os.path.relpath(os.path.join(raiz, f), RAIZ)
+            if rel in RASCUNHOS:
+                continue
+            if rel.split(os.sep)[0] in RASCUNHO_PASTAS:
+                continue
+            achadas.append(rel)
+    return sorted(achadas)
+
+
+PAGINAS = _todas()
 
 # As paginas que falam com a base tem de levar a biblioteca E a ligacao,
 # nesta ordem. Faltar uma delas nao da erro visivel: a pagina abre, nao
 # faz nada, e parece lenta.
-COM_BASE = ['portal/index.html', 'portal/listing/index.html',
-            'portal/calendar/index.html', 'portal/account/index.html',
-            'portal/fleet/index.html', 'portal/places/index.html',
-            'portal/fleet/index.html', 'portal/places/index.html',
-            'portal/reviews/index.html',
-            'admin/index.html', 'admin/operators/index.html',
-            'admin/searches/index.html', 'contact/index.html',
-            'suppliers/apply/index.html', 'tours/index.html',
-            'search/index.html', 'review/index.html',
-            'tours/cliffs-of-moher-galway/index.html']
+#
+# Quais sao elas descobre-se a LER o HTML e nao a lembrar-se: uma pagina
+# que carrega a ligacao.js esta a falar com a base, e e isso que faz
+# dela uma pagina a verificar. A lista a mao que estava aqui tinha uma
+# entrada repetida e tres paginas a menos.
+def _com_base():
+    quais = []
+    for nome in PAGINAS:
+        caminho = os.path.join(RAIZ, nome)
+        try:
+            with open(caminho) as f:
+                if 'assets/ligacao.js' in f.read():
+                    quais.append(nome)
+        except OSError:
+            pass
+    return quais
+
+
+COM_BASE = _com_base()
 
 # As paginas do portal e da administracao nunca podem sair sem noindex,
 # por outra razao que nao os precos: um painel de operador indexado nao
