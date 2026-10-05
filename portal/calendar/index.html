@@ -629,6 +629,41 @@ table.tab a { color: #A85426; font-weight: 500; }
 .leg .i-closed { background: #F2EFEC; }
 .leg .i-sold { background: #FBF2EB; }
 
+.horas {
+  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
+  padding: 1rem 1.1rem; margin-bottom: 1.3rem;
+}
+.horas-t {
+  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .12em; text-transform: uppercase; color: #5B6F6E;
+  margin: 0 0 .8rem; padding-bottom: .6rem;
+  border-bottom: 1px solid #D5D8D5;
+}
+.horas-l { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.hora {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: #F6F4F1; border: 1px solid #5B6F6E; border-radius: 20px;
+  padding: .4rem .5rem .4rem .8rem;
+  font: 600 .95rem/1 'Inter', system-ui, sans-serif; color: #0B2B2A;
+  font-variant-numeric: tabular-nums;
+}
+.hora button {
+  width: 1.4rem; height: 1.4rem; border-radius: 50%; cursor: pointer;
+  border: 0; background: #D5D8D5; color: #354F4E;
+  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.hora button:hover { background: #D79C96; color: #5F1512; }
+.hora-nova { display: flex; gap: .5rem; align-items: center; }
+.hora-nova input {
+  width: 8rem; font-variant-numeric: tabular-nums;
+}
+.horas-nota {
+  margin: .8rem 0 0;
+  font: 400 .84rem/1.6 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+.horas-nota b { color: #0B2B2A; }
+
 .cal-ajuda {
   font: 400 .88rem/1.55 'Inter', system-ui, sans-serif; color: #354F4E;
   background: #FFFFFF; border-left: 4px solid #CE7030;
@@ -686,6 +721,19 @@ table.tab a { color: #A85426; font-weight: 500; }
         </div>
       </div>
 
+      <div class="horas">
+        <p class="horas-t">Departure times</p>
+        <div class="horas-l" id="horas-l"></div>
+        <form class="hora-nova" id="f-hora" style="margin-top:.8rem">
+          <label class="so-leitor" for="hora-nova">Add a departure time</label>
+          <input type="time" id="hora-nova" step="300">
+          <button type="submit" class="bt bt-s bt-pq" id="bt-hora">Add
+            departure</button>
+        </form>
+        <p class="horas-nota" id="horas-nota"></p>
+        <p class="aviso" id="av-horas" role="status" hidden></p>
+      </div>
+
       <div class="grelha" id="grelha"></div>
 
       <p class="leg">
@@ -705,7 +753,61 @@ table.tab a { color: #A85426; font-weight: 500; }
   if (!window.ewt || window.ewt.avariado) return;
 
   var DIAS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  var E = { anuncios: [], tour: null, mes: null, dados: {}, aEscrever: 0 };
+  var E = { anuncios: [], tour: null, mes: null, dados: {}, aEscrever: 0,
+            horas: [], lead: 24 };
+
+  // ---------------------------------------------------------- as horas
+  //
+  // As horas de partida vivem aqui e nao no editor de anuncios, de
+  // proposito. Um cliente ve a hora, por isso a tentacao e trata-la como
+  // conteudo e faze-la passar pela revisao. Seria o mesmo erro que fazer
+  // o calendario passar pela revisao: um operador que tem de mudar a
+  // partida de amanha das 8h para as 9h nao pode esperar por mim.
+  function hhmm(t) { return String(t || '').slice(0, 5); }
+
+  function desenharHoras() {
+    var c = document.getElementById('horas-l');
+    if (!E.horas.length) {
+      c.innerHTML = '<p class="horas-nota" style="margin:0">No departure '
+        + 'times set. Without them we fall back to whole days, and a tour '
+        + 'that leaves at 5pm loses a day of calendar it did not have to.</p>';
+    } else {
+      c.innerHTML = E.horas.map(function (h) {
+        return '<span class="hora">' + hhmm(h)
+          + '<button type="button" data-tira="' + h
+          + '" aria-label="Remove the ' + hhmm(h)
+          + ' departure">\u00d7</button></span>';
+      }).join('');
+    }
+    var n = document.getElementById('horas-nota');
+    n.innerHTML = E.horas.length
+      ? 'A day is offered while <b>at least one</b> of these is still more '
+        + 'than <b>' + E.lead + ' hours</b> away. Changing a time applies '
+        + 'immediately \u2014 no review.'
+      : '';
+  }
+
+  async function carregarHoras() {
+    if (!E.tour) return;
+    var r = await ewt.sb.from('listing_times')
+      .select('starts_at').eq('listing_id', E.tour).eq('active', true)
+      .order('starts_at');
+    if (r.error) { ewt.dizer('av-horas', ewt.legivel(r.error), 'mal'); return; }
+    E.horas = (r.data || []).map(function (x) { return x.starts_at; });
+    var a = E.anuncios.filter(function (x) { return x.id === E.tour; })[0];
+    E.lead = (a && a.lead_time_hours != null) ? a.lead_time_hours : 24;
+    desenharHoras();
+  }
+
+  async function guardarHoras(novas) {
+    var r = await ewt.sb.rpc('definir_partidas', {
+      p_listing: E.tour,
+      p_horas: novas.map(function (h) { return hhmm(h) + ':00'; })
+    });
+    if (r.error) { ewt.dizer('av-horas', ewt.legivel(r.error), 'mal'); return; }
+    ewt.dizer('av-horas', '', '');
+    await carregarHoras();
+  }
 
   function iso(d) { return ewt.iso(d); }
   function primeiro(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
@@ -837,7 +939,8 @@ table.tab a { color: #A85426; font-weight: 500; }
     if (!pp) return;
 
     var r = await ewt.sb.from('listings')
-      .select('id, slug, status, city, country').order('created_at');
+      .select('id, slug, status, city, country, lead_time_hours, timezone')
+      .order('created_at');
     var anuncios = r.data || [];
 
     document.getElementById('carrega').hidden = true;
@@ -883,6 +986,35 @@ table.tab a { color: #A85426; font-weight: 500; }
       E.tour = sel.value;
       history.replaceState({}, '', '/portal/calendar/?tour=' + E.tour);
       carregar();
+      carregarHoras();
+    });
+
+    document.getElementById('f-hora').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var i = document.getElementById('hora-nova');
+      var v = hhmm(i.value);
+      if (!v) {
+        ewt.dizer('av-horas', 'Pick a time first.', 'mal');
+        i.focus();
+        return;
+      }
+      if (E.horas.some(function (h) { return hhmm(h) === v; })) {
+        ewt.dizer('av-horas', 'That departure is already there.', 'mal');
+        return;
+      }
+      var novas = E.horas.map(hhmm).concat([v]).sort();
+      i.value = '';
+      await guardarHoras(novas);
+    });
+
+    document.getElementById('horas-l').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-tira]');
+      if (!b) return;
+      var fora = b.getAttribute('data-tira');
+      // Tirar uma hora desativa-a e nao a apaga: um pedido antigo pode
+      // apontar para ela, e a linha tem de continuar a fazer sentido
+      // quando alguem a ler daqui a um mes.
+      guardarHoras(E.horas.filter(function (h) { return h !== fora; }).map(hhmm));
     });
     document.getElementById('cal-ant').addEventListener('click', function () {
       E.mes = new Date(E.mes.getFullYear(), E.mes.getMonth() - 1, 1);
@@ -897,7 +1029,9 @@ table.tab a { color: #A85426; font-weight: 500; }
       if (b && !b.disabled) tocar(b.getAttribute('data-d'));
     });
 
+    E.anuncios = anuncios;
     await carregar();
+    await carregarHoras();
   })();
 })();
 

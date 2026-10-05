@@ -1317,11 +1317,12 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   // O botao leva o que a pessoa escolheu — o dia e quantos sao — para o
   // pedido. Obrigar a escrever outra vez na pagina seguinte o que se
   // acabou de escolher e a maneira mais simples de perder um cliente.
-  var ir = p.querySelector('[data-ir]');
   if (ir) {
     function destino() {
       var q = '?tour=' + encodeURIComponent(SLUG);
       if (data && data.value) q += '&date=' + encodeURIComponent(data.value);
+      var h = ir.getAttribute('data-hora');
+      if (h) q += '&time=' + encodeURIComponent(h);
       q += '&people=' + n;
       return '/contact/' + q;
     }
@@ -1331,6 +1332,10 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
     p.addEventListener('input', function () { ir.setAttribute('href', destino()); });
     p.addEventListener('click', function () { ir.setAttribute('href', destino()); });
   }
+
+  // O botao de pedido. Declarado aqui, antes de verDia(), porque e ela
+  // que lhe escreve a hora escolhida.
+  var ir = p.querySelector('[data-ir]');
 
   // ------------------------------------------------- o dia, ao vivo
   //
@@ -1391,8 +1396,25 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
           + (f.veiculos > 1 ? ', across ' + f.veiculos + ' vehicles' : '')
           + '.';
       }
+
+      // E quais as partidas que ainda dao. Um dia pode ter a das 8h
+      // fechada pelo aviso minimo e a das 17h aberta — dizer so "esta
+      // disponivel" perdia metade da informacao util.
+      var horas = '';
+      var ph = await ewt.sb.rpc('partidas_no_dia', { p_slug: SLUG, p_day: d });
+      if (!ph.error && ph.data && ph.data.length) {
+        var lista = ph.data.map(function (x) {
+          return String(x.starts_at).slice(0, 5);
+        });
+        horas = ' Departures still open: <b>' + lista.join('</b>, <b>')
+          + '</b>.';
+        // A hora escolhida viaja com o pedido: quem clicar no botao leva
+        // a data E a partida, e nao tem de reescrever nada.
+        if (ir) { ir.setAttribute('data-hora', lista[0]); }
+      }
+
       aviso.className = 'dia-estado dia-sim';
-      aviso.innerHTML = '<b>That day is open.</b>' + cabe
+      aviso.innerHTML = '<b>That day is open.</b>' + cabe + horas
         + ' Ask us and we hold it while you decide.'
         + (f.price ? ' The operator prices that date at \u20ac'
             + ewt.euros(f.price) + '.' : '');

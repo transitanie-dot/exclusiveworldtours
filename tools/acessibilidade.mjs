@@ -73,6 +73,9 @@ function responder(url) {
         country: 'Portugal',
         operators: { id: OP, name: 'Atlantic Private Tours', status: 'approved', commission_rate: 0.2 } } }];
   }
+  if (c === '/rest/v1/listing_times') {
+    return [{ starts_at: '08:00:00' }, { starts_at: '17:00:00' }];
+  }
   if (c === '/rest/v1/vehicles') {
     return [{ id: 'vv1', name: 'Mercedes V-Class', max_pax: 6,
       plate: '191-D-1234', active: true, listing_vehicles: [{ listing_id: AN }] },
@@ -118,7 +121,7 @@ const PAGINAS = [
   ['entrada do portal', '/portal/', '#entrada'],
   ['painel do operador', '/portal/', '.an-l'],
   ['editor de anuncio', '/portal/listing/?id=' + AN, '#titulo'],
-  ['calendario', '/portal/calendar/?tour=' + AN, '.dia[data-d]'],
+  ['calendario', '/portal/calendar/?tour=' + AN, '.hora'],
   ['conta do operador', '/portal/account/', '.ct .cx'],
   ['frota', '/portal/fleet/', '.vd[data-d]'],
   ['fila de revisao', '/admin/', '.rv'],
