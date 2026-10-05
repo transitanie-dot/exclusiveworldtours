@@ -329,6 +329,25 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
    A fotografia a sangrar com o titulo por cima. A Viator e a
    GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
    por baixo; isto poe o sitio primeiro, que e o que se esta a comprar. */
+/* O ponto de encontro. A fotografia e a parte que conta: um "canto
+   nordeste da praca, ao pe do quiosque verde" explica-se em duas linhas
+   e falha; uma fotografia nao falha. */
+.encontro{display:grid;gap:var(--e3);background:var(--branco);
+  border:1px solid var(--risco);border-left:4px solid var(--cor);
+  border-radius:var(--raio);overflow:hidden;margin:var(--e3) 0 0}
+@media(min-width:720px){.encontro{grid-template-columns:minmax(0,1fr) 15rem;
+  align-items:stretch;gap:0}}
+.encontro-txt{padding:var(--e3)}
+.encontro-txt h4{margin:0 0 6px;font-family:var(--tipo-titulo);
+  font-size:1.05rem;color:var(--tinta)}
+.encontro-txt p{margin:0 0 8px;font-size:.94rem;line-height:1.6;
+  color:var(--texto)}
+.encontro-txt p:last-child{margin-bottom:0}
+.encontro-txt .morada{font-weight:600;color:var(--tinta)}
+.encontro-txt a{color:var(--cor-escura);font-weight:500}
+.encontro-foto{background:var(--papel);min-height:9rem}
+.encontro-foto img{width:100%;height:100%;object-fit:cover;display:block}
+
 .sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
   color:var(--tinta);margin:var(--e3) 0 var(--e2);
   padding-top:var(--e3);border-top:1px solid var(--risco)}
@@ -796,6 +815,9 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
           a hold on the day. Nothing is charged until you say yes.</p>
         <p class="intro"><a class="botao" href="/contact/?tour=dublin-private-chauffeur">Ask
           about a date</a></p>
+        <h3 class="sub-h">Where we meet</h3>
+        <p class="intro">We collect you at your hotel door. Tell us where you are staying when you ask about the date.</p>
+
         <h3 class="sub-h">Cancellation</h3>
         <p class="intro">Cancel up to 24 hours before your departure time and you pay nothing. Inside 24 hours the vehicle and the driver are already committed to your day, so we cannot refund it.</p>
         <p class="intro">Weather is not a cancellation. These are private days: if a stop is genuinely unsafe or a road is closed, your driver changes the route and tells you why, and you still get a full day out. That is the thing a coach tour cannot do.</p>

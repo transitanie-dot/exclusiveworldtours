@@ -55,6 +55,25 @@ CSS = '''
    A fotografia a sangrar com o titulo por cima. A Viator e a
    GetYourGuide poem uma grelha de miniaturas e o titulo em texto preto
    por baixo; isto poe o sitio primeiro, que e o que se esta a comprar. */
+/* O ponto de encontro. A fotografia e a parte que conta: um "canto
+   nordeste da praca, ao pe do quiosque verde" explica-se em duas linhas
+   e falha; uma fotografia nao falha. */
+.encontro{display:grid;gap:var(--e3);background:var(--branco);
+  border:1px solid var(--risco);border-left:4px solid var(--cor);
+  border-radius:var(--raio);overflow:hidden;margin:var(--e3) 0 0}
+@media(min-width:720px){.encontro{grid-template-columns:minmax(0,1fr) 15rem;
+  align-items:stretch;gap:0}}
+.encontro-txt{padding:var(--e3)}
+.encontro-txt h4{margin:0 0 6px;font-family:var(--tipo-titulo);
+  font-size:1.05rem;color:var(--tinta)}
+.encontro-txt p{margin:0 0 8px;font-size:.94rem;line-height:1.6;
+  color:var(--texto)}
+.encontro-txt p:last-child{margin-bottom:0}
+.encontro-txt .morada{font-weight:600;color:var(--tinta)}
+.encontro-txt a{color:var(--cor-escura);font-weight:500}
+.encontro-foto{background:var(--papel);min-height:9rem}
+.encontro-foto img{width:100%;height:100%;object-fit:cover;display:block}
+
 .sub-h{font-family:var(--tipo-titulo);font-size:1.05rem;font-weight:700;
   color:var(--tinta);margin:var(--e3) 0 var(--e2);
   padding-top:var(--e3);border-top:1px solid var(--risco)}
@@ -440,6 +459,52 @@ def faq(t, assinalados):
             '<p class="rot"><b>04</b> Questions</p>'
             '<h2>Before you ask</h2>%s</section>'
             % '\n'.join(linhas))
+
+
+def encontro_html(t):
+    """O ponto de encontro, quando existe.
+
+    Nao existir nao e uma falta: num dia privado o normal e a recolha ao
+    hotel, e dize-lo e melhor do que nao dizer nada — a pergunta "onde e
+    que nos encontramos?" aparece na cabeca do cliente de qualquer
+    maneira.
+    """
+    m = t.get('_encontro')
+    if not m:
+        return ('<p class="intro">We collect you at your hotel door. Tell '
+                'us where you are staying when you ask about the date.</p>')
+
+    mapa = ''
+    if m.get('lat') is not None and m.get('lng') is not None:
+        # Uma ligacao para o mapa, nao um mapa embebido: a pagina ja tem
+        # um mapa da cidade, e um segundo iframe por tour e meio megabyte
+        # que ninguem pediu.
+        # O & vai escapado: num href cru e HTML invalido, e o dia em que
+        # um browser deixar de o perdoar e o dia em que a ligacao parte.
+        mapa = ('<p><a href="https://www.openstreetmap.org/?mlat=%s&amp;mlon=%s'
+                '#map=18/%s/%s" target="_blank" rel="noopener">Open it on a '
+                'map &rarr;</a></p>' % (m['lat'], m['lng'], m['lat'], m['lng']))
+
+    foto = ''
+    if m.get('photo'):
+        foto = ('<div class="encontro-foto"><img src="%s" alt="%s" '
+                'loading="lazy" decoding="async" '
+                'onerror="this.parentNode.style.display=&quot;none&quot;">'
+                '</div>'
+                % (e(m['photo']),
+                   e('The meeting point: %s' % m['name'])))
+
+    return ('<div class="encontro">'
+            '<div class="encontro-txt">'
+            '<h4>%(nome)s</h4>'
+            '%(morada)s%(notas)s%(mapa)s'
+            '</div>%(foto)s</div>'
+            % {'nome': e(m['name']),
+               'morada': ('<p class="morada">%s</p>' % e(m['address'])
+                          if m.get('address') else ''),
+               'notas': ('<p>%s</p>' % e(m['instructions'])
+                         if m.get('instructions') else ''),
+               'mapa': mapa, 'foto': foto})
 
 
 def painel(t):
@@ -896,6 +961,9 @@ def main():
           a hold on the day. Nothing is charged until you say yes.</p>
         <p class="intro"><a class="botao" href="/contact/?tour=%(slug_b)s">Ask
           about a date</a></p>
+        <h3 class="sub-h">Where we meet</h3>
+        %(encontro)s
+
         <h3 class="sub-h">Cancellation</h3>
         %(politica)s
       </section>
@@ -938,6 +1006,7 @@ def main():
                                  % (e(a), e(b)) for a, b in t.get('practical', [])),
             'faq': faq(t, assinalados), 'mapa': mapa_cidade(t),
             'slug_b': e(t['slug']),
+            'encontro': encontro_html(t),
             'politica': '\n        '.join(
                 '<p class="intro">%s</p>' % x for x in politica.PARAGRAFOS),
             'painel': painel(t),

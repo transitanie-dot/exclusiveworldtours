@@ -180,6 +180,25 @@ def limpar(linha):
                           'alt': texto(x.get('alt'), 200),
                           'by': texto(x.get('by'), 120)})
 
+    # O ponto de encontro. Sem ele, a recolha e no hotel — que e o normal
+    # num dia privado e nao uma falta.
+    encontro = None
+    mp = linha.get('meeting_point')
+    if isinstance(mp, dict) and texto(mp.get('name'), 120):
+        foto = texto(mp.get('photo_url'), 500)
+        encontro = {
+            'name': texto(mp.get('name'), 120),
+            'address': texto(mp.get('address'), 250),
+            'instructions': texto(mp.get('instructions'), 600),
+            'photo': foto if foto.startswith('https://') else '',
+        }
+        try:
+            lat, lng = float(mp['lat']), float(mp['lng'])
+            if -90 <= lat <= 90 and -180 <= lng <= 180:
+                encontro['lat'], encontro['lng'] = lat, lng
+        except (TypeError, ValueError, KeyError):
+            pass
+
     return {
         'slug': slug,
         'title': titulo,
@@ -211,6 +230,7 @@ def limpar(linha):
         '_fuso': texto(linha.get('timezone'), 60),
         '_max_pax': linha.get('max_pax'),
         '_veiculos': linha.get('vehicles'),
+        '_encontro': encontro,
     }
 
 
@@ -218,12 +238,21 @@ def main():
     so_ver = '--ver' in sys.argv
 
     linhas = pedir('catalogo_publico')
+
+    # Os pontos de encontro vem a parte porque o catalogo_publico() nao
+    # pode ganhar colunas sem um `drop` — ver a nota em
+    # sql/012_pontos_de_encontro.sql. Uma chamada, nao uma por tour.
+    pontos = {}
+    for x in (pedir('pontos_de_encontro') or []):
+        if isinstance(x, dict) and x.get('slug'):
+            pontos[x['slug']] = x
     if not isinstance(linhas, list):
         sys.exit('A base devolveu uma coisa que nao e uma lista: %r'
                  % (str(linhas)[:200],))
 
     tours, descartados = [], []
     for linha in linhas:
+        linha['meeting_point'] = pontos.get(linha.get('slug'))
         limpo = limpar(linha)
         (tours if limpo else descartados).append(limpo or linha.get('slug'))
 

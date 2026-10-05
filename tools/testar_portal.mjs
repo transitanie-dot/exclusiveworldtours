@@ -89,7 +89,7 @@ function responder(url, metodo, corpo) {
     if (metodo !== 'GET') return [{ id: AN, slug: 'example-sintra',
       status: 'draft', city: 'Lisbon', country: 'Portugal' }];
     return [{ id: AN, slug: 'example-sintra', status: 'live',
-      city: 'Lisbon', country: 'Portugal',
+      city: 'Lisbon', country: 'Portugal', meeting_point_id: 'mp1',
       created_at: '2026-09-01T10:00:00Z',
       operators: { id: OP, name: 'Atlantic Private Tours',
                    status: 'approved', commission_rate: 0.2 } }];
@@ -125,6 +125,16 @@ function responder(url, metodo, corpo) {
   }
   if (c === '/rest/v1/listing_vehicles') return [];
   if (c === '/rest/v1/rpc/marcar_veiculo') return 1;
+  if (c === '/rest/v1/meeting_points') {
+    if (metodo !== 'GET') return [{ id: 'mp1' }];
+    return [{ id: 'mp1', operator_id: OP, name: 'Molly Malone statue',
+      address: 'Suffolk Street, Dublin 2', lat: 53.3438, lng: -6.2597,
+      instructions: 'On the corner by the kiosk, not the main door.',
+      photo_url: 'https://exemplo.invalid/ponto.jpg' },
+      { id: 'mp2', operator_id: OP, name: 'Heuston Station',
+        address: null, lat: null, lng: null, instructions: null,
+        photo_url: null }];
+  }
   if (c === '/rest/v1/listing_times') {
     if (metodo !== 'GET') return [];
     return [{ starts_at: '08:00:00' }, { starts_at: '17:00:00' }];
@@ -576,6 +586,59 @@ await t('o contacto recebe a partida pelo endereco',
     ['e e dita no topo',
       (await p.locator('#sobre').innerText()).indexOf('17:00') > -1]
   ]);
+
+// ------------------------------------------------ os pontos de encontro
+await t('os pontos de encontro listam-se e abrem',
+  '/portal/places/', '.p[data-p]', async (p) => [
+    ['lista os dois', await p.locator('.p[data-p]').count() === 2],
+    ['o primeiro vem aberto',
+      (await p.locator('#p-nome').inputValue()).indexOf('Molly') === 0],
+    ['com a morada', (await p.locator('#p-morada').inputValue()).length > 5],
+    ['e as instrucoes',
+      (await p.locator('#p-notas').inputValue()).indexOf('kiosk') > -1],
+    ['mostra a fotografia que ja tem',
+      await p.locator('#foto-pre img').count() === 1],
+    ['e o mapa com o pino', await p.locator('#mapa iframe').count() === 1],
+    ['diz que um tour o usa',
+      await p.locator('.p-usos').count() >= 1]
+  ]);
+
+await t('um ponto sem coordenadas nao desenha pino nenhum',
+  '/portal/places/', '.p[data-p]', async (p) => {
+    await p.locator('.p[data-p]').nth(1).click();
+    await p.waitForTimeout(300);
+    return [
+      ['abre o segundo',
+        (await p.locator('#p-nome').inputValue()).indexOf('Heuston') === 0],
+      ['sem mapa', await p.locator('#mapa iframe').count() === 0],
+      ['e diz que falta a fotografia',
+        (await p.locator('#foto-pre').innerText()).toLowerCase()
+          .indexOf('no photograph') > -1]
+    ];
+  });
+
+await t('os pontos de encontro recusam meia coordenada',
+  '/portal/places/', '#f-lugar', async (p) => {
+    await p.locator('.p[data-p]').nth(1).click();
+    await p.waitForTimeout(200);
+    await p.locator('#p-lat').fill('53.3438');
+    await p.locator('#bt-grava').click();
+    await p.waitForTimeout(300);
+    const a = (await p.locator('#av-lg').innerText()).toLowerCase();
+    return [['explica que vao aos pares',
+      a.indexOf('together') > -1 || a.indexOf('both') > -1]];
+  });
+
+await t('e recusam coordenadas que nao sao numeros',
+  '/portal/places/', '#f-lugar', async (p) => {
+    await p.locator('#p-lat').fill('perto da ponte');
+    await p.locator('#p-lng').fill('ao pe do rio');
+    await p.locator('#bt-grava').click();
+    await p.waitForTimeout(300);
+    return [['diz que nao sao numeros',
+      (await p.locator('#av-lg').innerText()).toLowerCase()
+        .indexOf('not numbers') > -1]];
+  });
 
 // ------------------------------------------------------------- a frota
 await t('a frota lista os veiculos e o calendario do escolhido',

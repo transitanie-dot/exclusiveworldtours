@@ -26,6 +26,7 @@ CORES = pagina.CORES
 NAV = [('My tours', '/portal/'),
        ('Calendar', '/portal/calendar/'),
        ('Fleet', '/portal/fleet/'),
+       ('Meeting points', '/portal/places/'),
        ('Account', '/portal/account/')]
 
 

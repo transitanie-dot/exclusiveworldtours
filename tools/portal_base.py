@@ -178,6 +178,43 @@ legend {
 }
 .obrig { color: #8C1D18; }
 
+/* --------------------------------------------------- linhas repetiveis
+   Uma lista onde se acrescentam e apagam linhas: escaloes de preco,
+   paragens, perguntas, fotografias. Vive aqui e nao no editor porque
+   mais do que uma pagina do portal a usa. */
+.rep { display: grid; gap: .7rem; }
+.rep-l {
+  display: grid; gap: .6rem; align-items: start;
+  padding: .8rem; border: 1px solid %(risco)s; border-radius: 5px;
+  background: %(papel)s;
+}
+.rep-l > .campo { margin: 0; }
+.rep-x {
+  justify-self: start;
+  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
+  color: #8C1D18; background: none; border: 1px solid #B3261E;
+  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
+}
+.rep-x:hover { background: #FCEEEC; }
+.rep-mais {
+  justify-self: start; margin-top: .3rem;
+  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
+  color: %(tinta)s; background: %(branco)s;
+  border: 1px dashed %(mudo)s; border-radius: 4px;
+  padding: .6rem .85rem; cursor: pointer;
+}
+.rep-mais:hover { border-style: solid; border-color: %(tinta)s; }
+
+/* Os tours ligados a um recurso (um veiculo, um ponto de encontro). */
+.v-tours { display: grid; gap: .45rem; margin-top: .3rem; }
+.v-t {
+  display: flex; align-items: flex-start; gap: .55rem;
+  font: 400 .88rem/1.45 'Inter', system-ui, sans-serif; color: %(texto)s;
+  padding: .45rem .55rem; border-radius: 4px; background: %(papel)s;
+}
+.v-t input { margin: .15rem 0 0; width: 1.05rem; height: 1.05rem; flex: none; }
+.v-t span span { color: %(mudo)s; }
+
 /* --------------------------------------------------------------- avisos */
 .aviso {
   margin: .9rem 0; padding: .8rem .9rem; border-radius: 4px;

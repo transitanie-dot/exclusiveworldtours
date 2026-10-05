@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Searches — Exclusive World Tours</title>
+<title>Meeting points — Exclusive World Tours</title>
 <meta name="description" content="Operator area of Exclusive World Tours.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
@@ -582,22 +582,59 @@ table.tab a { color: #A85426; font-weight: 500; }
   font: 400 .92rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
 }
 
-.ops-f { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.1rem; }
-.ops-f button {
-  font: 500 .85rem/1 'Inter', system-ui, sans-serif;
-  background: #FFFFFF; border: 1px solid #5B6F6E; border-radius: 20px;
-  color: #354F4E; padding: .5rem .9rem; cursor: pointer;
+.lg { display: grid; gap: 1.2rem; }
+@media (min-width: 1000px) {
+  .lg { grid-template-columns: 20rem minmax(0, 1fr); align-items: start; }
 }
-.ops-f button[aria-pressed="true"] {
-  background: #0B2B2A; color: #F6F4F1; border-color: #0B2B2A;
+
+.p-lista { display: grid; gap: .6rem; }
+.p {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
+  border-left: 4px solid #D5D8D5; padding: .8rem .9rem;
+  font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: #5B6F6E;
 }
-.com-in { width: 5.5rem; }
-.barra {
-  height: .5rem; border-radius: 3px; background: #CE7030; min-width: 3px;
+.p:hover { border-color: #5B6F6E; }
+.p[aria-pressed="true"] { border-left-color: #CE7030; background: #F6F4F1; }
+.p:focus-visible { outline: 3px solid #CE7030; outline-offset: 2px; }
+.p b {
+  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
+  color: #0B2B2A; margin-bottom: .15rem;
 }
-.barra-f { background: #D5D8D5; border-radius: 3px; }
-.proc-q { font-weight: 600; color: #0B2B2A; }
-.nada { font-style: italic; color: #5B6F6E; }
+.p-usos {
+  display: inline-block; margin-top: .3rem;
+  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
+  letter-spacing: .08em; text-transform: uppercase; color: #A85426;
+}
+
+/* ------------------------------------------------------- a fotografia */
+.foto-cx { display: grid; gap: .7rem; }
+.foto-pre {
+  position: relative; border-radius: 6px; overflow: hidden;
+  background: #F6F4F1; border: 1px solid #D5D8D5;
+  aspect-ratio: 4 / 3; display: flex; align-items: center;
+  justify-content: center;
+}
+.foto-pre img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto-pre p {
+  margin: 0; padding: 1rem; text-align: center;
+  font: 400 .86rem/1.55 'Inter', system-ui, sans-serif; color: #5B6F6E;
+}
+.foto-bts { display: flex; flex-wrap: wrap; gap: .5rem; }
+.foto-escolher {
+  position: relative; overflow: hidden; display: inline-block;
+}
+.foto-escolher input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+}
+
+.mapa-mini {
+  border: 1px solid #D5D8D5; border-radius: 6px; overflow: hidden;
+  background: #F6F4F1; aspect-ratio: 16 / 9;
+}
+.mapa-mini iframe { width: 100%; height: 100%; border: 0; display: block; }
+.coord { display: grid; gap: .8rem; }
+@media (min-width: 560px) { .coord { grid-template-columns: 1fr 1fr; } }
 
 </style>
 <script src="/assets/lib/supabase.js"></script>
@@ -608,7 +645,7 @@ table.tab a { color: #A85426; font-weight: 500; }
 <header class="pt-topo">
   <div class="folha pt-topo-i">
     <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
-    <span class="pt-etiq">Administration</span>
+    <span class="pt-etiq">Operator portal</span>
     <div class="pt-topo-fim">
       <span class="pt-quem" id="quem"></span>
       <button type="button" class="pt-sair" id="sair" hidden>Sign out</button>
@@ -616,19 +653,115 @@ table.tab a { color: #A85426; font-weight: 500; }
   </div>
 </header>
   <nav class="pt-nav" aria-label="Portal">
-    <div class="folha pt-nav-i"><a href="/admin/">Review queue</a>
-<a href="/admin/operators/">Operators</a>
-<a href="/admin/searches/" aria-current="page">Searches</a></div>
+    <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
+<a href="/portal/calendar/">Calendar</a>
+<a href="/portal/fleet/">Fleet</a>
+<a href="/portal/places/" aria-current="page">Meeting points</a>
+<a href="/portal/account/">Account</a></div>
   </nav><main id="principal" class="pt-corpo">
   <div class="folha" id="conteudo">
     <p class="carrega" id="carrega">Loading&hellip;</p>
-    <div id="ad" hidden>
+
+    <div id="lg" hidden>
       <div class="pt-cab">
-        <h1>Searches</h1>
-        <p>What people typed into the search box. The ones that found nothing are the useful ones: each is somebody who wanted a private day in a city where we have nobody.</p>
+        <h1>Meeting points</h1>
+        <p>Only needed when guests come to you. A private day that
+          collects at the hotel door needs none &mdash; that is the normal
+          case, and the better one. When you do need one, a photograph of
+          the doorway saves more phone calls than any paragraph.</p>
       </div>
-      
-      <div id="lista"></div>
+
+      <p class="aviso" id="av-lg" role="status" hidden></p>
+
+      <div class="lg">
+        <div>
+          <div class="cx">
+            <p class="cx-t">Your meeting points</p>
+            <div class="p-lista" id="p-lista"></div>
+            <button type="button" class="rep-mais" id="bt-novo-lugar"
+                    style="margin-top:.8rem">Add a meeting point</button>
+          </div>
+
+          <div class="cx">
+            <p class="cx-t">Which tours meet here</p>
+            <div class="v-tours" id="p-tours"></div>
+            <p class="lado-nota">A tour with no meeting point ticked
+              collects at the hotel.</p>
+          </div>
+        </div>
+
+        <div class="cx">
+          <p class="cx-t" id="p-titulo">A new meeting point</p>
+          <form id="f-lugar" novalidate>
+            <div class="campo">
+              <label for="p-nome">What you call it</label>
+              <input type="text" id="p-nome" maxlength="120"
+                     placeholder="Molly Malone statue">
+              <span class="ajuda">For your own list. The guest sees the
+                address and the photograph.</span>
+            </div>
+
+            <div class="campo">
+              <label for="p-morada">Address</label>
+              <input type="text" id="p-morada" maxlength="250"
+                     placeholder="Suffolk Street, Dublin 2">
+            </div>
+
+            <div class="campo">
+              <span class="rot">Where the pin falls</span>
+              <div class="mapa-mini" id="mapa"></div>
+            </div>
+
+            <div class="coord">
+              <div class="campo">
+                <label for="p-lat">Latitude</label>
+                <input type="text" id="p-lat" maxlength="20" inputmode="decimal"
+                       placeholder="53.343800">
+              </div>
+              <div class="campo">
+                <label for="p-lng">Longitude</label>
+                <input type="text" id="p-lng" maxlength="20" inputmode="decimal"
+                       placeholder="-6.259700">
+              </div>
+            </div>
+
+            <div class="campo">
+              <label for="p-notas">How to find it</label>
+              <textarea id="p-notas" maxlength="600" rows="3"
+                placeholder="On the corner by the kiosk, not the main door. Your driver holds a sign with your name."></textarea>
+              <span class="ajuda">Write it for someone who has never been
+                to the city and is already a little late.</span>
+            </div>
+
+            <div class="campo">
+              <span class="rot">Photograph of the spot</span>
+              <div class="foto-cx">
+                <div class="foto-pre" id="foto-pre"></div>
+                <div class="foto-bts">
+                  <span class="bt bt-s foto-escolher">
+                    Choose a photograph
+                    <input type="file" id="foto-ficheiro"
+                           accept="image/jpeg,image/png,image/webp,image/avif"
+                           aria-label="Choose a photograph of the meeting point">
+                  </span>
+                  <button type="button" class="bt bt-mal" id="bt-tira-foto"
+                          hidden>Remove</button>
+                </div>
+                <p class="aviso" id="av-foto" role="status" hidden></p>
+                <p class="ajuda">Take it standing where the guest will
+                  stand, looking at where the car waits. Up to 5 MB.</p>
+              </div>
+            </div>
+
+            <div class="acoes" style="margin-top:1.2rem">
+              <button type="submit" class="bt bt-p" id="bt-grava">Save
+                meeting point</button>
+              <button type="button" class="bt bt-mal" id="bt-apaga"
+                      hidden>Delete</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -637,93 +770,286 @@ table.tab a { color: #A85426; font-weight: 500; }
   'use strict';
   if (!window.ewt || window.ewt.avariado) return;
 
+  var E = { operador: null, lugares: [], anuncios: [], escolhido: null,
+            foto: null };
+
+  // ------------------------------------------------------------ a lista
+  function desenharLista() {
+    var c = document.getElementById('p-lista');
+    if (!E.lugares.length) {
+      c.innerHTML = '<div class="vazio"><h3>No meeting points yet</h3>'
+        + '<p>Only add one if guests come to you. A private day that '
+        + 'collects at the hotel door needs none — that is the normal '
+        + 'case and the better one.</p></div>';
+      return;
+    }
+    c.innerHTML = E.lugares.map(function (p) {
+      var usos = E.anuncios.filter(function (a) {
+        return a.meeting_point_id === p.id;
+      }).length;
+      return '<button type="button" class="p" data-p="' + p.id + '"'
+        + ' aria-pressed="' + (E.escolhido === p.id ? 'true' : 'false') + '">'
+        + '<b>' + ewt.escapar(p.name) + '</b>'
+        + ewt.escapar(p.address || 'No address yet')
+        + (usos ? '<span class="p-usos">' + usos
+                  + (usos === 1 ? ' tour' : ' tours') + '</span>' : '')
+        + (p.photo_url ? '' : '<span class="p-usos">No photo</span>')
+        + '</button>';
+    }).join('');
+  }
+
+  function vazio() {
+    return { id: null, name: '', address: '', lat: null, lng: null,
+             instructions: '', photo_url: null };
+  }
+
+  function actual() {
+    return E.lugares.filter(function (p) { return p.id === E.escolhido; })[0]
+           || vazio();
+  }
+
+  // ------------------------------------------------------------ o form
+  function espalhar() {
+    var p = actual();
+    document.getElementById('p-nome').value = p.name || '';
+    document.getElementById('p-morada').value = p.address || '';
+    document.getElementById('p-lat').value = p.lat == null ? '' : p.lat;
+    document.getElementById('p-lng').value = p.lng == null ? '' : p.lng;
+    document.getElementById('p-notas').value = p.instructions || '';
+    E.foto = p.photo_url || null;
+    desenharFoto();
+    desenharMapa();
+    desenharTours();
+    document.getElementById('bt-apaga').hidden = !p.id;
+    document.getElementById('p-titulo').textContent =
+      p.id ? 'Edit this meeting point' : 'A new meeting point';
+  }
+
+  function desenharFoto() {
+    var c = document.getElementById('foto-pre');
+    c.innerHTML = E.foto
+      ? '<img src="' + ewt.escapar(E.foto) + '" alt="The meeting point">'
+      : '<p>No photograph yet. This is the cheapest thing on this page '
+        + 'with a real return: a guest who can see the doorway does not '
+        + 'ring the driver.</p>';
+    document.getElementById('bt-tira-foto').hidden = !E.foto;
+  }
+
+  // Um mapa sem chave de API e sem seguir ninguem: o OpenStreetMap num
+  // iframe. Nao e para navegar, e para o operador confirmar que o pino
+  // caiu onde ele queria.
+  function desenharMapa() {
+    var c = document.getElementById('mapa');
+    var lat = parseFloat(document.getElementById('p-lat').value);
+    var lng = parseFloat(document.getElementById('p-lng').value);
+    if (!isFinite(lat) || !isFinite(lng)) {
+      c.innerHTML = '<p class="lado-nota" style="padding:1rem;margin:0">'
+        + 'Paste coordinates below and the pin appears here, so you can '
+        + 'check it landed where you meant.</p>';
+      return;
+    }
+    var d = 0.004;
+    c.innerHTML = '<iframe loading="lazy" title="Where the pin is"'
+      + ' src="https://www.openstreetmap.org/export/embed.html?bbox='
+      + (lng - d) + '%2C' + (lat - d) + '%2C' + (lng + d) + '%2C' + (lat + d)
+      + '&layer=mapnik&marker=' + lat + '%2C' + lng + '"></iframe>';
+  }
+
+  function desenharTours() {
+    var c = document.getElementById('p-tours');
+    var p = actual();
+    if (!p.id) {
+      c.innerHTML = '<p class="lado-nota">Save it first, then pick which '
+        + 'tours meet here.</p>';
+      return;
+    }
+    if (!E.anuncios.length) {
+      c.innerHTML = '<p class="lado-nota">You have no tours yet.</p>';
+      return;
+    }
+    c.innerHTML = E.anuncios.map(function (a) {
+      return '<label class="v-t"><input type="checkbox" data-usa="' + a.id
+        + '"' + (a.meeting_point_id === p.id ? ' checked' : '') + '>'
+        + '<span>' + ewt.escapar(a.titulo)
+        + (a.meeting_point_id && a.meeting_point_id !== p.id
+            ? ' <span>— meets somewhere else</span>' : '')
+        + '</span></label>';
+    }).join('');
+  }
+
+  // ---------------------------------------------------------- gravar
+  function num(id) {
+    var v = document.getElementById(id).value.trim();
+    if (!v) return null;
+    var n = Number(v);
+    return isFinite(n) ? n : NaN;
+  }
+
+  async function gravar(ev) {
+    ev.preventDefault();
+    ewt.dizer('av-lg', '', '');
+    var nome = document.getElementById('p-nome').value.trim();
+    if (nome.length < 2) {
+      ewt.dizer('av-lg', 'Give it a name you will recognise in a list.', 'mal');
+      document.getElementById('p-nome').focus();
+      return;
+    }
+    var lat = num('p-lat'), lng = num('p-lng');
+    if (isNaN(lat) || isNaN(lng)) {
+      ewt.dizer('av-lg', 'Those coordinates are not numbers. Copy them from '
+        + 'a map as two decimals, like 53.349805 and -6.260310.', 'mal');
+      return;
+    }
+    // Meia coordenada desenha um pino no oceano. A base tambem recusa,
+    // mas dizer aqui poupa uma mensagem tecnica.
+    if ((lat === null) !== (lng === null)) {
+      ewt.dizer('av-lg', 'Latitude and longitude go together — fill both '
+        + 'or neither.', 'mal');
+      return;
+    }
+
+    var campos = {
+      operator_id: E.operador.id,
+      name: nome,
+      address: document.getElementById('p-morada').value.trim() || null,
+      lat: lat, lng: lng,
+      instructions: document.getElementById('p-notas').value.trim() || null,
+      photo_url: E.foto
+    };
+
+    var bt = document.getElementById('bt-grava');
+    bt.disabled = true; bt.textContent = 'Saving…';
+    var r = E.escolhido
+      ? await ewt.sb.from('meeting_points').update(campos).eq('id', E.escolhido)
+      : await ewt.sb.from('meeting_points').insert(campos).select('id').single();
+    bt.disabled = false; bt.textContent = 'Save meeting point';
+
+    if (r.error) { ewt.dizer('av-lg', ewt.legivel(r.error), 'mal'); return; }
+    if (!E.escolhido && r.data) E.escolhido = r.data.id;
+    await carregar();
+    ewt.dizer('av-lg', 'Saved. It applies to every tour that meets here, '
+      + 'immediately — no review.', 'bem');
+  }
+
+  async function apagar() {
+    var p = actual();
+    if (!p.id) return;
+    var usos = E.anuncios.filter(function (a) {
+      return a.meeting_point_id === p.id;
+    }).length;
+    if (!confirm(usos
+        ? 'Delete "' + p.name + '"? ' + usos + (usos === 1 ? ' tour' : ' tours')
+          + ' will go back to hotel pick-up.'
+        : 'Delete "' + p.name + '"?')) return;
+    var r = await ewt.sb.from('meeting_points').delete().eq('id', p.id);
+    if (r.error) { ewt.dizer('av-lg', ewt.legivel(r.error), 'mal'); return; }
+    E.escolhido = null;
+    await carregar();
+    ewt.dizer('av-lg', 'Deleted.', 'bem');
+  }
+
+  async function usar(listingId, usa) {
+    var r = await ewt.sb.from('listings')
+      .update({ meeting_point_id: usa ? E.escolhido : null })
+      .eq('id', listingId);
+    if (r.error) { ewt.dizer('av-lg', ewt.legivel(r.error), 'mal'); return; }
+    await carregar();
+  }
+
+  // ----------------------------------------------------------- a foto
+  async function escolheuFicheiro(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    ewt.dizer('av-foto', 'Uploading…', '');
+    var r = await ewt.enviar_foto(f, E.operador.id);
+    ev.target.value = '';
+    if (r.erro) { ewt.dizer('av-foto', r.erro, 'mal'); return; }
+    E.foto = r.url;
+    desenharFoto();
+    ewt.dizer('av-foto', 'Uploaded. Save the meeting point to keep it.', 'bem');
+  }
+
+  // ----------------------------------------------------------- arranque
+  async function carregar() {
+    var r = await ewt.sb.from('meeting_points')
+      .select('*').order('name');
+    if (r.error) { ewt.dizer('av-lg', ewt.legivel(r.error), 'mal'); return; }
+    E.lugares = r.data || [];
+
+    var a = await ewt.sb.from('listings')
+      .select('id, slug, meeting_point_id').order('created_at');
+    E.anuncios = (a.data || []).map(function (x) {
+      return { id: x.id, titulo: x.slug, meeting_point_id: x.meeting_point_id };
+    });
+    if (E.anuncios.length) {
+      var vv = await ewt.sb.from('listing_versions')
+        .select('listing_id, version, payload')
+        .in('listing_id', E.anuncios.map(function (x) { return x.id; }))
+        .order('version', { ascending: false });
+      var t = {};
+      (vv.data || []).forEach(function (x) {
+        if (!t[x.listing_id] && x.payload && x.payload.title) {
+          t[x.listing_id] = x.payload.title;
+        }
+      });
+      E.anuncios.forEach(function (x) { x.titulo = t[x.id] || x.titulo; });
+    }
+
+    // Quem chega a pagina ve o que ja tem, nao um formulario em branco.
+    // O formulario vazio e um clique de distancia, no "Add a meeting
+    // point"; o ponto que ele ja criou nao devia estar.
+    var existe = E.lugares.some(function (p) { return p.id === E.escolhido; });
+    if (!existe) {
+      E.escolhido = E.lugares.length ? E.lugares[0].id : null;
+    }
+    desenharLista();
+    espalhar();
+  }
+
   (async function () {
     var p = await ewt.exigir_entrada();
     if (!p) return;
     document.getElementById('carrega').hidden = true;
-    if (!p.admin) {
+    if (!p.operadores.length) {
       document.getElementById('conteudo').innerHTML =
-        '<div class="vazio"><h3>This area is not yours</h3>'
-        + '<a class="bt bt-p" href="/portal/">Go to the operator portal</a></div>';
+        '<div class="vazio"><h3>Your account is not linked to a company</h3>'
+        + '<a class="bt bt-s" href="/portal/">Back to the portal</a></div>';
       return;
     }
-    document.getElementById('ad').hidden = false;
+    E.operador = p.operadores[0];
+    document.getElementById('lg').hidden = false;
 
-    var r = await ewt.sb.from('search_queries')
-      .select('q, results, city_match, country, created_at')
-      .order('created_at', { ascending: false }).limit(2000);
-
-    var c = document.getElementById('lista');
-    if (r.error) {
-      c.innerHTML = '<div class="aviso aviso-mal">'
-        + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-      return;
-    }
-    var todas = r.data || [];
-    if (!todas.length) {
-      c.innerHTML = '<div class="vazio"><h3>Nobody has searched yet</h3>'
-        + '<p>Once the site is live, every search that comes back empty '
-        + 'lands here. That list is where the next operator should be.</p>'
-        + '</div>';
-      return;
-    }
-
-    // Agrupa-se pelo texto em minusculas: "dublin" e "Dublin" sao a
-    // mesma procura e contar as duas em separado esconde a verdadeira.
-    var g = {};
-    todas.forEach(function (x) {
-      var k = (x.q || '').toLowerCase();
-      var o = g[k] || (g[k] = { q: x.q, n: 0, vazias: 0, ultima: x.created_at,
-                                cidade: x.city_match, pais: x.country });
-      o.n++;
-      if (!x.results) o.vazias++;
-      if (x.created_at > o.ultima) o.ultima = x.created_at;
+    document.getElementById('f-lugar').addEventListener('submit', gravar);
+    document.getElementById('bt-apaga').addEventListener('click', apagar);
+    document.getElementById('bt-novo-lugar').addEventListener('click', function () {
+      E.escolhido = null;
+      desenharLista();
+      espalhar();
+      document.getElementById('p-nome').focus();
+    });
+    document.getElementById('p-lista').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-p]');
+      if (!b) return;
+      E.escolhido = b.getAttribute('data-p');
+      desenharLista();
+      espalhar();
+    });
+    document.getElementById('p-tours').addEventListener('change', function (ev) {
+      var c = ev.target.closest('[data-usa]');
+      if (c) usar(c.getAttribute('data-usa'), c.checked);
+    });
+    document.getElementById('foto-ficheiro')
+      .addEventListener('change', escolheuFicheiro);
+    document.getElementById('bt-tira-foto').addEventListener('click', function () {
+      E.foto = null;
+      desenharFoto();
+      ewt.dizer('av-foto', 'Removed here. Save to apply it.', '');
+    });
+    ['p-lat', 'p-lng'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', desenharMapa);
     });
 
-    var lista = Object.keys(g).map(function (k) { return g[k]; });
-    var semNada = lista.filter(function (x) { return x.vazias === x.n; })
-      .sort(function (a, b) { return b.n - a.n; });
-    var maior = semNada.length ? semNada[0].n : 1;
-
-    var comAlgo = lista.filter(function (x) { return x.vazias < x.n; })
-      .sort(function (a, b) { return b.n - a.n; }).slice(0, 40);
-
-    function tabela(xs, vazio) {
-      if (!xs.length) return '<p class="nada">' + vazio + '</p>';
-      return '<div class="tab-rolo" tabindex="0" role="region" '
-      + 'aria-label="Table, scrolls sideways"><table class="tab">'
-        + '<thead><tr><th>What they typed</th><th>Times</th>'
-        + '<th>Matched</th><th>Last</th></tr></thead><tbody>'
-        + xs.map(function (x) {
-            var d = new Date(x.ultima);
-            return '<tr><td class="proc-q">' + ewt.escapar(x.q) + '</td>'
-              + '<td><div class="barra-f" style="width:7rem">'
-              + '<div class="barra" style="width:'
-              + Math.max(3, Math.round(x.n / maior * 100)) + '%"></div></div>'
-              + x.n + '</td>'
-              + '<td>' + (x.cidade ? ewt.escapar(x.cidade) : '<span class="nada">nothing</span>')
-              + (x.pais ? '<br>' + ewt.escapar(x.pais) : '') + '</td>'
-              + '<td>' + d.toLocaleDateString(undefined,
-                  { day: 'numeric', month: 'short' }) + '</td></tr>';
-          }).join('')
-        + '</tbody></table></div>';
-    }
-
-    c.innerHTML =
-      '<div class="resumo">'
-      + '<div class="rs"><b>' + todas.length + '</b><span>searches recorded</span></div>'
-      + '<div class="rs"><b>' + semNada.length + '</b><span>that never found anything</span></div>'
-      + '<div class="rs"><b>' + lista.length + '</b><span>different things asked for</span></div>'
-      + '</div>'
-      + '<div class="cx"><p class="cx-t">Asked for and not here</p>'
-      + '<p class="lado-nota" style="margin:0 0 1rem">In order of how '
-      + 'many people asked. This is the list an operator should be '
-      + 'recruited against, top first.</p>'
-      + tabela(semNada, 'Everything people searched for was found.')
-      + '</div>'
-      + '<div class="cx"><p class="cx-t">Found something</p>'
-      + tabela(comAlgo, 'No search has matched a tour yet.')
-      + '</div>';
+    await carregar();
   })();
 })();
 

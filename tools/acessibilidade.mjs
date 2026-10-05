@@ -73,6 +73,12 @@ function responder(url) {
         country: 'Portugal',
         operators: { id: OP, name: 'Atlantic Private Tours', status: 'approved', commission_rate: 0.2 } } }];
   }
+  if (c === '/rest/v1/meeting_points') {
+    return [{ id: 'mp1', operator_id: OP, name: 'Molly Malone statue',
+      address: 'Suffolk Street, Dublin 2', lat: 53.3438, lng: -6.2597,
+      instructions: 'On the corner by the kiosk.',
+      photo_url: 'https://exemplo.invalid/ponto.jpg' }];
+  }
   if (c === '/rest/v1/listing_times') {
     return [{ starts_at: '08:00:00' }, { starts_at: '17:00:00' }];
   }
@@ -124,6 +130,7 @@ const PAGINAS = [
   ['calendario', '/portal/calendar/?tour=' + AN, '.hora'],
   ['conta do operador', '/portal/account/', '.ct .cx'],
   ['frota', '/portal/fleet/', '.vd[data-d]'],
+  ['pontos de encontro', '/portal/places/', '.p[data-p]'],
   ['fila de revisao', '/admin/', '.rv'],
   ['operadores', '/admin/operators/', 'table.tab'],
   ['procuras', '/admin/searches/', '.cx']
