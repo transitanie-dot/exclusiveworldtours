@@ -12,7 +12,25 @@
 -- Um teste cujo resultado depende da ordem em que corre nao e um teste.
 -- Por isso: tudo dentro de begin/rollback, e cada ficheiro de teste com
 -- os seus proprios ids (ver o prefixo 0002 em baixo).
+--
+-- O ON_ERROR_ROLLBACK NAO E DECORACAO
+-- -----------------------------------
+-- Metade dos cenarios aqui PROVOCA um erro de proposito (um operador a
+-- aprovar-se a si mesmo, a mexer no calendario de outro). Fora de uma
+-- transacao isso nao tinha consequencia nenhuma. Dentro de uma, o
+-- primeiro erro aborta a transacao e TUDO o que vem depois falha com
+-- "current transaction is aborted" — e com ON_ERROR_STOP 0 o psql sai
+-- com codigo 0, por isso quem corre o ficheiro num ciclo ve sucesso.
+--
+-- Foi exatamente o que aconteceu quando se poe aqui a transacao: 32
+-- instrucoes abortadas e nenhum sinal de que algo estava mal.
+--
+-- O ON_ERROR_ROLLBACK poe um savepoint implicito antes de cada
+-- instrucao: um erro desfaz a instrucao e a transacao segue. E a
+-- verificacao no fim do ficheiro e o que impede isto de voltar a passar
+-- em silencio.
 -- =====================================================================
+\set ON_ERROR_ROLLBACK on
 begin;
 
 -- ---- cenario: um administrador, dois operadores
@@ -84,5 +102,29 @@ set role app; set teste.uid = '00022222-2222-2222-2222-222222222222';
 select submeter_versao('cccccccc-0000-0000-0000-000000000003',
   '{"title":"TITULO POR REVER","price":9999}'::jsonb) is not null as submeteu_v2;
 reset role; select slug, payload->>'title' as titulo_no_site, version from public_listings;
+
+-- =====================================================================
+-- ESTE FICHEIRO CORREU DE VERDADE?
+--
+-- Com ON_ERROR_STOP 0, um ficheiro que aborte a meio sai com codigo 0 e
+-- parece ter passado. Esta verificacao e o que torna isso impossivel: se
+-- os dados do cenario nao estiverem todos de pe no fim, o ficheiro falha
+-- com codigo diferente de 0 e quem o corre num ciclo para.
+-- =====================================================================
+\set ON_ERROR_STOP 1
+do $$
+begin
+  if (select count(*) from operators
+      where id in ('aaaaaaaa-0000-0000-0000-000000000001',
+                   'bbbbbbbb-0000-0000-0000-000000000002')) <> 2
+     or not exists (select 1 from admins
+                    where user_id = '00021111-1111-1111-1111-111111111111')
+     or not exists (select 1 from listing_versions
+                    where listing_id = 'cccccccc-0000-0000-0000-000000000003') then
+    raise exception 'O 002 nao correu inteiro: os dados do cenario nao estao '
+      'todos de pe. Procura "current transaction is aborted" no que saiu.';
+  end if;
+  raise notice 'ok: o 002 correu inteiro';
+end $$;
 
 rollback;

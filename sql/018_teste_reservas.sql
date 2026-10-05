@@ -140,7 +140,10 @@ from (select reservar(jsonb_build_object(
         'name','Segundo','email','segundo@x.invalid')) r) z;
 select count(*) as reservas_nesse_dia from bookings
  where booking_date = :'perto'::date and status <> 'cancelled';
-select count(*) as carros_presos from vehicle_days where day = :'perto'::date;
+-- E a linha do dia continua la, com a nota do operador intacta.
+select status, note from vehicle_days where day = :'perto'::date;
+select count(*) as carros_presos from vehicle_days
+ where day = :'perto'::date and status <> 'open';
 \echo '    e o dia deixou de aparecer livre'
 select count(*) as dias_abertos_nesse_dia
 from dias_abertos('connemara', :'perto'::date, :'perto'::date);
@@ -158,7 +161,7 @@ from (select reservar(jsonb_build_object(
         'slug','connemara','date',:'perto','pax',2,
         'name','Terceiro','email','terceiro@x.invalid')) r) z;
 select count(*) as continua_a_ser_um_carro_preso
-from vehicle_days where day = :'perto'::date;
+from vehicle_days where day = :'perto'::date and status <> 'open';
 
 \echo ''
 \echo '=== 8. O STRIPE REPETE OS EVENTOS'
@@ -210,8 +213,10 @@ select charge_attempts, status from bookings where id = :'lid'::uuid;
 select registar_cobranca(jsonb_build_object(
   'booking_id', :'lid', 'ok', false, 'attempt', 3, 'code','card_declined'));
 select status, cancel_reason from bookings where id = :'lid'::uuid;
+-- A linha fica, solta: o booking_id deixa de apontar para a reserva e o
+-- dia volta a 'open'. Contar linhas aqui media a arrumacao e nao a venda.
 select count(*) as carro_preso_nesse_dia
-from vehicle_days where booking_id = :'lid'::uuid;
+from vehicle_days where booking_id = :'lid'::uuid and status <> 'open';
 select count(*) as tentativas_registadas
 from charge_attempts where booking_id = :'lid'::uuid;
 
@@ -311,5 +316,63 @@ select marcar_pago('aaaaaaaa-0000-0000-0000-00000000000a',
                    'Transferencia SEPA 5 out') as marcadas;
 select count(*) as ainda_a_pagar from a_pagar();
 reset role;
+
+\echo ''
+\echo '=== 19. A NOTA DO OPERADOR SOBREVIVE A UMA RESERVA CANCELADA'
+\echo '    (era isto que o delete from vehicle_days apagava)'
+reset role;
+select (current_date + 20)::text as nota_dia \gset
+insert into vehicle_days (vehicle_id, day, status, note)
+ values ('cccccccc-0000-0000-0000-00000000000c', :'nota_dia'::date,
+         'open', 'So de manha: tenho o casamento da sobrinha a tarde')
+on conflict (vehicle_id, day) do update set note = excluded.note;
+
+select r->>'reference' as ref
+from (select reservar(jsonb_build_object(
+        'slug','connemara','date',:'nota_dia','pax',2,
+        'name','Nota Teste','email','nota@x.invalid')) r) z;
+select status, booking_id is not null as tem_reserva, note
+from vehicle_days where day = :'nota_dia'::date;
+
+select id as nid from bookings where customer_email = 'nota@x.invalid' \gset
+select confirmar_reserva(jsonb_build_object(
+  'booking_id', :'nid', 'session_id','cs_test_9'))->>'status' as pago;
+
+set local role authenticated;
+set local "teste.uid" = '99999999-9999-9999-9999-999999999999';
+select cancelar_reserva(:'nid'::uuid,
+  'O cliente mudou de planos e cancelou com uma semana de aviso.')->>'ok'
+  as cancelou;
+reset role;
+\echo '    o dia volta a venda E a nota continua la'
+select status, booking_id is null as sem_reserva, note
+from vehicle_days where day = :'nota_dia'::date;
+select count(*) as dia_aberto_outra_vez
+from dias_abertos('connemara', :'nota_dia'::date, :'nota_dia'::date);
+
+\echo ''
+\echo '=== 20. UMA RESERVA CANCELADA NAO SE CONFIRMA'
+\echo '    (o cliente paga no Stripe depois de a reserva ter caido)'
+reset role;
+select (current_date + 25)::text as tarde_dia \gset
+select r->>'booking_id' as cid
+from (select reservar(jsonb_build_object(
+        'slug','connemara','date',:'tarde_dia','pax',2,
+        'name','Perdeu A Corrida','email','perdeu@x.invalid')) r) z \gset
+select id as cid from bookings where customer_email = 'perdeu@x.invalid' \gset
+\echo '    faz-se de conta que a limpar_marcas() a fechou por nao ter sido paga'
+update bookings set status = 'cancelled', cancelled_at = now(),
+       cancel_reason = 'Nao foi paga: o cliente saiu do pagamento.'
+ where id = :'cid'::uuid;
+
+\echo '    e agora chega o webhook do Stripe a dizer que o pagamento entrou'
+select c->>'ok' as aceitou, c->>'code' as codigo,
+       (c->>'amount')::numeric as a_devolver
+from (select confirmar_reserva(jsonb_build_object(
+        'booking_id', :'cid', 'session_id','cs_test_10',
+        'payment_intent','pi_a_devolver')) c) z;
+\echo '    a reserva continua cancelada e nao ficou "paga"'
+select status, charged_at is null as nada_marcado_como_cobrado
+from bookings where id = :'cid'::uuid;
 
 rollback;

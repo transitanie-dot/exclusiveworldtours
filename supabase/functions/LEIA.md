@@ -28,12 +28,25 @@ já existem sozinhos dentro das Edge Functions; não se põem à mão.
 
 ## Publicar
 
+**As quatro já estão publicadas** (5 out 2026), com o código que está
+neste repositório e com os `verify_jwt` certos. Não arrancam até os
+segredos estarem postos — a `segredo()` atira no arranque de propósito,
+porque falhar logo é melhor do que falhar a meio de um pagamento.
+
+Para publicar outra vez depois de mexeres no código:
+
 ```bash
 supabase functions deploy reservar       --project-ref lmrvoakknsrypoeqmjbr
 supabase functions deploy sessao         --project-ref lmrvoakknsrypoeqmjbr
 supabase functions deploy stripe-webhook --project-ref lmrvoakknsrypoeqmjbr --no-verify-jwt
 supabase functions deploy cobrar         --project-ref lmrvoakknsrypoeqmjbr --no-verify-jwt
 ```
+
+Este é o caminho canónico: o repositório é a verdade, e um deploy daqui
+normaliza o que estiver publicado. (A primeira publicação foi feita pela
+API, que empacota uma cópia do `_partilhado/comum.ts` dentro de cada
+função. A do `stripe-webhook` levou o ficheiro com menos comentários — o
+código é o mesmo, e um deploy pelo CLI iguala-os.)
 
 ## O webhook, no Stripe
 
@@ -68,6 +81,20 @@ select cron.schedule('cobrar-reservas', '7 * * * *', $$
 
 O minuto 7 e não o 0 de propósito: à hora em ponto é quando todos os
 crons do mundo correm.
+
+## O que já está feito, e o que falta
+
+| | Estado |
+|---|---|
+| `sql/017_reservas.sql` aplicado ao Supabase | **feito** |
+| As quatro funções publicadas | **feito** |
+| Os três segredos (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `CRON_SECRET`) | **falta** |
+| O webhook registado no painel do Stripe | **falta** |
+| O cron de hora a hora | **falta** |
+
+Até os segredos estarem postos, o botão "Continue to payment" na página
+do tour responde com erro. A reserva **não** é criada nesse caso: a base
+só é tocada depois de a função arrancar.
 
 ## O que NÃO está aqui
 
