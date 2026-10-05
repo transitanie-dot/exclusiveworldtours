@@ -337,8 +337,13 @@ JS = r"""
   }
 
   async function filaPedidos() {
+    // Dois grupos: os por responder, e os que ja viajaram e ainda nao
+    // foram convidados a avaliar. O segundo e o que se esquece — e
+    // esquece-se exatamente quando mais vale a pena pedir, logo a
+    // seguir ao dia.
     var r = await ewt.sb.from('enquiries')
-      .select('*').eq('status', 'new').order('created_at', { ascending: false });
+      .select('*').in('status', ['new', 'answered', 'booked'])
+      .order('created_at', { ascending: false });
     if (r.error) return '<div class="aviso aviso-mal">'
       + ewt.escapar(ewt.legivel(r.error)) + '</div>';
     var ps = r.data || [];
@@ -454,7 +459,8 @@ JS = r"""
     var b = await ewt.sb.from('operator_applications')
       .select('id', { count: 'exact', head: true }).eq('status', 'new');
     var c = await ewt.sb.from('enquiries')
-      .select('id', { count: 'exact', head: true }).eq('status', 'new');
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['new', 'answered', 'booked']);
     pintar('n-tours', a.count); pintar('n-ops', b.count); pintar('n-peds', c.count);
   }
   function pintar(id, n) {
@@ -503,6 +509,12 @@ JS = r"""
       if (b) mostrar(b.getAttribute('data-aba'));
     });
 
+    // A data da viagem grava-se ao sair do campo e nao a cada tecla.
+    document.getElementById('fila').addEventListener('change', function (ev) {
+      var i = ev.target.closest('[data-viajou]');
+      if (i) marcarViagem(i.getAttribute('data-viajou'), i.value);
+    });
+
     document.getElementById('fila').addEventListener('click', function (ev) {
       var t = ev.target;
       var b = t.closest('button');
@@ -513,6 +525,8 @@ JS = r"""
       if (b.hasAttribute('data-cont')) return candidatura(b.getAttribute('data-cont'), 'contactar');
       if (b.hasAttribute('data-rec'))  return candidatura(b.getAttribute('data-rec'), 'recusar');
       if (b.hasAttribute('data-ped'))  return pedidoFeito(b.getAttribute('data-ped'));
+      if (b.hasAttribute('data-conv')) return convidar(b.getAttribute('data-conv'));
+      if (b.hasAttribute('data-liga')) return copiarLigacao(b.getAttribute('data-liga'));
       if (b.hasAttribute('data-todo')) {
         var pre = document.getElementById('todo-' + b.getAttribute('data-todo'));
         if (pre) {

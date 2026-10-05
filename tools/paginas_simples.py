@@ -138,9 +138,112 @@ def cancelamento(paises):
         CSS, corpo, js=procura.JS), 'cancellation/index.html')
 
 
+def avaliacoes(paises):
+    """Como funcionam as avaliacoes aqui.
+
+    Esta pagina e um compromisso publico e e por isso que existe. Um
+    marketplace novo nao tem avaliacoes nenhumas; o que pode ter desde o
+    primeiro dia e uma regra escrita sobre como as trata — e ser julgado
+    por ela depois.
+    """
+    corpo = '''%(cabecalho)s
+<main id="principal">
+
+<section class="pcapa">
+  <div class="folha">
+    <h1>How reviews work here</h1>
+    <p class="lede">We have very few, because we are new. What we will
+      not do is make that look better than it is.</p>
+  </div>
+</section>
+
+<section class="ptexto">
+  <div class="folha">
+    <div class="dentro">
+
+      <div class="pregra">
+        <b>Only people who travelled can leave one</b>
+        <span>There is no open review form on this site, and there will
+          not be one. A review link is sent by email after a day out, it
+          works once, and it is tied to that booking.</span>
+      </div>
+
+      <h2>What that rules out</h2>
+      <p>It rules out an operator reviewing himself, a competitor
+        reviewing him, and us writing a few to fill the page. It also
+        rules out a happy guest leaving five reviews, however much they
+        enjoyed the day.</p>
+      <p>The trade is that we will always have fewer reviews than a site
+        that asks everyone who visits. We would rather have twenty you
+        can trust than two hundred you cannot.</p>
+
+      <h2>What the operator can and cannot do</h2>
+      <ul>
+        <li>They <b>can</b> reply in public, under the review, and we
+          encourage it &mdash; a good reply to a bad review tells you
+          more than ten good reviews.</li>
+        <li>They <b>cannot</b> change the rating or the words.</li>
+        <li>They <b>cannot</b> contact you privately about a review you
+          left, or offer you anything to change it.</li>
+      </ul>
+
+      <h2>When we remove a review</h2>
+      <p>Rarely, and only for these reasons:</p>
+      <ul>
+        <li>the day did not actually happen;</li>
+        <li>it is abusive, or it identifies a person;</li>
+        <li>the words and the rating contradict each other so plainly
+          that one of them must be a mistake;</li>
+        <li>it is advertising something;</li>
+        <li>whoever wrote it has an interest in the outcome.</li>
+      </ul>
+      <p><b>"It is negative and it is true" is not on that list, and it
+        is not going to be.</b> Every removal is recorded with the
+        written reason, which is the thing that stops this from quietly
+        becoming a button for deleting whatever stings.</p>
+
+      <h2>How the score is worked out</h2>
+      <p>A review from two years ago describes a vehicle that has since
+        been sold and a driver who has since left. So recent reviews
+        count for more: a review loses half its weight after about
+        eighteen months, and half again after three years. We show the
+        plain average as well, because a weighted average nobody can
+        check is just a nicer number.</p>
+      <p>A tour with fewer than three reviews of its own shows the
+        <b>operator\u2019s</b> rating instead, and says so. The rating is
+        real; it just is not that tour\u2019s yet.</p>
+      <p>A tour with no reviews at all, and an operator with none,
+        shows <b>nothing</b>. Not five empty stars, not "no reviews
+        yet" in large type. An empty space is honest; empty stars read
+        like a day that went badly.</p>
+
+      <div class="pnota">
+        <p style="margin:0">We do not pay for reviews, we do not offer
+          anything in return for one, and we do not have a way to buy a
+          better position on this site. If that ever changes, it will be
+          written here before it happens.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+%(rodape)s''' % {'cabecalho': cabecalho(paises=paises),
+                 'rodape': rodape(paises)}
+
+    escrever(envolver(
+        'How reviews work — Exclusive World Tours',
+        'Only people who travelled can leave a review here. What the '
+        'operator can and cannot do, and the narrow reasons a review is '
+        'ever removed.',
+        CSS, corpo, js=procura.JS), 'reviews-policy/index.html')
+
+
 def main():
     paises = por_pais(carregar())
     cancelamento(paises)
+    avaliacoes(paises)
 
 
 if __name__ == '__main__':

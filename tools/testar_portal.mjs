@@ -125,6 +125,44 @@ function responder(url, metodo, corpo) {
   }
   if (c === '/rest/v1/listing_vehicles') return [];
   if (c === '/rest/v1/rpc/marcar_veiculo') return 1;
+  if (c === '/rest/v1/reviews') {
+    if (metodo !== 'GET') return [];
+    return [
+      { id: 'rv1', listing_id: AN, rating: 5, title: 'A day we will remember',
+        body: 'The driver knew where the light would be good.',
+        author_name: 'Maria', author_country: 'Brazil',
+        travelled_on: '2026-09-20', reply: null, state: 'published' },
+      { id: 'rv2', listing_id: AN, rating: 2, title: 'Late and rushed',
+        body: 'We left forty minutes late and lost the first stop.',
+        author_name: 'Tom', author_country: null,
+        travelled_on: '2026-09-02',
+        reply: 'You are right and I am sorry \u2014 the van had a flat.',
+        state: 'published' }
+    ];
+  }
+  if (c === '/rest/v1/review_invites') {
+    if (metodo !== 'GET') return [];
+    return [{ enquiry_id: 'p1', token: 'tok-1', used_at: null }];
+  }
+  if (c === '/rest/v1/rpc/convidar_avaliacao') return 'tok-novo';
+  if (c === '/rest/v1/rpc/responder_avaliacao') return null;
+  if (c === '/rest/v1/rpc/convite') {
+    if (RESPOSTA_CONVITE === 'valido') {
+      return [{ valido: true, motivo: null, tour: 'Private Day in Sintra',
+                slug: 'example-sintra', travelled_on: '2026-09-20',
+                first_name: 'Maria' }];
+    }
+    if (RESPOSTA_CONVITE === 'usado') {
+      return [{ valido: false, motivo: 'used', tour: 'x', slug: 'x',
+                travelled_on: null, first_name: null }];
+    }
+    if (RESPOSTA_CONVITE === 'expirado') {
+      return [{ valido: false, motivo: 'expired', tour: 'x', slug: 'x',
+                travelled_on: null, first_name: null }];
+    }
+    return [];
+  }
+  if (c === '/rest/v1/rpc/deixar_avaliacao') return 'rv-novo';
   if (c === '/rest/v1/meeting_points') {
     if (metodo !== 'GET') return [{ id: 'mp1' }];
     return [{ id: 'mp1', operator_id: OP, name: 'Molly Malone statue',
@@ -198,6 +236,7 @@ function responder(url, metodo, corpo) {
 
 // ---------------------------------------------------------------- correr
 let RESPOSTA_DIAS = 'livre';
+let RESPOSTA_CONVITE = 'valido';
 const erros = [];
 const avisos = [];
 
@@ -586,6 +625,74 @@ await t('o contacto recebe a partida pelo endereco',
     ['e e dita no topo',
       (await p.locator('#sobre').innerText()).indexOf('17:00') > -1]
   ]);
+
+// ------------------------------------------------------- as avaliacoes
+await t('o operador ve as avaliacoes e pode responder a que falta',
+  '/portal/reviews/', '.rv-c', async (p) => [
+    ['mostra as duas', await p.locator('.rv-c').count() === 2],
+    ['com a media', (await p.locator('.rs b').first().innerText()) === '3.5'],
+    ['diz quantas esperam resposta',
+      (await p.locator('.rs b').nth(2).innerText()) === '1'],
+    ['a que ja tem resposta mostra-a, sem formulario',
+      await p.locator('.rv-resp').count() === 1],
+    ['a que falta tem formulario',
+      await p.locator('[data-resp]').count() === 1],
+    ['nao ha nenhum campo para mexer na nota',
+      await p.locator('input[type=number]').count() === 0]
+  ]);
+
+await t('o operador nao pode responder com duas palavras',
+  '/portal/reviews/', '[data-resp]', async (p) => {
+    await p.locator('[data-resp] textarea').fill('ok');
+    await p.locator('[data-resp] button').click();
+    await p.waitForTimeout(300);
+    const a = await p.locator('.rv-c .aviso').allInnerTexts();
+    return [['diz que escreva a serio',
+      a.join(' ').toLowerCase().indexOf('real reply') > -1]];
+  });
+
+async function convidaDiz(nome, modo, contem) {
+  RESPOSTA_CONVITE = modo;
+  total++;
+  if (await ver(nome, '/review/?t=abc',
+                '#form:not([hidden]), #erro:not([hidden])', async (p) => {
+    const txt = await p.locator('#conteudo, main').first().innerText();
+    return [['diz "' + contem + '"',
+      txt.toLowerCase().indexOf(contem.toLowerCase()) > -1]];
+  })) bem++;
+}
+
+await convidaDiz('o convite valido abre o formulario', 'valido', 'how was the day');
+await convidaDiz('um convite ja usado diz que ja foi', 'usado', 'already in');
+await convidaDiz('um convite expirado diz que expirou', 'expirado', 'expired');
+await convidaDiz('um token que nao existe nao finge', 'nenhum', 'not one of ours');
+RESPOSTA_CONVITE = 'valido';
+
+await t('a pagina de avaliar exige a nota geral',
+  '/review/?t=abc', '#f-av', async (p) => {
+    await p.locator('#bt-av').click();
+    await p.waitForTimeout(300);
+    return [
+      ['pede a nota',
+        (await p.locator('#av-erro').innerText()).toLowerCase()
+          .indexOf('rating') > -1],
+      ['e o nome nao se escreve',
+        await p.locator('#f-av input[id="nome"]').count() === 0]
+    ];
+  });
+
+await t('as estrelas acendem-se ate a escolhida',
+  '/review/?t=abc', '#f-av', async (p) => {
+    await p.locator('[data-estrelas="rating"] input').nth(3).check();
+    await p.waitForTimeout(200);
+    return [
+      ['quatro acesas',
+        await p.locator('[data-estrelas="rating"] .acesa').count() === 4],
+      ['o leitor de ecra ouve o numero',
+        (await p.locator('[data-estrelas="rating"] label').nth(3).innerText())
+          .indexOf('4 out of 5') > -1]
+    ];
+  });
 
 // ------------------------------------------------ os pontos de encontro
 await t('os pontos de encontro listam-se e abrem',

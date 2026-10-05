@@ -26,6 +26,27 @@
 -- qualquer pagina onde ela apareca.
 -- =====================================================================
 
+
+-- ---------------------------------------------------------------------
+-- NOTA IMPORTANTE, APRENDIDA A MAL
+--
+-- Esta funcao NAO pode ler atraves da vista `listing_live`.
+--
+-- A vista e `security_invoker` (posta assim na 003, e bem: por baixo
+-- dela esta `operators`). Mas uma funcao `security definer` que le
+-- atraves de uma vista invoker PERDE os privilegios na fronteira da
+-- vista — e o resultado, para quem nao assinou, nao e um erro: sao ZERO
+-- LINHAS.
+--
+-- Zero linhas aqui significa um gerador que puxa um catalogo vazio e
+-- publica um site sem nenhum tour de operador, sem dar erro nenhum e sem
+-- ninguem dar por isso ate um operador perguntar porque e que o tour
+-- dele desapareceu.
+--
+-- Por isso a "ultima versao aprovada" e calculada aqui dentro, sobre a
+-- tabela, e nao pedida a vista. O sql/016_teste_anon.sql corre todas as
+-- funcoes publicas como `anon` justamente para isto nao voltar a passar.
+-- ---------------------------------------------------------------------
 create or replace function catalogo_publico()
 returns table (
   slug          text,
@@ -65,7 +86,11 @@ language sql stable security definer set search_path = public as $$
       where lx.listing_id = l.id and v.active)
   from   listings l
   join   operators o on o.id = l.operator_id
-  join   listing_live lv on lv.listing_id = l.id
+  join   (select distinct on (v.listing_id)
+                 v.listing_id, v.payload, v.version, v.reviewed_at
+          from   listing_versions v
+          where  v.status = 'approved'
+          order  by v.listing_id, v.version desc) lv on lv.listing_id = l.id
   where  l.status = 'live' and o.status = 'approved'
   order  by o.name, l.slug;
 $$;

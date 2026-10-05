@@ -199,6 +199,51 @@ def limpar(linha):
         except (TypeError, ValueError, KeyError):
             pass
 
+    # As notas. `mostrar` vem da base e diz a pagina o que fazer — a
+    # decisao do arranque a frio vive num sitio so, em SQL, e nao
+    # espalhada por tres geradores.
+    nota = None
+    nt = linha.get('_notas')
+    if isinstance(nt, dict) and nt.get('mostrar') in ('tour', 'operador'):
+        def num(v):
+            try:
+                return round(float(v), 2)
+            except (TypeError, ValueError):
+                return None
+        nota = {
+            'mostrar': nt['mostrar'],
+            'n': int(nt.get('n') or 0),
+            'media': num(nt.get('media')),
+            'ponderada': num(nt.get('ponderada')),
+            'op_n': int(nt.get('op_n') or 0),
+            'op_media': num(nt.get('op_media')),
+            'op_ponderada': num(nt.get('op_ponderada')),
+            'operador': texto(nt.get('operator_name'), 200),
+            'temas': {k: num(nt.get(k))
+                      for k in ('driver', 'vehicle', 'value', 'organising')
+                      if num(nt.get(k)) is not None},
+        }
+
+    lista_av = []
+    for x in (linha.get('_avaliacoes') or [])[:12]:
+        if not isinstance(x, dict):
+            continue
+        try:
+            n = int(x.get('rating'))
+        except (TypeError, ValueError):
+            continue
+        if not (1 <= n <= 5):
+            continue
+        lista_av.append({
+            'rating': n,
+            'title': texto(x.get('title'), 140),
+            'body': texto(x.get('body'), 4000),
+            'name': texto(x.get('author_name'), 80),
+            'country': texto(x.get('author_country'), 80),
+            'on': texto(x.get('travelled_on'), 12),
+            'reply': texto(x.get('reply'), 2000),
+        })
+
     return {
         'slug': slug,
         'title': titulo,
@@ -231,6 +276,8 @@ def limpar(linha):
         '_max_pax': linha.get('max_pax'),
         '_veiculos': linha.get('vehicles'),
         '_encontro': encontro,
+        '_nota': nota,
+        '_avaliacoes': lista_av,
     }
 
 
@@ -246,6 +293,17 @@ def main():
     for x in (pedir('pontos_de_encontro') or []):
         if isinstance(x, dict) and x.get('slug'):
             pontos[x['slug']] = x
+
+    # As notas e as avaliacoes. Duas chamadas, nao uma por tour.
+    notas = {}
+    for x in (pedir('notas_publicas') or []):
+        if isinstance(x, dict) and x.get('slug'):
+            notas[x['slug']] = x
+
+    avaliacoes = {}
+    for x in (pedir('avaliacoes_publicas') or []):
+        if isinstance(x, dict) and x.get('slug'):
+            avaliacoes.setdefault(x['slug'], []).append(x)
     if not isinstance(linhas, list):
         sys.exit('A base devolveu uma coisa que nao e uma lista: %r'
                  % (str(linhas)[:200],))
@@ -253,6 +311,8 @@ def main():
     tours, descartados = [], []
     for linha in linhas:
         linha['meeting_point'] = pontos.get(linha.get('slug'))
+        linha['_notas'] = notas.get(linha.get('slug'))
+        linha['_avaliacoes'] = avaliacoes.get(linha.get('slug'), [])
         limpo = limpar(linha)
         (tours if limpo else descartados).append(limpo or linha.get('slug'))
 
