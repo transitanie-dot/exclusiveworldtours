@@ -28,6 +28,7 @@ import portal_base
 CORES = pagina.CORES
 
 NAV = [('Review queue', '/admin/'),
+       ('Bookings', '/admin/bookings/'),
        ('Operators', '/admin/operators/'),
        ('Searches', '/admin/searches/')]
 

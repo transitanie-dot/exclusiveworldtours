@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fleet — Exclusive World Tours</title>
+<title>Bookings — Exclusive World Tours</title>
 <meta name="description" content="Operator area of Exclusive World Tours.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
@@ -582,128 +582,57 @@ table.tab a { color: #A85426; font-weight: 500; }
   font: 400 .92rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
 }
 
-.fr { display: grid; gap: 1.2rem; }
-@media (min-width: 1060px) {
-  .fr { grid-template-columns: 21rem minmax(0, 1fr); align-items: start; }
-}
+.rv-abas { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;
+  border-bottom: 2px solid #D5D8D5; }
+.rv-aba { font: 600 .9rem/1 'Inter', system-ui, sans-serif; background: none;
+  border: 0; border-bottom: 3px solid transparent; color: #5B6F6E;
+  padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px; }
+.rv-aba[aria-selected="true"] { color: #0B2B2A; border-bottom-color: #CE7030; }
+.rv-aba .n { display: inline-block; margin-left: .4rem; padding: 0 .4rem;
+  border-radius: 10px; background: #D5D8D5; color: #354F4E;
+  font-size: .78rem; font-weight: 700; }
 
-/* ------------------------------------------------------------ a frota */
-.v-lista { display: grid; gap: .6rem; }
-.v {
-  display: grid; grid-template-columns: 1fr auto; gap: .5rem 1rem;
-  align-items: center; width: 100%; text-align: left;
-  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
-  border-left: 4px solid #D5D8D5;
-  padding: .8rem .9rem; cursor: pointer;
-  font: 400 .92rem/1.4 'Inter', system-ui, sans-serif; color: #354F4E;
-}
-.v:hover { border-color: #5B6F6E; }
-.v[aria-pressed="true"] { border-left-color: #CE7030; background: #F6F4F1; }
-.v:focus-visible { outline: 3px solid #CE7030; outline-offset: 2px; }
-.v b {
-  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
-  color: #0B2B2A; margin-bottom: .15rem;
-}
-.v span { color: #5B6F6E; font-size: .84rem; }
-.v-pax {
-  font: 700 1.1rem/1 'Archivo', system-ui, sans-serif; color: #0B2B2A;
-  text-align: right; white-space: nowrap;
-}
-.v-pax small {
-  display: block; font: 400 .66rem/1.3 'Inter', system-ui, sans-serif;
-  color: #5B6F6E; letter-spacing: .06em; text-transform: uppercase;
-}
-.v-inativo { opacity: .55; }
+/* Uma reserva. A referencia e a data sao o que se procura com os olhos,
+   por isso sao as duas unicas coisas em destaque. */
+.rb { border: 1px solid #D5D8D5; border-radius: 10px; background: #FFFFFF;
+  padding: 1rem 1.1rem; margin-bottom: .8rem; }
+.rb-t { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: baseline;
+  margin-bottom: .55rem; }
+.rb-r { font: 700 1.05rem/1 'Inter', system-ui, sans-serif; color: #0B2B2A;
+  letter-spacing: .05em; -webkit-user-select: all; user-select: all; }
+.rb-d { font-weight: 650; color: #0B2B2A; }
+.rb-tour { color: #354F4E; }
+.rb-l { display: flex; flex-wrap: wrap; gap: .35rem 1.3rem; margin: 0 0 .5rem;
+  font-size: .88rem; color: #5B6F6E; }
+.rb-l b { color: #354F4E; font-weight: 600; }
+.rb-acoes { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .7rem; }
 
-.v-form { display: grid; gap: .8rem; }
-@media (min-width: 420px) {
-  .v-form .v-linha { display: grid; grid-template-columns: 1fr 7rem; gap: .8rem; }
-}
+/* O estado, numa palavra e numa cor. 'confirmed' nao e 'paid' e a
+   diferenca e dinheiro: uma esta cobrada, a outra tem um cartao
+   guardado e uma cobranca marcada. */
+.et { display: inline-block; padding: .18rem .5rem; border-radius: 4px;
+  font: 700 .72rem/1.4 'Inter', system-ui, sans-serif; letter-spacing: .06em;
+  text-transform: uppercase; }
+.et-paid { background: #e6f2ea; color: #1d5c35; }
+.et-confirmed { background: #fff4e0; color: #7a4c05; }
+.et-pending { background: #D5D8D5; color: #354F4E; }
+.et-cancelled { background: #f6e9e9; color: #8a2a2a; }
+.et-refunded { background: #ecebf5; color: #41407a; }
+.et-later { background: #F6F4F1; color: #354F4E; border: 1px solid #D5D8D5; }
 
-/* Os tours ligados a um veiculo usam o .v-t do portal_base: tambem sao
-   usados na pagina dos pontos de encontro. */
+.rb-cob { font-size: .85rem; color: #5B6F6E; margin: .4rem 0 0;
+  padding-left: .7rem; border-left: 2px solid #D5D8D5; }
 
-/* ------------------------------------------------------ o calendario */
-.vc-topo {
-  display: flex; flex-wrap: wrap; gap: .8rem; align-items: center;
-  margin-bottom: 1rem;
-}
-.vc-quem {
-  font: 700 1.05rem/1.2 'Archivo', system-ui, sans-serif; color: #0B2B2A;
-}
-.vc-quem span {
-  display: block; font: 400 .82rem/1.4 'Inter', system-ui, sans-serif;
-  color: #5B6F6E;
-}
-.vc-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
-.vc-mes {
-  font: 700 1rem/1 'Archivo', system-ui, sans-serif; color: #0B2B2A;
-  min-width: 10rem; text-align: center;
-}
-.vc-b {
-  width: 2.6rem; height: 2.6rem; border-radius: 4px; cursor: pointer;
-  background: #FFFFFF; border: 1px solid #5B6F6E; color: #0B2B2A;
-  font: 600 1rem/1 'Inter', system-ui, sans-serif;
-}
-.vc-b:hover { border-color: #0B2B2A; background: #F6F4F1; }
-.vc-b[disabled] { opacity: .4; cursor: not-allowed; }
+.pg { border: 1px solid #D5D8D5; border-radius: 10px; background: #FFFFFF;
+  padding: 1rem 1.1rem; margin-bottom: .8rem; display: flex;
+  flex-wrap: wrap; gap: .7rem 1.2rem; align-items: center;
+  justify-content: space-between; }
+.pg-v { font: 700 1.3rem/1 'Inter', system-ui, sans-serif; color: #0B2B2A; }
+.pg-n { font-weight: 650; color: #0B2B2A; }
+.pg-m { font-size: .85rem; color: #5B6F6E; }
 
-.vgrelha {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  background: #D5D8D5; border: 1px solid #D5D8D5; border-radius: 6px;
-  padding: 3px; margin-bottom: 1rem;
-}
-.vgd {
-  background: #FFFFFF; text-align: center;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .08em; text-transform: uppercase; color: #5B6F6E;
-  padding: .55rem 0;
-}
-.vd {
-  position: relative; background: #FFFFFF; border: 0; cursor: pointer;
-  aspect-ratio: 1 / 1; min-height: 2.9rem; padding: .25rem;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: .1rem;
-  font: 500 .95rem/1 'Inter', system-ui, sans-serif; color: #0B2B2A;
-  font-variant-numeric: tabular-nums;
-}
-@media (min-width: 720px) { .vd { aspect-ratio: auto; height: 4.4rem; } }
-.vd:hover:not([disabled]) { outline: 2px solid #CE7030; outline-offset: -2px; }
-.vd:focus-visible { outline: 3px solid #CE7030; outline-offset: -3px; z-index: 2; }
-.vd-v { background: #F6F4F1; cursor: default; }
-.vd[disabled] { background: #F6F4F1; color: #5B6F6E; cursor: not-allowed; }
-.vd-hoje { box-shadow: inset 0 0 0 2px #0B2B2A; }
-/* Ocupado e indisponivel nao se distinguem so pela cor. */
-.vd-booked { background: #EDF5EE; color: #14401A; }
-.vd-booked::after {
-  content: ''; position: absolute; bottom: .3rem; left: 50%;
-  transform: translateX(-50%);
-  width: 5px; height: 5px; border-radius: 50%; background: #14401A;
-}
-.vd-closed {
-  background: #F2EFEC; color: #5B6F6E; text-decoration: line-through;
-  text-decoration-thickness: 2px;
-}
-
-.vleg {
-  display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin: 0 0 1.2rem;
-  font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
-}
-.vleg span { display: flex; align-items: center; gap: .4rem; }
-.vleg i {
-  width: 1.1rem; height: 1.1rem; border-radius: 3px;
-  border: 1px solid #D5D8D5; display: inline-block;
-}
-.vleg .i-open { background: #FFFFFF; }
-.vleg .i-booked { background: #EDF5EE; }
-.vleg .i-closed { background: #F2EFEC; }
-
-.vc-ajuda {
-  font: 400 .88rem/1.6 'Inter', system-ui, sans-serif; color: #354F4E;
-  background: #FFFFFF; border-left: 4px solid #CE7030;
-  border-radius: 4px; padding: .9rem 1rem; margin-bottom: 1.2rem;
-}
-.vc-ajuda b { color: #0B2B2A; }
+.lk { font-size: .85rem; word-break: break-all; }
+.nada { font-style: italic; color: #5B6F6E; }
 
 </style>
 <script src="/assets/lib/supabase.js"></script>
@@ -714,7 +643,7 @@ table.tab a { color: #A85426; font-weight: 500; }
 <header class="pt-topo">
   <div class="folha pt-topo-i">
     <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
-    <span class="pt-etiq">Operator portal</span>
+    <span class="pt-etiq">Administration</span>
     <div class="pt-topo-fim">
       <span class="pt-quem" id="quem"></span>
       <button type="button" class="pt-sair" id="sair" hidden>Sign out</button>
@@ -722,99 +651,32 @@ table.tab a { color: #A85426; font-weight: 500; }
   </div>
 </header>
   <nav class="pt-nav" aria-label="Portal">
-    <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
-<a href="/portal/bookings/">Bookings</a>
-<a href="/portal/calendar/">Calendar</a>
-<a href="/portal/fleet/" aria-current="page">Fleet</a>
-<a href="/portal/places/">Meeting points</a>
-<a href="/portal/reviews/">Reviews</a>
-<a href="/portal/account/">Account</a></div>
+    <div class="folha pt-nav-i"><a href="/admin/">Review queue</a>
+<a href="/admin/bookings/" aria-current="page">Bookings</a>
+<a href="/admin/operators/">Operators</a>
+<a href="/admin/searches/">Searches</a></div>
   </nav><main id="principal" class="pt-corpo">
   <div class="folha" id="conteudo">
-    <p class="carrega" id="carrega">Loading your fleet&hellip;</p>
-
-    <div id="fr" hidden>
+    <p class="carrega" id="carrega">Loading&hellip;</p>
+    <div id="ad" hidden>
       <div class="pt-cab">
-        <h1>Fleet</h1>
-        <p>Your vehicles, and when each of them is free. A vehicle you
-          close here disappears from <b>every tour that uses it</b>, at
-          once &mdash; you do not close the same day three times.</p>
+        <h1>Bookings</h1>
+        <p>What is sold, who still has to be invited to leave a review,
+          and what is owed to each operator. Nothing on this page moves
+          money &mdash; it records what happened and tells you what to do
+          in Stripe.</p>
       </div>
 
-      <p class="aviso" id="av-fr" role="status" hidden></p>
-
-      <div class="fr">
-        <div>
-          <div class="cx">
-            <p class="cx-t">Your vehicles</p>
-            <div class="v-lista" id="v-lista"></div>
-          </div>
-
-          <div class="cx">
-            <p class="cx-t">Add a vehicle</p>
-            <form class="v-form" id="f-novo" novalidate>
-              <div class="v-linha">
-                <div class="campo">
-                  <label for="v-nome">What is it</label>
-                  <input type="text" id="v-nome" maxlength="80"
-                         placeholder="Mercedes V-Class">
-                </div>
-                <div class="campo">
-                  <label for="v-pax">Seats</label>
-                  <input type="number" id="v-pax" min="1" max="99"
-                         inputmode="numeric">
-                </div>
-              </div>
-              <div class="campo">
-                <label for="v-mat">Registration</label>
-                <input type="text" id="v-mat" maxlength="20">
-                <span class="ajuda">Only you and we see this. It is never
-                  shown to a guest.</span>
-              </div>
-              <button type="submit" class="bt bt-p" id="bt-novo">Add
-                vehicle</button>
-              <p class="aviso" id="av-novo" role="status" hidden></p>
-            </form>
-          </div>
-
-          <div class="cx">
-            <p class="cx-t">Which tours it can run</p>
-            <div class="v-tours" id="v-tours"></div>
-            <p class="lado-nota">Tick every tour this vehicle can do. That
-              is what lets one vehicle hold up a tour's calendar and drop
-              out of it the moment it is busy.</p>
-          </div>
-        </div>
-
-        <!-- ------------------------------------------ o calendario -->
-        <div id="vc" hidden>
-          <p class="vc-ajuda">Tap a day to change it:
-            <b>free</b> &rarr; <b>out on a job</b> &rarr;
-            <b>not available</b> &rarr; back to free. It applies
-            immediately, with no review, to every tour this vehicle
-            serves.</p>
-
-          <div class="vc-topo">
-            <p class="vc-quem" id="vc-quem" role="status"></p>
-            <div class="vc-nav">
-              <button type="button" class="vc-b" id="vc-ant"
-                      aria-label="Previous month">&larr;</button>
-              <span class="vc-mes" id="vc-mes" role="status"></span>
-              <button type="button" class="vc-b" id="vc-seg"
-                      aria-label="Next month">&rarr;</button>
-            </div>
-          </div>
-
-          <div class="vgrelha" id="vgrelha"></div>
-
-          <p class="vleg">
-            <span><i class="i-open"></i> Free</span>
-            <span><i class="i-booked"></i> Out on a job &mdash; with a dot</span>
-            <span><i class="i-closed"></i> Not available &mdash; struck through</span>
-          </p>
-          <p class="lado-nota" id="vc-sinal" role="status" hidden></p>
-        </div>
+      <div class="rv-abas" id="abas" role="tablist" aria-label="Bookings views">
+        <button type="button" class="rv-aba" data-aba="bookings"
+                role="tab" aria-selected="true">Bookings</button>
+        <button type="button" class="rv-aba" data-aba="invites"
+                role="tab" aria-selected="false">To invite<span class="n">0</span></button>
+        <button type="button" class="rv-aba" data-aba="payouts"
+                role="tab" aria-selected="false">To pay<span class="n">0</span></button>
       </div>
+
+      <div id="lista"></div>
     </div>
   </div>
 </main>
@@ -823,294 +685,287 @@ table.tab a { color: #A85426; font-weight: 500; }
   'use strict';
   if (!window.ewt || window.ewt.avariado) return;
 
-  var DIAS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  var E = { operador: null, frota: [], anuncios: [], escolhido: null,
-            mes: null, dados: {}, aEscrever: 0 };
+  var ABA = 'bookings';
+  var e = ewt.escapar;
 
-  function primeiro(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
-  function nomeMes(d) {
-    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  function et(s) {
+    return '<span class="et et-' + e(s) + '">' + e(s) + '</span>';
   }
 
-  // ------------------------------------------------------------- a frota
-  function desenharFrota() {
-    var c = document.getElementById('v-lista');
-    if (!E.frota.length) {
-      c.innerHTML = '<div class="vazio"><h3>No vehicles yet</h3>'
-        + '<p>Add the vehicles you actually run. The calendar below belongs '
-        + 'to the vehicle, not to a tour — so closing one closes it '
-        + 'across every tour that uses it.</p></div>';
-      document.getElementById('vc').hidden = true;
-      return;
-    }
-    c.innerHTML = E.frota.map(function (v) {
-      return '<button type="button" class="v' + (v.active ? '' : ' v-inativo')
-        + '" data-v="' + v.id + '" aria-pressed="'
-        + (E.escolhido === v.id ? 'true' : 'false') + '">'
-        + '<span><b>' + ewt.escapar(v.name) + '</b>'
-        + '<span>' + (v.plate ? ewt.escapar(v.plate) + ' · ' : '')
-        + (v.tours || 0) + (v.tours === 1 ? ' tour' : ' tours')
-        + (v.active ? '' : ' · retired') + '</span></span>'
-        + '<span class="v-pax">' + v.max_pax + '<small>seats</small></span>'
-        + '</button>';
-    }).join('');
-    document.getElementById('vc').hidden = false;
+  function linha(rot, v) {
+    if (v === null || v === undefined || v === '') return '';
+    return '<span><b>' + e(rot) + '</b> ' + e(String(v)) + '</span>';
   }
 
-  async function carregarFrota() {
-    var r = await ewt.sb.from('vehicles')
-      .select('id, name, max_pax, plate, notes, active, listing_vehicles(listing_id)')
-      .order('max_pax');
-    if (r.error) { ewt.dizer('av-fr', ewt.legivel(r.error), 'mal'); return; }
-    E.frota = (r.data || []).map(function (v) {
-      v.tours = (v.listing_vehicles || []).length;
-      v.listings = (v.listing_vehicles || []).map(function (x) { return x.listing_id; });
-      return v;
+  // ------------------------------------------------------------ reservas
+  async function reservas() {
+    // Por data da viagem e nao por data da reserva: o que interessa a
+    // quem abre esta pagina e o que esta a chegar, nao o que entrou.
+    var r = await ewt.sb.from('bookings')
+      .select('*').neq('status', 'pending')
+      .order('booking_date', { ascending: true })
+      .limit(200);
+    if (r.error) throw new Error(ewt.legivel(r.error));
+
+    var hoje = ewt.hoje();
+    var futuras = (r.data || []).filter(function (b) {
+      return b.booking_date >= hoje && b.status !== 'cancelled';
     });
-    if (!E.escolhido || !E.frota.some(function (v) { return v.id === E.escolhido; })) {
-      E.escolhido = E.frota.length ? E.frota[0].id : null;
+    var resto = (r.data || []).filter(function (b) {
+      return !(b.booking_date >= hoje && b.status !== 'cancelled');
+    }).reverse();
+
+    if (!futuras.length && !resto.length) {
+      return '<p class="nada">No bookings yet.</p>';
     }
-    desenharFrota();
-    desenharLigacoes();
-    await carregarDias();
+
+    return (futuras.length
+              ? '<h2 class="pt-h2">Coming up</h2>' + futuras.map(cartao).join('')
+              : '<p class="nada">Nothing booked for the days ahead.</p>')
+         + (resto.length
+              ? '<h2 class="pt-h2">Past and cancelled</h2>'
+                + resto.slice(0, 60).map(cartao).join('')
+              : '');
   }
 
-  // ------------------------------------------------- que tours o usam
-  function desenharLigacoes() {
-    var c = document.getElementById('v-tours');
-    var v = E.frota.filter(function (x) { return x.id === E.escolhido; })[0];
-    if (!v || !E.anuncios.length) {
-      c.innerHTML = '<p class="lado-nota">'
-        + (E.anuncios.length ? 'Pick a vehicle to see which tours it serves.'
-                             : 'You have no tours yet.') + '</p>';
+  function cartao(b) {
+    var depois = b.payment_mode === 'later';
+    var podeCancelar = b.status === 'confirmed' || b.status === 'paid';
+
+    return '<article class="rb" data-b="' + e(b.id) + '">'
+      + '<div class="rb-t">'
+      +   '<span class="rb-r">' + e(b.reference) + '</span>'
+      +   '<span class="rb-d">' + e(b.booking_date)
+      +     (b.start_time ? ' &middot; ' + e(String(b.start_time).slice(0, 5)) : '')
+      +   '</span>'
+      +   '<span class="rb-tour">' + e(b.tour_title) + '</span>'
+      +   et(b.status)
+      +   (depois ? '<span class="et et-later">pay later</span>' : '')
+      + '</div>'
+
+      + '<p class="rb-l">'
+      +   linha('Group', b.pax + (b.pax === 1 ? ' person' : ' people'))
+      +   linha('Vehicle', b.vehicle_name)
+      +   linha('Customer', b.customer_name)
+      +   linha('Email', b.customer_email)
+      +   linha('Phone', b.customer_phone)
+      + '</p>'
+      + '<p class="rb-l">'
+      +   linha('Total', b.currency + ' ' + Number(b.price_total).toFixed(2))
+      +   linha('Operator gets', b.currency + ' ' + Number(b.operator_amount).toFixed(2))
+      +   linha('We keep', b.currency + ' ' + Number(b.platform_amount).toFixed(2))
+      +   linha('Paid out', b.payout_at ? b.payout_at.slice(0, 10) : 'not yet')
+      + '</p>'
+      + (b.pickup ? '<p class="rb-l">' + linha('Pick-up', b.pickup) + '</p>' : '')
+      + (b.notes ? '<p class="rb-l">' + linha('Notes', b.notes) + '</p>' : '')
+
+      // A COBRANCA QUE AINDA NAO ACONTECEU
+      //
+      // Uma reserva 'confirmed' nao tem dinheiro nenhum ca dentro. Sem
+      // esta linha, a pagina mostrava um valor e uma data e parecia tudo
+      // tratado — e so no dia da viagem e que se descobria que nao.
+      + (depois && b.status === 'confirmed'
+          ? '<p class="rb-cob">Nothing charged yet. The card is charged on '
+            + e(b.charge_at ? b.charge_at.slice(0, 16).replace('T', ' ') : '—')
+            + (b.charge_attempts
+                ? ' &middot; ' + b.charge_attempts + ' attempt(s) so far'
+                : '')
+            + (b.stripe_payment_method_id ? ''
+                : ' &middot; <b>no card saved — this one cannot be charged</b>')
+            + '</p>'
+          : '')
+      + (b.cancel_reason
+          ? '<p class="rb-cob">' + e(b.cancel_reason) + '</p>' : '')
+
+      + (podeCancelar
+          ? '<div class="rb-acoes">'
+            + '<button class="pt-b pt-b-f" data-cancelar>Cancel this booking</button>'
+            + '</div>'
+          : '')
+      + '</article>';
+  }
+
+  // ---------------------------------------------------------- a convidar
+  async function convidar() {
+    var r = await ewt.sb.rpc('reservas_a_convidar');
+    if (r.error) throw new Error(ewt.legivel(r.error));
+    var l = r.data || [];
+    if (!l.length) {
+      return '<p class="nada">Nobody is waiting for a review invitation.</p>';
+    }
+    return l.map(function (b) {
+      return '<article class="rb" data-b="' + e(b.booking_id) + '">'
+        + '<div class="rb-t">'
+        +   '<span class="rb-r">' + e(b.reference) + '</span>'
+        +   '<span class="rb-d">' + e(b.booking_date) + '</span>'
+        +   '<span class="rb-tour">' + e(b.tour_title) + '</span>'
+        + '</div>'
+        + '<p class="rb-l">' + linha('Customer', b.customer_name)
+        +   linha('Email', b.customer_email) + '</p>'
+        + '<div class="rb-acoes">'
+        +   '<button class="pt-b" data-convidar>Create the review link</button>'
+        + '</div>'
+        + '<p class="lk" data-lk hidden></p>'
+        + '</article>';
+    }).join('');
+  }
+
+  // ------------------------------------------------------------- a pagar
+  async function pagar() {
+    var r = await ewt.sb.rpc('a_pagar');
+    if (r.error) throw new Error(ewt.legivel(r.error));
+    var l = r.data || [];
+    if (!l.length) {
+      return '<p class="nada">Nothing owed to any operator right now.</p>';
+    }
+    return '<p>These are tours that have already happened and been paid for '
+      + 'by the customer. Marking an operator as paid records what you '
+      + 'transferred &mdash; it does not transfer anything.</p>'
+      + l.map(function (o) {
+        return '<div class="pg" data-op="' + e(o.operator_id) + '">'
+          + '<div>'
+          +   '<p class="pg-n">' + e(o.operator_name) + '</p>'
+          +   '<p class="pg-m">' + e(o.operator_email) + ' &middot; '
+          +     o.reservas + ' booking(s) &middot; oldest '
+          +     e(o.mais_antiga) + '</p>'
+          + '</div>'
+          + '<div>'
+          +   '<span class="pg-v">&euro;' + Number(o.total).toFixed(2) + '</span>'
+          + '</div>'
+          + '<div><button class="pt-b" data-pago>Mark as paid</button></div>'
+          + '</div>';
+      }).join('');
+  }
+
+  // ------------------------------------------------------------ desenhar
+  var FEITORES = { bookings: reservas, invites: convidar, payouts: pagar };
+
+  async function desenhar() {
+    var c = document.getElementById('lista');
+    c.innerHTML = '<p class="carrega">Loading&hellip;</p>';
+    try {
+      c.innerHTML = await FEITORES[ABA]();
+    } catch (err) {
+      c.innerHTML = '';
+      ewt.dizer(c, err.message, 'mal');
+    }
+    contar();
+  }
+
+  /** Os numeros nas abas. Correm em separado e depois do desenho: uma
+   *  contagem lenta nao pode atrasar a lista que se foi ver. */
+  async function contar() {
+    try {
+      var a = await ewt.sb.rpc('reservas_a_convidar');
+      var b = await ewt.sb.rpc('a_pagar');
+      poe('invites', (a.data || []).length);
+      poe('payouts', (b.data || []).length);
+    } catch (err) { /* os numeros sao um extra, nao a pagina */ }
+  }
+
+  function poe(aba, n) {
+    var el = document.querySelector('[data-aba="' + aba + '"] .n');
+    if (el) el.textContent = n;
+  }
+
+  document.getElementById('abas').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-aba]');
+    if (!b) return;
+    ABA = b.dataset.aba;
+    [].forEach.call(document.querySelectorAll('[data-aba]'), function (x) {
+      x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+    });
+    desenhar();
+  });
+
+  document.getElementById('lista').addEventListener('click', async function (ev) {
+    var art = ev.target.closest('[data-b], [data-op]');
+    if (!art) return;
+
+    // ---- cancelar
+    if (ev.target.matches('[data-cancelar]')) {
+      var razao = prompt('Why is this booking being cancelled?\n\n'
+        + 'This is written into the record and the operator can see it. '
+        + 'At least 10 characters.');
+      if (!razao) return;
+      ev.target.disabled = true;
+      try {
+        var r = await ewt.sb.rpc('cancelar_reserva',
+          { p_booking: art.dataset.b, p_razao: razao });
+        if (r.error) throw new Error(ewt.legivel(r.error));
+        var d = r.data || {};
+        // O REEMBOLSO FICA PARA O STRIPE
+        //
+        // A base ja gravou o cancelamento e soltou o veiculo. O dinheiro
+        // devolve-se no painel do Stripe, com o payment_intent que
+        // aparece aqui. Fazer as duas coisas num clique dava uma reserva
+        // cancelada com o dinheiro do cliente ca dentro no dia em que o
+        // Stripe recusasse o reembolso.
+        alert('Cancelled. The vehicle is free again.\n\n'
+          + (d.charged
+              ? 'This one WAS charged: ' + Number(d.amount).toFixed(2)
+                + '\nRefund it in Stripe using\n' + (d.payment_intent || '—')
+              : 'Nothing had been charged, so there is nothing to refund.'));
+        desenhar();
+      } catch (err) {
+        ewt.dizer(art, err.message, 'mal');
+        ev.target.disabled = false;
+      }
       return;
     }
-    c.innerHTML = E.anuncios.map(function (a) {
-      var ligado = v.listings.indexOf(a.id) > -1;
-      return '<label class="v-t"><input type="checkbox" data-liga="' + a.id
-        + '"' + (ligado ? ' checked' : '') + '>'
-        + '<span>' + ewt.escapar(a.titulo) + '</span></label>';
-    }).join('');
-  }
 
-  async function ligar(listingId, ligar_) {
-    var v = E.frota.filter(function (x) { return x.id === E.escolhido; })[0];
-    if (!v) return;
-    var r = ligar_
-      ? await ewt.sb.from('listing_vehicles')
-          .insert({ listing_id: listingId, vehicle_id: v.id })
-      : await ewt.sb.from('listing_vehicles').delete()
-          .eq('listing_id', listingId).eq('vehicle_id', v.id);
-    if (r.error) { ewt.dizer('av-fr', ewt.legivel(r.error), 'mal'); return; }
-    ewt.dizer('av-fr', '', '');
-    await carregarFrota();
-  }
-
-  // -------------------------------------------------------- o calendario
-  function desenharCalendario() {
-    var v = E.frota.filter(function (x) { return x.id === E.escolhido; })[0];
-    if (!v) return;
-    document.getElementById('vc-quem').innerHTML =
-      ewt.escapar(v.name) + '<span>up to ' + v.max_pax + ' people · '
-      + (v.tours || 0) + (v.tours === 1 ? ' tour uses it' : ' tours use it')
-      + '</span>';
-
-    var g = document.getElementById('vgrelha');
-    var mes = E.mes;
-    document.getElementById('vc-mes').textContent = nomeMes(mes);
-
-    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-    var html = DIAS.map(function (d) {
-      return '<div class="vgd" aria-hidden="true">' + d + '</div>';
-    }).join('');
-
-    var inicio = primeiro(mes);
-    var desvio = (inicio.getDay() + 6) % 7;
-    for (var i = 0; i < desvio; i++) {
-      html += '<span class="vd vd-v" aria-hidden="true"></span>';
+    // ---- convidar a avaliar
+    if (ev.target.matches('[data-convidar]')) {
+      ev.target.disabled = true;
+      try {
+        var c = await ewt.sb.rpc('convidar_por_reserva',
+          { p_booking: art.dataset.b });
+        if (c.error) throw new Error(ewt.legivel(c.error));
+        var p = art.querySelector('[data-lk]');
+        // O link copia-se e mete-se num email a mao. Enquanto os
+        // registos DNS do dominio nao estiverem na Resend, nao sai email
+        // nenhum daqui — e um link que se ve vale mais do que um envio
+        // que falha em silencio.
+        p.textContent = location.origin + '/review/?t=' + c.data;
+        p.hidden = false;
+        ev.target.textContent = 'Link created — copy it';
+      } catch (err) {
+        ewt.dizer(art, err.message, 'mal');
+        ev.target.disabled = false;
+      }
+      return;
     }
 
-    var ultimo = new Date(mes.getFullYear(), mes.getMonth() + 1, 0).getDate();
-    for (var n = 1; n <= ultimo; n++) {
-      var d = new Date(mes.getFullYear(), mes.getMonth(), n);
-      var k = ewt.iso(d);
-      var r = E.dados[k] || { status: 'open' };
-      var passado = d < hoje;
-      var cls = 'vd';
-      if (r.status === 'booked') cls += ' vd-booked';
-      if (r.status === 'closed') cls += ' vd-closed';
-      if (ewt.iso(hoje) === k) cls += ' vd-hoje';
-
-      var legivel = d.toLocaleDateString(undefined,
-        { weekday: 'long', day: 'numeric', month: 'long' });
-      var estado = passado ? 'in the past'
-        : r.status === 'booked' ? 'out on a job'
-        : r.status === 'closed' ? 'not available' : 'free';
-
-      html += '<button type="button" class="' + cls + '" data-d="' + k + '"'
-        + (passado ? ' disabled' : '')
-        + ' aria-label="' + legivel + ', ' + ewt.escapar(v.name) + ' is '
-        + estado + '">' + n + '</button>';
-    }
-
-    var ocupados = (desvio + ultimo) % 7;
-    if (ocupados) {
-      for (var f = ocupados; f < 7; f++) {
-        html += '<span class="vd vd-v" aria-hidden="true"></span>';
+    // ---- marcar como pago
+    if (ev.target.matches('[data-pago]')) {
+      var nota = prompt('How did you pay them?\n\n'
+        + 'A bank reference or a date — anything that lets you find it '
+        + 'again in six months.');
+      if (nota === null) return;
+      ev.target.disabled = true;
+      try {
+        var m = await ewt.sb.rpc('marcar_pago',
+          { p_operator: art.dataset.op, p_nota: nota });
+        if (m.error) throw new Error(ewt.legivel(m.error));
+        desenhar();
+      } catch (err) {
+        ewt.dizer(art, err.message, 'mal');
+        ev.target.disabled = false;
       }
     }
-    g.innerHTML = html;
+  });
 
-    document.getElementById('vc-ant').disabled = (mes <= primeiro(new Date()));
-  }
-
-  async function carregarDias() {
-    if (!E.escolhido) return;
-    var de = ewt.iso(primeiro(E.mes));
-    var ate = ewt.iso(new Date(E.mes.getFullYear(), E.mes.getMonth() + 1, 0));
-    var r = await ewt.sb.from('vehicle_days')
-      .select('day, status, note')
-      .eq('vehicle_id', E.escolhido).gte('day', de).lte('day', ate);
-    if (r.error) { ewt.dizer('av-fr', ewt.legivel(r.error), 'mal'); return; }
-    E.dados = {};
-    (r.data || []).forEach(function (x) { E.dados[x.day] = x; });
-    desenharCalendario();
-  }
-
-  // Livre -> ocupado -> indisponivel -> livre. Tres estados num toque,
-  // como no calendario dos tours: um menu por dia e vinte toques para
-  // fechar uma semana no telemovel.
-  var SEGUINTE = { open: 'booked', booked: 'closed', closed: 'open' };
-
-  async function tocar(dia) {
-    var agora = (E.dados[dia] && E.dados[dia].status) || 'open';
-    var novo = SEGUINTE[agora];
-
-    E.dados[dia] = Object.assign({}, E.dados[dia] || {},
-                                 { day: dia, status: novo });
-    desenharCalendario();
-
-    E.aEscrever++; sinal();
-    var r = await ewt.sb.rpc('marcar_veiculo', {
-      p_vehicle: E.escolhido, p_dias: [dia], p_status: novo
-    });
-    E.aEscrever--; sinal();
-
-    if (r.error) {
-      ewt.dizer('av-fr', ewt.legivel(r.error), 'mal');
-      await carregarDias();
-    } else {
-      ewt.dizer('av-fr', '', '');
-    }
-  }
-
-  function sinal() {
-    var s = document.getElementById('vc-sinal');
-    if (!s) return;
-    s.textContent = E.aEscrever > 0 ? 'Saving…' : 'Saved.';
-    s.hidden = false;
-  }
-
-  // ------------------------------------------------------ novo veiculo
-  async function acrescentar(ev) {
-    ev.preventDefault();
-    var nome = document.getElementById('v-nome').value.trim();
-    var pax = parseInt(document.getElementById('v-pax').value, 10);
-    var mat = document.getElementById('v-mat').value.trim();
-    ewt.dizer('av-novo', '', '');
-
-    if (nome.length < 2) {
-      ewt.dizer('av-novo', 'Give the vehicle a name you will recognise — '
-        + 'the model is usually enough.', 'mal');
-      document.getElementById('v-nome').focus();
-      return;
-    }
-    if (!(pax > 0 && pax < 100)) {
-      ewt.dizer('av-novo', 'How many passengers does it seat?', 'mal');
-      document.getElementById('v-pax').focus();
-      return;
-    }
-
-    var bt = document.getElementById('bt-novo');
-    bt.disabled = true; bt.textContent = 'Adding…';
-    var r = await ewt.sb.from('vehicles').insert({
-      operator_id: E.operador.id, name: nome, max_pax: pax,
-      plate: mat || null
-    }).select('id').single();
-    bt.disabled = false; bt.textContent = 'Add vehicle';
-
-    if (r.error) { ewt.dizer('av-novo', ewt.legivel(r.error), 'mal'); return; }
-    document.getElementById('f-novo').reset();
-    E.escolhido = r.data ? r.data.id : E.escolhido;
-    await carregarFrota();
-    ewt.dizer('av-novo', 'Added. Now tick the tours it can run, below.', 'bem');
-  }
-
-  // ----------------------------------------------------------- arranque
   (async function () {
     var p = await ewt.exigir_entrada();
     if (!p) return;
-    document.getElementById('carrega').hidden = true;
-
-    if (!p.operadores.length) {
-      document.getElementById('conteudo').innerHTML =
-        '<div class="vazio"><h3>Your account is not linked to a company</h3>'
-        + '<a class="bt bt-s" href="/portal/">Back to the portal</a></div>';
+    if (!p.admin) {
+      document.getElementById('carrega').textContent =
+        'This page is for the administrator.';
       return;
     }
-    E.operador = p.operadores[0];
-    E.mes = primeiro(new Date());
-    document.getElementById('fr').hidden = false;
-
-    // Os titulos dos anuncios vem das versoes.
-    var a = await ewt.sb.from('listings').select('id, slug').order('created_at');
-    E.anuncios = (a.data || []).map(function (x) {
-      return { id: x.id, titulo: x.slug };
-    });
-    if (E.anuncios.length) {
-      var vv = await ewt.sb.from('listing_versions')
-        .select('listing_id, version, payload')
-        .in('listing_id', E.anuncios.map(function (x) { return x.id; }))
-        .order('version', { ascending: false });
-      var t = {};
-      (vv.data || []).forEach(function (x) {
-        if (!t[x.listing_id] && x.payload && x.payload.title) {
-          t[x.listing_id] = x.payload.title;
-        }
-      });
-      E.anuncios.forEach(function (x) { x.titulo = t[x.id] || x.titulo; });
-    }
-
-    document.getElementById('f-novo').addEventListener('submit', acrescentar);
-
-    document.getElementById('v-lista').addEventListener('click', function (ev) {
-      var b = ev.target.closest('[data-v]');
-      if (!b) return;
-      E.escolhido = b.getAttribute('data-v');
-      desenharFrota();
-      desenharLigacoes();
-      carregarDias();
-    });
-
-    document.getElementById('v-tours').addEventListener('change', function (ev) {
-      var c = ev.target.closest('[data-liga]');
-      if (c) ligar(c.getAttribute('data-liga'), c.checked);
-    });
-
-    document.getElementById('vc-ant').addEventListener('click', function () {
-      E.mes = new Date(E.mes.getFullYear(), E.mes.getMonth() - 1, 1);
-      carregarDias();
-    });
-    document.getElementById('vc-seg').addEventListener('click', function () {
-      E.mes = new Date(E.mes.getFullYear(), E.mes.getMonth() + 1, 1);
-      carregarDias();
-    });
-    document.getElementById('vgrelha').addEventListener('click', function (ev) {
-      var b = ev.target.closest('.vd[data-d]');
-      if (b && !b.disabled) tocar(b.getAttribute('data-d'));
-    });
-
-    await carregarFrota();
+    document.getElementById('carrega').hidden = true;
+    document.getElementById('ad').hidden = false;
+    desenhar();
   })();
 })();
 

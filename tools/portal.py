@@ -24,6 +24,7 @@ import portal_base
 CORES = pagina.CORES
 
 NAV = [('My tours', '/portal/'),
+       ('Bookings', '/portal/bookings/'),
        ('Calendar', '/portal/calendar/'),
        ('Fleet', '/portal/fleet/'),
        ('Meeting points', '/portal/places/'),

@@ -90,6 +90,54 @@ function cenarioPadrao() {
     reservar: { ok: true, url: 'http://localhost:' + PORTA + '/cancellation/',
                 reference: 'EWABCD23', payment_mode: 'now', hold_minutes: 30 },
     reservarEstado: 200,
+    // A AGENDA DO OPERADOR
+    //
+    // A agenda_do_operador() nao devolve price_total nem commission_rate,
+    // e o mock tambem nao os devolve: se devolvesse, o teste que prova
+    // que a pagina nao os mostra passava por o mock nao os ter mandado e
+    // nao por a pagina nao os mostrar.
+    agenda: [
+      { reference: 'EWAAAA22', tour_title: 'Private Day in Sintra',
+        booking_date: '2026-12-01', start_time: '08:30:00', pax: 2,
+        vehicle_name: 'Sedan', customer_name: 'Maria Oliveira',
+        customer_phone: '+351 900 000 000', pickup: 'Hotel Avenida',
+        notes: 'One child seat.', you_receive: 444.00,
+        status: 'paid', paid_out: false },
+      { reference: 'EWBBBB33', tour_title: 'Private Day in Sintra',
+        booking_date: '2026-12-09', start_time: null, pax: 4,
+        vehicle_name: 'Minivan', customer_name: 'John Reed',
+        customer_phone: null, pickup: null, notes: null,
+        you_receive: 392.00, status: 'confirmed', paid_out: false }
+    ],
+    aConvidar: [
+      { booking_id: '77777777-0000-0000-0000-000000000007',
+        reference: 'EWCCCC44', tour_title: 'Private Day in Sintra',
+        booking_date: '2026-09-20', customer_name: 'Ana Pires',
+        customer_email: 'ana@example.invalid' }
+    ],
+    aPagar: [
+      { operator_id: OP, operator_name: 'Atlantic Private Tours',
+        operator_email: 'ops@example.invalid', reservas: 3,
+        total: 1236.00, mais_antiga: '2026-09-20' }
+    ],
+    token: '12345678-1234-1234-1234-123456789abc',
+    cancelar: { ok: true, reference: 'EWDDDD55', was: 'paid', charged: true,
+                payment_intent: 'pi_3Exemplo', amount: 555 },
+    // A tabela das reservas, como o admin a le. Uma 'later' confirmada
+    // SEM cartao guardado, que e o caso que ninguem ve a tempo.
+    reservasTabela: [
+      { id: '88888888-0000-0000-0000-000000000008', reference: 'EWEEEE66',
+        listing_slug: 'example-sintra', tour_title: 'Private Day in Sintra',
+        booking_date: '2099-12-01', start_time: '08:30:00', pax: 2,
+        vehicle_name: 'Sedan', price_total: 555, currency: 'EUR',
+        commission_rate: 0.2, platform_amount: 111, operator_amount: 444,
+        payment_mode: 'later', status: 'confirmed',
+        charge_at: '2099-11-28T08:30:00Z', charge_attempts: 0,
+        stripe_payment_method_id: null,
+        customer_name: 'Maria Oliveira', customer_email: 'maria@example.invalid',
+        customer_phone: '+351 900 000 000', pickup: 'Hotel Avenida',
+        notes: null, payout_at: null, cancel_reason: null }
+    ],
     sessao: {
       confirmed: true, payment_mode: 'now', reference: 'EWABCD23',
       tour: 'Private Day in Sintra', operator: 'Atlantic Private Tours',
@@ -105,6 +153,13 @@ function responder(url, metodo, corpo) {
   const c = u.pathname;
 
   if (c === '/rest/v1/rpc/cotar') return CENARIO.cotar;
+  if (c === '/rest/v1/rpc/agenda_do_operador') return CENARIO.agenda;
+  if (c === '/rest/v1/rpc/reservas_a_convidar') return CENARIO.aConvidar;
+  if (c === '/rest/v1/rpc/a_pagar') return CENARIO.aPagar;
+  if (c === '/rest/v1/rpc/convidar_por_reserva') return CENARIO.token;
+  if (c === '/rest/v1/rpc/cancelar_reserva') return CENARIO.cancelar;
+  if (c === '/rest/v1/rpc/marcar_pago') return 2;
+  if (c === '/rest/v1/bookings') return CENARIO.reservasTabela;
   // So responde aqui se o cenario do pagamento tiver posto horas. A
   // partidas_no_dia ja tinha um mock em baixo, usado pelos testes do
   // painel do tour, e responder aqui sempre tapava-o — foi exatamente
@@ -1109,6 +1164,83 @@ await t('o formulario de reserva e usavel no telemovel',
       ['o formulario nao estica para fora do ecra', !r.estica],
       ['o botao tem altura de dedo (' + r.botao + 'px)', r.botao >= 44],
       ['os campos tem altura de dedo (' + r.menor + 'px)', r.menor >= 40]
+    ];
+  });
+
+
+cenarioPadrao();
+await t('a agenda do operador diz o que ele recebe, e nao o que o cliente pagou',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    const txt = await p.locator('#lista').innerText();
+    return [
+      ['mostra o que ele recebe', /444\.00/.test(txt)],
+      ['soma o total dele', /836\.00/.test(txt)],
+      // O total do cliente e a comissao nao vem da base nesta funcao, e
+      // nao podem aparecer aqui nem por acidente.
+      ['nao escreve o total que o cliente pagou', !/555/.test(txt)],
+      ['nao escreve a comissao', !/111|20%|0\.2/.test(txt)],
+      ['diz que ha dinheiro cobrado e ainda nao pago',
+        /not yet paid to you/.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+await t('a agenda explica a diferenca entre confirmada e paga',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    const txt = await p.locator('#lista').innerText();
+    return [
+      ['a paga diz que foi cobrada', /collected/.test(txt)],
+      // Ao operador nao interessa o jargao do Stripe; interessa saber
+      // que o dia e dele e quando chega o dinheiro.
+      ['a confirmada diz que o cliente e cobrado antes do tour',
+        /charged before the tour/.test(txt)],
+      ['uma reserva sem hora nao finge uma hora',
+        /time to agree/.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+await t('o admin avisa quando uma reserva por pagar nao tem cartao guardado',
+  '/admin/bookings/', '.rb', async (p) => {
+    const txt = await p.locator('#lista').innerText();
+    return [
+      ['marca-a como pagar depois', /pay later/i.test(txt)],
+      ['diz que nada foi cobrado', /Nothing charged yet/.test(txt)],
+      // Sem este aviso, a pagina mostrava uma data de cobranca e parecia
+      // tudo tratado. A viagem acontecia e nunca era paga.
+      ['avisa que nao pode ser cobrada',
+        /cannot be charged/.test(txt)],
+      ['mostra o que a plataforma leva (aqui pode)', /111/.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+await t('o admin cria o link de avaliacao de uma reserva que ja viajou',
+  '/admin/bookings/', '.rv-abas', async (p) => {
+    await p.click('[data-aba="invites"]');
+    await p.waitForSelector('[data-convidar]', { timeout: 6000 });
+    await p.click('[data-convidar]');
+    await p.waitForSelector('[data-lk]:not([hidden])', { timeout: 6000 });
+    const l = await p.locator('[data-lk]').innerText();
+    return [
+      ['o link leva o token', /\/review\/\?t=12345678/.test(l)],
+      ['o botao diz que ja esta feito',
+        /copy it/i.test(await p.locator('[data-convidar]').innerText())]
+    ];
+  });
+
+cenarioPadrao();
+await t('a fila de pagamentos soma por operador e diz que nao transfere nada',
+  '/admin/bookings/', '.rv-abas', async (p) => {
+    await p.click('[data-aba="payouts"]');
+    await p.waitForSelector('.pg', { timeout: 6000 });
+    const txt = await p.locator('#lista').innerText();
+    return [
+      ['soma o que esta a pagar', /1236\.00/.test(txt)],
+      ['diz quantas reservas', /3 booking\(s\)/.test(txt)],
+      // Uma pagina que diz "mark as paid" e facil de confundir com uma
+      // pagina que paga. Esta diz, por escrito, que nao paga nada.
+      ['avisa que nao transfere nada', /does not transfer/.test(txt)]
     ];
   });
 

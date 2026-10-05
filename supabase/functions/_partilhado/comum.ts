@@ -30,13 +30,30 @@ export const VERSAO_BRANDING = '2025-09-30.clover';
 
 export const MARCA = {
   display_name: 'Exclusive World Tours',
-  logo: { type: 'url', url: SITE + '/logos/exclusive-world-tours.png' },
-  icon: { type: 'url', url: SITE + '/icon-512.png' },
   background_color: '#FFFFFF',
   button_color: '#1B2A35',
   font_family: 'inter',
   border_style: 'rounded',
 };
+
+// O LOGOTIPO NAO ESTA AQUI, E E DE PROPOSITO
+//
+// O Stripe aceita `logo` e `icon` como URLs, e o The Epic Tours usa-os.
+// Aqui nao ha ficheiro nenhum para apontar: o repositorio nao tem um
+// unico PNG, e o logotipo e desenhado em SVG pelo tools/marca.py. Um URL
+// que da 404 faz o Stripe recusar o branding_settings INTEIRO — e o
+// resultado nao e uma pagina sem logotipo, e uma pagina com a marca
+// Airportlink, que e precisamente o que isto existe para evitar.
+//
+// Com o nome, as cores e a letra, a pagina ja diz Exclusive World Tours.
+// Para juntar o logotipo: exportar um PNG do logotipo escolhido (quadrado
+// para o icon, horizontal para o logo), por em /logos/ e acrescentar
+//
+//   logo: { type: 'url', url: SITE + '/logos/<ficheiro>.png' },
+//   icon: { type: 'url', url: SITE + '/<ficheiro>.png' },
+//
+// Qual dos desenhos e o definitivo e uma escolha do Ricardo, e nao se
+// adivinha num ficheiro de pagamentos.
 
 export const SUFIXO_EXTRATO = 'EXCL WORLD TOURS';
 

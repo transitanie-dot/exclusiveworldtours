@@ -39,6 +39,7 @@ PASSOS = [
     ('a pagina de avaliar',       'avaliar.py'),
     ('o portal',                  'portal.py'),
     ('o editor de anuncios',      'portal_anuncio.py'),
+    ('a agenda do operador',      'portal_agenda.py'),
     ('o calendario',              'portal_calendario.py'),
     ('a frota',                   'portal_frota.py'),
     ('os pontos de encontro',     'portal_lugares.py'),
@@ -46,6 +47,7 @@ PASSOS = [
     ('a conta do operador',       'portal_conta.py'),
     ('a fila de revisao',         'admin.py'),
     ('as listas da administracao', 'admin_listas.py'),
+    ('as reservas no admin',      'admin_reservas.py'),
 ]
 
 

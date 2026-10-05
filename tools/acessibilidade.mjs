@@ -54,6 +54,38 @@ function responder(url) {
   // A cotacao e a confirmacao, para o axe poder ver o formulario com o
   // preco preenchido e a pagina de confirmacao com as linhas todas — e
   // nao a pagina vazia a dizer "One moment".
+  if (c === '/rest/v1/rpc/agenda_do_operador') {
+    return [{ reference: 'EWAAAA22', tour_title: 'Private Day in Sintra',
+      booking_date: '2026-12-01', start_time: '08:30:00', pax: 2,
+      vehicle_name: 'Sedan', customer_name: 'Maria Oliveira',
+      customer_phone: '+351 900 000 000', pickup: 'Hotel Avenida',
+      notes: 'One child seat.', you_receive: 444.00, status: 'paid',
+      paid_out: false }];
+  }
+  if (c === '/rest/v1/rpc/reservas_a_convidar') {
+    return [{ booking_id: '77777777-0000-0000-0000-000000000007',
+      reference: 'EWCCCC44', tour_title: 'Private Day in Sintra',
+      booking_date: '2026-09-20', customer_name: 'Ana Pires',
+      customer_email: 'ana@example.invalid' }];
+  }
+  if (c === '/rest/v1/rpc/a_pagar') {
+    return [{ operator_id: OP, operator_name: 'Atlantic Private Tours',
+      operator_email: 'ops@example.invalid', reservas: 3, total: 1236.00,
+      mais_antiga: '2026-09-20' }];
+  }
+  if (c === '/rest/v1/bookings') {
+    return [{ id: '88888888-0000-0000-0000-000000000008',
+      reference: 'EWEEEE66', listing_slug: 'example-sintra',
+      tour_title: 'Private Day in Sintra', booking_date: '2099-12-01',
+      start_time: '08:30:00', pax: 2, vehicle_name: 'Sedan',
+      price_total: 555, currency: 'EUR', commission_rate: 0.2,
+      platform_amount: 111, operator_amount: 444, payment_mode: 'later',
+      status: 'confirmed', charge_at: '2099-11-28T08:30:00Z',
+      charge_attempts: 0, stripe_payment_method_id: null,
+      customer_name: 'Maria Oliveira', customer_email: 'maria@example.invalid',
+      customer_phone: '+351 900 000 000', pickup: 'Hotel Avenida',
+      notes: null, payout_at: null, cancel_reason: null }];
+  }
   if (c === '/rest/v1/rpc/cotar') {
     return { ok: true, slug: 'example-sintra', title: 'Private Day in Sintra',
       operator: 'Atlantic Private Tours', date: '2026-12-01', time: null,
@@ -150,6 +182,8 @@ const PAGINAS = [
   ['fila de revisao', '/admin/', '.rv'],
   ['operadores', '/admin/operators/', 'table.tab'],
   ['procuras', '/admin/searches/', '.cx'],
+  ['agenda do operador', '/portal/bookings/', '.ag-soma'],
+  ['reservas no admin', '/admin/bookings/', '.rb'],
   // A reserva confirmada: o estado que o cliente ve a seguir a pagar, e
   // nao o "One moment" de antes da resposta.
   ['reserva confirmada',
