@@ -113,6 +113,7 @@ JS_CONTACTO = r"""
   var q = new URLSearchParams(location.search);
   var tour = q.get('tour') || '';
   var data = q.get('date') || '';
+  var hora = q.get('time') || '';
   var de = q.get('from') || '';
   if (tour) {
     document.getElementById('tour').value = tour;
@@ -121,10 +122,15 @@ JS_CONTACTO = r"""
       r.hidden = false;
       r.innerHTML = 'About <b>' + ewt.escapar(tour.replace(/-/g, ' ')) + '</b>'
         + (data ? ', on <b>' + ewt.escapar(data) + '</b>' : '')
+        + (hora ? ' at <b>' + ewt.escapar(hora) + '</b>' : '')
         + '. <a href="/tours/' + ewt.escapar(tour) + '/">Back to the tour</a>';
     }
   }
   if (data) document.getElementById('quando').value = data;
+  if (hora) {
+    var h = document.getElementById('a-que-horas');
+    if (h) h.value = hora;
+  }
   if (de === 'operator') {
     var o = document.getElementById('op-nota');
     if (o) o.hidden = false;
@@ -157,6 +163,7 @@ JS_CONTACTO = r"""
         kind: tour ? 'date' : (de === 'operator' ? 'operator' : 'general'),
         listing_slug: tour || null,
         wanted_on: document.getElementById('quando').value || null,
+        wanted_at: document.getElementById('a-que-horas').value || null,
         party: document.getElementById('quantos').value || null,
         name: nome, email: email,
         phone: document.getElementById('telefone').value.trim(),
@@ -218,11 +225,21 @@ def contacto(paises):
               say so below.</span>
           </div>
           <div class="fcampo">
+            <label for="a-que-horas">Departure</label>
+            <input type="time" id="a-que-horas" step="300">
+            <span class="ajuda">If the tour has set departure times, the
+              one you picked is already here.</span>
+          </div>
+        </div>
+
+        <div class="f2">
+          <div class="fcampo">
             <label for="quantos">How many of you</label>
             <input type="number" id="quantos" min="1" max="199">
             <span class="ajuda">The price depends on the vehicle, not on
               the headcount.</span>
           </div>
+          <div class="fcampo"></div>
         </div>
 
         <div class="f2">
