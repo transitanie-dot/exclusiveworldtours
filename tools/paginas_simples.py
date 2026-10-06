@@ -19,11 +19,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import datetime  # noqa: E402
+
+import empresa  # noqa: E402
 import ligacao  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
 from pagina import (cabecalho, carregar, envolver, escrever,  # noqa: E402
                     por_pais, rodape)
+from pagina import e  # noqa: E402
+
+# A data que as paginas legais mostram. E a data de GERACAO e nao uma
+# constante escrita a mao: uma politica que diz "actualizada em Janeiro"
+# e foi mexida em Marco e pior do que nao ter data nenhuma.
+DATA = datetime.date.today().strftime('%d %B %Y')
 
 CSS = '''
 .pcapa{background:var(--tinta);color:rgba(255,255,255,.86);
@@ -422,11 +431,288 @@ JS_CONFIRMADA = r"""
 """
 
 
+# =====================================================================
+# AS PAGINAS LEGAIS
+# =====================================================================
+# A partir do momento em que o site aceita um cartao, estas duas deixam
+# de ser boa pratica e passam a ser obrigacao. Mas o que as torna uteis
+# nao e a obrigacao: e dizerem, antes de alguem pagar, as tres coisas
+# que a pessoa vai querer saber quando houver um problema — com quem e
+# que ela tem contrato, quem conduz o carro, e a quem se queixa.
+#
+# O ponto que estas paginas tem de deixar sem duvida e aquele em que um
+# marketplace se engana sempre: **o contrato do dia e com o operador, e
+# nao connosco.** Nos vendemos, cobramos e respondemos; quem conduz e
+# ele. Escrever isto com clareza e o que evita a discussao de quem e
+# responsavel pelo que, no dia em que ela aparecer.
+#
+# O bloco de identidade vem do tools/empresa.py, e se os dados nao
+# estiverem la estas paginas NAO SE ESCREVEM. Ver a nota desse ficheiro.
+
+CSS_LEGAL = '''
+.lg .dentro{max-width:42rem}
+.lg h2{margin:var(--e5) 0 var(--e2);font-size:1.35rem;line-height:1.25}
+.lg h3{margin:var(--e4) 0 var(--e2);font-size:1.08rem;line-height:1.35;
+  color:var(--tinta)}
+.lg p,.lg li{font-size:1.01rem;line-height:1.72;color:var(--texto)}
+.lg .data{font-size:.9rem;color:var(--mudo);margin:0 0 var(--e4)}
+
+/* O bloco de identidade. Uma lista de definicoes e nao uma tabela: sao
+   pares nome/valor, que e exactamente o que um <dl> e, e num telemovel
+   uma tabela de duas colunas com moradas dentro parte-se. */
+.ident{margin:var(--e4) 0 0;padding:var(--e4);border-radius:var(--raio);
+  background:var(--papel)}
+.ident dl{margin:0;display:grid;gap:10px}
+.id-l{display:flex;flex-wrap:wrap;gap:4px 14px}
+.id-l dt{min-width:12rem;color:var(--mudo);font-size:.93rem;font-weight:500}
+.id-l dd{margin:0;color:var(--tinta);font-weight:600;font-size:.96rem}
+'''
+
+
+def _capa(titulo, lede):
+    return '''<section class="pcapa">
+  <div class="folha">
+    <h1>%s</h1>
+    <p class="lede">%s</p>
+  </div>
+</section>''' % (titulo, lede)
+
+
+def _identidade():
+    return '''<div class="ident">
+  <h3 style="margin-top:0">Who you are dealing with</h3>
+  <dl>
+%s
+  </dl>
+</div>''' % empresa.identidade_html(e)
+
+
+def termos(paises):
+    corpo = '''%(cabecalho)s
+<main id="principal" class="lg">
+
+%(capa)s
+
+<section class="ptexto">
+  <div class="folha">
+    <div class="dentro">
+
+      <p class="data">Last updated %(data)s.</p>
+
+      <h2>What we are</h2>
+      <p>%(marca)s is a marketplace. We list private day tours run by
+        independent local operators, we take the booking, and we take the
+        payment. We do not own the vehicles and we do not employ the
+        drivers.</p>
+      <p>This matters more than it sounds, so it is worth being plain
+        about it: <b>your contract for the day itself is with the
+        operator</b> who runs the tour. Our contract with you is for
+        finding it, booking it, holding the money and standing behind the
+        booking. Where something goes wrong on the day, the operator is
+        responsible for it &mdash; and we are the people you tell.</p>
+
+      <h2>Prices</h2>
+      <p>Prices on this site are for the <b>whole vehicle</b>, not per
+        person. A price for up to four people is the same price whether
+        two of you travel or four. Where a tour sets a maximum group
+        size, that maximum is the number of seats in the vehicle.</p>
+      <p>The price shown at the moment you book is the price you pay. It
+        includes the vehicle, the driver and their fuel for the route
+        described. It does not include entrance tickets, meals, or
+        anything the listing says is not included.</p>
+      <p>Where a tour lets infants travel on an adult&rsquo;s lap, those
+        infants do not take a seat and do not count towards the price
+        band. Everyone else does.</p>
+
+      <h2>Booking and paying</h2>
+      <p>You can pay when you book, or &mdash; on tours and dates where
+        we offer it &mdash; book now and be charged before you travel. If
+        you choose to pay later, we save your card at the time of booking
+        and charge it shortly before departure. We tell you the date we
+        will charge it.</p>
+      <p>A booking is confirmed when the payment, or the saved card, is
+        accepted. Until then the vehicle is held for you for a short
+        window only.</p>
+      <p>If a later charge fails, we will tell you and try again. A
+        booking we cannot charge is cancelled, and we say so rather than
+        letting you arrive at a pick-up that is not coming.</p>
+
+      <h2>Cancelling</h2>
+      <p>%(cancelamento)s</p>
+      <p>If the operator cancels &mdash; a vehicle breaks down, a driver
+        falls ill and no replacement is possible &mdash; you are refunded
+        in full, whatever the notice. That is not a goodwill gesture; it
+        is the rule.</p>
+
+      <h2>If you do not turn up</h2>
+      <p>If nobody is at the pick-up point and the driver cannot reach
+        you, the day is not refunded. The driver records how long they
+        waited and what they tried. We will always look at that record
+        with you if you think it is wrong.</p>
+
+      <h2>Changes to a booking</h2>
+      <p>Ask us. Dates, times and pick-up points can often be moved if
+        the operator still has the day free, and it costs nothing to
+        ask. What we cannot do is promise a change before checking with
+        the operator.</p>
+
+      <h2>Reviews</h2>
+      <p>Only someone who actually travelled can leave a review, because
+        the invitation to write one is sent against a real booking. We do
+        not remove a review for being unflattering. We remove it for
+        being abusive, for naming a private individual, or for not being
+        about the tour.</p>
+
+      <h2>When things go wrong</h2>
+      <p>Write to <a href="mailto:%(email)s">%(email)s</a> and tell us
+        what happened. We would rather hear it from you than read it
+        later. Nothing on this page takes away rights you have under
+        consumer law where you live.</p>
+
+      %(identidade)s
+
+    </div>
+  </div>
+</section>
+
+</main>
+%(rodape)s''' % {'cabecalho': cabecalho(paises=paises),
+                 'rodape': rodape(paises),
+                 'capa': _capa('Terms',
+                   'What you are buying, who you are buying it from, and '
+                   'what happens when something does not go to plan.'),
+                 'data': DATA,
+                 'marca': e(empresa.NOME_COMERCIAL),
+                 'email': e(empresa.EMAIL),
+                 'cancelamento': politica.FRASE,
+                 'identidade': _identidade()}
+
+    escrever(envolver(
+        'Terms — Exclusive World Tours',
+        'The terms of booking a private day tour through Exclusive World '
+        'Tours: prices, paying, cancelling, and who is responsible for '
+        'what.',
+        CSS + CSS_LEGAL, corpo, js=procura.JS), 'terms/index.html')
+
+
+def privacidade(paises):
+    corpo = '''%(cabecalho)s
+<main id="principal" class="lg">
+
+%(capa)s
+
+<section class="ptexto">
+  <div class="folha">
+    <div class="dentro">
+
+      <p class="data">Last updated %(data)s.</p>
+
+      <h2>The short version</h2>
+      <p>We ask for what a driver needs to collect you and what a bank
+        needs to take a payment, and nothing else. We do not sell your
+        details to anybody, for any price. Your card number never
+        reaches us.</p>
+
+      <h2>What we collect, and why</h2>
+      <h3>When you book</h3>
+      <p>Your name, email, phone number, the pick-up point and anything
+        you tell us about the group &mdash; a child seat, a wheelchair, a
+        flight number. We need it to make the booking exist and to let
+        the driver find you.</p>
+      <h3>When you pay</h3>
+      <p>The card itself is handled by %(stripe)s. It goes from your
+        browser to them; it does not pass through our servers and we
+        never hold the number. What we keep is the fact that a payment
+        succeeded, for how much, and a reference we can use to refund
+        it.</p>
+      <p>If you choose to pay later, %(stripe)s keeps the card for us
+        against the booking, and we hold only a token &mdash; a reference
+        that lets us charge that card once, for that booking, and lets us
+        do nothing else with it.</p>
+      <h3>When you ask us something</h3>
+      <p>What you wrote and how to reply to it.</p>
+      <h3>When you use the site</h3>
+      <p>What was searched for, so we know which cities to add tours in.
+        This is not tied to your name.</p>
+
+      <h2>Who else sees it</h2>
+      <p><b>The operator who runs your tour</b> sees your name, your
+        phone number, your pick-up point and your notes. They cannot see
+        what you paid us; they see what they are owed. A driver who
+        cannot phone you is a driver who leaves without you, which is why
+        the phone number goes across.</p>
+      <p><b>%(stripe)s</b> processes the payment.</p>
+      <p>Nobody else. We do not sell or rent your details, and we do not
+        pass them to advertisers.</p>
+
+      <h2>How long we keep it</h2>
+      <p>A booking and its payment record are kept for as long as tax and
+        accounting rules require &mdash; those rules, not our preference,
+        set the clock. An enquiry that never became a booking is kept
+        while it is useful to answer you, and then deleted.</p>
+
+      <h2>What you can ask us to do</h2>
+      <ul>
+        <li>Tell you what we hold about you.</li>
+        <li>Correct it when it is wrong.</li>
+        <li>Delete it, where no law requires us to keep it &mdash; a paid
+          booking is the usual exception, and we will say so rather than
+          quietly refusing.</li>
+        <li>Send you a copy in a form you can take elsewhere.</li>
+        <li>Object to us using it, or ask us to stop while a complaint is
+          looked at.</li>
+      </ul>
+      <p>Write to <a href="mailto:%(email)s">%(email)s</a>. We answer
+        within a month, and usually much sooner. If you are not satisfied
+        with the answer, you can complain to the data protection
+        authority where you live.</p>
+
+      <h2>What this site stores in your browser</h2>
+      <p>What is needed for it to work: that you are signed in, if you
+        are an operator, and which theme you chose. No advertising
+        trackers and no third-party analytics that follow you to other
+        sites.</p>
+
+      %(identidade)s
+
+    </div>
+  </div>
+</section>
+
+</main>
+%(rodape)s''' % {'cabecalho': cabecalho(paises=paises),
+                 'rodape': rodape(paises),
+                 'capa': _capa('Privacy',
+                   'What we ask for, who sees it, how long we keep it, and '
+                   'what you can tell us to do with it.'),
+                 'data': DATA,
+                 'stripe': e(empresa.PROCESSADOR),
+                 'email': e(empresa.EMAIL),
+                 'identidade': _identidade()}
+
+    escrever(envolver(
+        'Privacy — Exclusive World Tours',
+        'What Exclusive World Tours collects when you book a private day '
+        'tour, who it is shared with, and what you can ask us to do with '
+        'it.',
+        CSS + CSS_LEGAL, corpo, js=procura.JS), 'privacy/index.html')
+
+
 def main():
     paises = por_pais(carregar())
     cancelamento(paises)
     avaliacoes(paises)
     confirmada(paises)
+
+    # As paginas legais so saem com os dados da empresa confirmados. Ver
+    # a nota no topo do tools/empresa.py: um numero de registo inventado
+    # nao e um marcador de lugar, e uma declaracao falsa sobre quem
+    # recebe o dinheiro.
+    if empresa.completa():
+        termos(paises)
+        privacidade(paises)
+    else:
+        print('  FALTA  ' + empresa.porque_nao())
 
 
 if __name__ == '__main__':

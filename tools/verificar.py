@@ -17,8 +17,11 @@ import sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
+sys.path.insert(0, AQUI)
 
 import glob
+
+import empresa  # noqa: E402
 
 # TODAS as paginas geradas, e nao uma lista a mao
 #
@@ -235,6 +238,48 @@ def main():
             if not os.path.exists(alvo):
                 falhas.append('%s: liga para %s e essa pagina nao existe'
                               % (nome, destino))
+
+    # ---------------------------------------------------------------
+    # AS PAGINAS LEGAIS
+    #
+    # Os termos e a privacidade so se escrevem com os dados da empresa
+    # confirmados (ver tools/empresa.py), e o rodape so lhes liga quando
+    # elas existem. As duas metades andam juntas, e esta verificacao
+    # existe para o dia em que alguem mexer numa e esquecer a outra.
+    #
+    # A verificacao das ligacoes mortas, aqui em cima, ja apanha o caso
+    # "ha link e nao ha pagina". Falta o contrario — e falta o pior de
+    # todos: uma pagina legal publicada com um campo por preencher.
+    # ---------------------------------------------------------------
+    legais_existem = all(
+        os.path.exists(os.path.join(RAIZ, d, 'index.html'))
+        for d in ('terms', 'privacy'))
+
+    if empresa.completa() and not legais_existem:
+        falhas.append('os dados da empresa estao completos e as paginas '
+                      'legais nao foram geradas')
+    if legais_existem and not empresa.completa():
+        falhas.append('as paginas legais existem com os dados da empresa '
+                      'por preencher: ' + ', '.join(
+                          n for n, _d in empresa.em_falta()))
+
+    if legais_existem:
+        inicio = os.path.join(RAIZ, 'index.html')
+        if os.path.exists(inicio):
+            h = open(inicio).read()
+            for d in ('/terms/', '/privacy/'):
+                if ('href="%s"' % d) not in h:
+                    falhas.append('o rodape nao liga para %s e essa '
+                                  'pagina existe' % d)
+        # Uma pagina legal com a palavra None la dentro e um campo que
+        # escapou. Vale a pena procura-la: e o unico erro desta familia
+        # que chega ao cliente com ar de normal.
+        for d in ('terms', 'privacy'):
+            h = open(os.path.join(RAIZ, d, 'index.html')).read()
+            for marca in ('None', 'TODO', 'XXX', 'por preencher'):
+                if marca in h:
+                    falhas.append('%s/index.html: tem "%s" no texto'
+                                  % (d, marca))
 
     # ---------------------------------------------------------------
     # O MANIFESTO DO QUE ESTA PUBLICADO

@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from marca import CSS as CSS_MARCA, lockup  # noqa: E402
 from marca_base import PALETA, contraste, misturar  # noqa: E402
+import empresa  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
 
@@ -604,6 +605,19 @@ def cabecalho(marca_titulo=False, paises=None, compacto=False):
 
 
 def rodape(paises):
+    # OS LINKS LEGAIS SO APARECEM COM AS PAGINAS A EXISTIR
+    #
+    # As paginas de termos e de privacidade so se escrevem com os dados
+    # da empresa confirmados (ver tools/empresa.py). Um link de rodape
+    # para uma pagina que nao foi gerada e um 404 em TODAS as paginas do
+    # site — e o rodape e a unica coisa que aparece em todas elas.
+    #
+    # Os dois andam juntos: quando os dados entrarem, os links entram
+    # sozinhos e nao ha nada a lembrar.
+    legais = ('<a href="/terms/">Terms</a>\n'
+              '          <a href="/privacy/">Privacy</a>'
+              if empresa.completa() else '')
+
     return '''<footer class="rodape">
   <div class="folha">
     <div class="rodape-i">
@@ -621,6 +635,7 @@ def rodape(paises):
           <a href="/tours/">All tours</a>
           <a href="/journal/">Journal</a>
           <a href="/contact/">Contact</a>
+          %(legais)s
         </div>
         <div class="rodape-col">
           <h3>Operators</h3>
@@ -647,6 +662,7 @@ def rodape(paises):
   </div>
 </footer>''' % {
         'marca': lockup(40),
+        'legais': legais,
         'links': '\n'.join('<a href="/tours/?country=%s">%s</a>'
                            % (e(p['cod']), e(p['nome'])) for p in paises),
         'cancelamento': politica.CURTA,
