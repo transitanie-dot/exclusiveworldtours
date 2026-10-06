@@ -193,13 +193,30 @@ const PAGINAS = [
 
 const TAMANHOS = [[1440, 900], [768, 1024], [390, 844]];
 
+// Os dois temas. O escuro nao e um extra: desde que o portal passou a
+// ter fichas de cor, metade das paginas que uma pessoa ve e a versao
+// escura — e um tema que ninguem testa apodrece sem se dar por isso.
+// Ja aconteceu uma vez: o titulo "Operator sign-in" saiu verde-escuro
+// sobre verde-escuro e so se viu num screenshot, porque o axe corria
+// so em claro.
+//
+// O escuro corre no ecra largo e no telemovel, nao nos tres: o do meio
+// nao mostrava nada que os outros dois nao mostrem, e duplicar o tempo
+// todo de uma verificacao que ja demora e como se garante que ela
+// deixa de ser corrida.
+const TEMAS = [
+  ['claro',  'light', TAMANHOS],
+  ['escuro', 'dark',  [TAMANHOS[0], TAMANHOS[2]]]
+];
+
 const navegador = await chromium.launch();
 await new Promise(r => servidor.listen(PORTA, r));
 
 let violacoes = 0, verificadas = 0;
 
 for (const [nome, caminho, esperar] of PAGINAS) {
-  const ctx = await navegador.newContext();
+ for (const [tema, esquema, tamanhos] of TEMAS) {
+  const ctx = await navegador.newContext({ colorScheme: esquema });
   await ctx.addInitScript(() => {
     const s = {
       access_token: 'falso.' + btoa(JSON.stringify({
@@ -228,13 +245,13 @@ for (const [nome, caminho, esperar] of PAGINAS) {
   });
 
   const pag = await ctx.newPage();
-  for (const [l, a] of TAMANHOS) {
+  for (const [l, a] of tamanhos) {
     await pag.setViewportSize({ width: l, height: a });
     await pag.goto('http://localhost:' + PORTA + caminho, { waitUntil: 'networkidle' });
     if (esperar) {
       try { await pag.waitForSelector(esperar, { timeout: 6000 }); }
       catch (e) {
-        console.log('  ?  ' + nome + ' @' + l + ' — nao chegou a ' + esperar);
+        console.log('  ?  ' + nome + ' @' + l + '/' + tema + ' — nao chegou a ' + esperar);
         continue;
       }
     }
@@ -245,17 +262,18 @@ for (const [nome, caminho, esperar] of PAGINAS) {
     verificadas++;
     if (r.violations.length) {
       violacoes += r.violations.length;
-      console.log('  FALHA  ' + nome + ' @' + l + 'px');
+      console.log('  FALHA  ' + nome + ' @' + l + 'px / ' + tema);
       r.violations.forEach(v => {
         console.log('         [' + v.impact + '] ' + v.id + ' — ' + v.help);
         v.nodes.slice(0, 3).forEach(n2 =>
           console.log('           ' + n2.html.slice(0, 120).replace(/\n/g, ' ')));
       });
     } else {
-      console.log('  ok     ' + nome + ' @' + l + 'px');
+      console.log('  ok     ' + nome + ' @' + l + 'px / ' + tema);
     }
   }
   await ctx.close();
+ }
 }
 
 console.log('\n' + verificadas + ' verificacoes, ' + violacoes + ' violacoes WCAG 2.1 AA\n');

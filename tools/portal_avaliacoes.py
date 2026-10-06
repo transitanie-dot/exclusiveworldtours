@@ -21,7 +21,10 @@ import pagina
 import portal_base
 from portal import NAV
 
-CORES = pagina.CORES
+# As cores vem das fichas do tema, nao de hexadecimais fixos:
+# ver a nota em portal_base.FICHAS. E isto que faz o modo
+# escuro desta pagina funcionar sem lhe mexer no CSS.
+CORES = portal_base.FICHAS
 
 CSS = """
 .rv-resumo { display: grid; gap: .8rem; margin-bottom: 1.4rem; }

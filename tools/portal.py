@@ -21,7 +21,10 @@ sys.path.insert(0, AQUI)
 import pagina
 import portal_base
 
-CORES = pagina.CORES
+# As cores vem das fichas do tema, nao de hexadecimais fixos:
+# ver a nota em portal_base.FICHAS. E isto que faz o modo
+# escuro desta pagina funcionar sem lhe mexer no CSS.
+CORES = portal_base.FICHAS
 
 NAV = [('My tours', '/portal/'),
        ('Bookings', '/portal/bookings/'),
@@ -92,10 +95,15 @@ CSS = """
   font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: %(mudo)s;
   margin: 0; display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: center;
 }
+/* O fundo era um creme escrito a mao e o texto vinha da ficha. No
+   modo escuro isso dava texto claro sobre creme claro — o axe apanhou-o
+   assim que passou a correr nos dois temas. Agora o fundo E o texto sao
+   o par "acento", que a porta de contraste do tema.py garante nos
+   dois. A barra de 3px sai: a cor do fundo ja diz o que isto e. */
 .an-pend {
-  margin-top: .6rem; padding: .5rem .7rem; border-radius: 4px;
-  background: #FBF2EB; border-left: 3px solid %(cor)s;
-  font: 400 .84rem/1.45 'Inter', system-ui, sans-serif; color: %(texto)s;
+  margin-top: .6rem; padding: .6rem .8rem; border-radius: var(--r-p);
+  background: var(--acento-f); color: var(--acento);
+  font: 400 .84rem/1.45 'Inter', system-ui, sans-serif;
 }
 
 /* O QUE ESTA NO SITE, E O QUE ESTA SO APROVADO

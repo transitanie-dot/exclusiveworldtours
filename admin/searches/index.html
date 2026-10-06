@@ -15,6 +15,11 @@
   src:url(/assets/fontes/inter-latin-500-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
   src:url(/assets/fontes/inter-latin-600-normal.woff2) format('woff2')}
+/* A 700 entrou quando o portal passou a usar uma familia so: os titulos
+   que eram Archivo 700 passam a ser Inter 700. O ficheiro ja estava
+   servido do nosso dominio, so nao estava declarado. */
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;
+  src:url(/assets/fontes/inter-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
   src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
 @font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
@@ -325,12 +330,159 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 }
 
 
-/* ------------------------------------------------------------ portal */
-body.pt { background: #F6F4F1; }
+/* =================================================================
+   AS FICHAS
 
+   Ver tools/tema.py. Nao se escreve uma cor a mao numa folha de
+   estilo deste projecto: escreve-se o nome de uma ficha. Uma cor
+   escrita a mao e uma cor que nao muda quando o tema muda.
+   ================================================================= */
+:root {
+  --papel: #FAFAF9;
+  --sup: #FFFFFF;
+  --sup-2: #F2F3F2;
+  --sup-3: #E9EBEA;
+  --tinta: #10312E;
+  --tinta-2: #3D524F;
+  --mudo: #586966;
+  --acento: #A4501E;
+  --acento-f: #FBEFE7;
+  --fechado: #98422C;
+  --fechado-f: #FBECE8;
+  --bom: #1F6B4F;
+  --bom-f: #E8F3ED;
+  --sel: #10312E;
+  --sel-t: #FAFAF9;
+  --sombra: 0 1px 2px rgba(16,49,46,.04), 0 8px 24px -12px rgba(16,49,46,.10);
+  --r-xg: 28px;
+  --r-g: 22px;
+  --r-m: 14px;
+  --r-p: 10px;
+  --r-c: 999px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+  --papel: #0C1413;
+  --sup: #14201E;
+  --sup-2: #1B2927;
+  --sup-3: #243331;
+  --tinta: #EAF1EF;
+  --tinta-2: #B8C8C5;
+  --mudo: #8C9F9C;
+  --acento: #E88B4F;
+  --acento-f: #2B1D14;
+  --fechado: #E8907A;
+  --fechado-f: #2C1A17;
+  --bom: #6FC79B;
+  --bom-f: #12241C;
+  --sel: #2A4741;
+  --sel-t: #EAF1EF;
+  --sombra: none;
+  }
+}
+
+:root[data-tema="escuro"] {
+  --papel: #0C1413;
+  --sup: #14201E;
+  --sup-2: #1B2927;
+  --sup-3: #243331;
+  --tinta: #EAF1EF;
+  --tinta-2: #B8C8C5;
+  --mudo: #8C9F9C;
+  --acento: #E88B4F;
+  --acento-f: #2B1D14;
+  --fechado: #E8907A;
+  --fechado-f: #2C1A17;
+  --bom: #6FC79B;
+  --bom-f: #12241C;
+  --sel: #2A4741;
+  --sel-t: #EAF1EF;
+  --sombra: none;
+}
+
+/* ------------------------------------------------------------ base */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  /* Os numeros das tabelas e do calendario tem de alinhar em coluna.
+     Era para isso que a primeira versao usava monoespacada — mas isso
+     traz o aspecto de terminal com ele. `tnum` faz o trabalho e deixa
+     o texto normal. */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea { font: inherit; }
+
+button {
+  color: inherit; border: 0; background: none; cursor: pointer;
+}
+
+/* O foco e visivel em TODO o projecto, e e a mesma forma em todo o
+   projecto. Quem navega por teclado nao devia ter de aprender duas
+   linguagens entre o site e o portal. */
+:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Quem pediu menos movimento recebe menos movimento. Nao e uma
+   gentileza: para algumas pessoas a animacao causa mal-estar fisico. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+:root {
+  --tinta-topo: #0B2B2A;
+  --papel-topo: #F6F4F1;
+}
+
+/* ----------------------------------------------------- o interruptor */
+.tm {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .4rem .85rem .4rem .7rem;
+  border-radius: var(--r-c);
+  background: var(--sup-2); color: var(--tinta-2);
+  font-size: .8rem; font-weight: 600; letter-spacing: .01em;
+  transition: background .15s, color .15s;
+}
+.tm:hover { background: var(--sup-3); color: var(--tinta); }
+.tm-i {
+  width: 14px; height: 14px; border-radius: var(--r-c);
+  background: var(--tinta-2);
+  /* O icone e um circulo com uma mordida: cheio = escuro, vazio =
+     claro, meio = automatico. Nao e um sol nem uma lua porque um sol
+     e uma lua lado a lado perguntam "qual e o estado actual?" e esta
+     forma responde. */
+  box-shadow: inset -4px 0 0 0 var(--sup-2);
+}
+:root[data-tema="claro"] .tm-i { box-shadow: inset -9px 0 0 0 var(--sup-2); }
+:root[data-tema="escuro"] .tm-i { box-shadow: none; }
+
+/* ------------------------------------------------------------ portal */
+body.pt {
+  background: var(--papel);
+  font: 400 15px/1.5 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--tinta);
+}
+
+/* ---------------------------------------------------------- o topo
+   Uma barra so, sem a segunda barra de navegacao por baixo. Eram duas
+   faixas a roubar 110px de altura antes de comecar o conteudo, no
+   ecra onde ha menos altura para dar. */
 .pt-topo {
-  background: #0B2B2A; color: #F6F4F1;
-  border-bottom: 3px solid #CE7030;
+  background: var(--tinta-topo); color: var(--papel-topo);
   position: sticky; top: 0; z-index: 40;
   /* as tintas de fundo escuro, para a marca aqui dentro */
   --papel: #0B1715; --tinta: #F3F1EE; --cor: #CE7030;
@@ -339,89 +491,114 @@ body.pt { background: #F6F4F1; }
 /* O fundo do topo e o verde da marca e nao o quase-preto do palco
    escuro, por isso a capa do passaporte leva a cor do papel claro: e
    assim que ela se destaca, como se destaca no papel. */
-.pt-topo .sim .p { fill: #F6F4F1; }
-.pt-topo .sim .pf { fill: #E1AF8D; }
-.pt-topo .sim .papel { fill: #0B2B2A; }
-.pt-topo .sim .u { fill: #F6F4F1; }
-.pt-topo .marca-nome { color: #F6F4F1; }
+.pt-topo .sim .p { fill: var(--papel-topo); }
+.pt-topo .sim .pf { fill: #704523; }
+.pt-topo .sim .papel { fill: var(--tinta-topo); }
+.pt-topo .sim .u { fill: var(--papel-topo); }
+.pt-topo .marca-nome { color: var(--papel-topo); }
 .pt-topo-i {
   display: flex; align-items: center; gap: .6rem 1rem;
-  min-height: 60px; padding: .5rem 0;
+  min-height: 62px; padding: .55rem 0;
   /* Dobra. Sem isto, a marca mais a etiqueta mais o email mais o botao
      de sair somavam 525px num ecra de 390 e a pagina toda rolava para o
      lado — no sitio onde o operador a vai mesmo abrir. */
   flex-wrap: wrap;
 }
 .pt-topo .marca { flex: 0 0 auto; }
+
+/* A etiqueta era maiuscula, espacada e com moldura. Agora e uma
+   pastilha de fundo translucido: diz a mesma coisa e nao grita. */
 .pt-etiq {
-  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: #D5854F; padding: .3rem .5rem;
-  border: 1px solid #D5854F; border-radius: 3px;
+  font-size: .76rem; font-weight: 600;
+  color: var(--papel-topo); background: rgba(255,255,255,.14);
+  padding: .3rem .7rem; border-radius: var(--r-c);
   white-space: nowrap;
 }
 .pt-topo-fim {
-  margin-left: auto; display: flex; align-items: center; gap: .9rem;
+  margin-left: auto; display: flex; align-items: center; gap: .6rem;
   min-width: 0;
 }
 .pt-quem {
-  font: 400 .8rem/1.3 'Inter', system-ui, sans-serif;
-  color: #F6F4F1; opacity: .85; text-align: right;
-  max-width: 14rem; overflow: hidden; text-overflow: ellipsis;
-  white-space: nowrap; min-width: 0;
+  font-size: .82rem; color: var(--papel-topo); opacity: .8;
+  text-align: right; max-width: 14rem;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;
 }
 /* Em ecra estreito o email e a primeira coisa a sair: quem esta a usar o
    telemovel sabe de quem e o telemovel. O botao de sair fica. */
-@media (max-width: 560px) {
+@media (max-width: 620px) {
   .pt-quem { display: none; }
-  .pt-topo-i { min-height: 54px; }
-  .pt-etiq { font-size: .62rem; padding: .26rem .4rem; }
+  .pt-topo-i { min-height: 56px; }
+  .pt-etiq { font-size: .7rem; padding: .26rem .55rem; }
 }
 .pt-sair {
-  font: 500 .82rem/1 'Inter', system-ui, sans-serif;
-  color: #F6F4F1; background: none;
-  border: 1px solid rgba(255,255,255,.4); border-radius: 4px;
-  padding: .5rem .8rem; cursor: pointer;
+  font-size: .84rem; font-weight: 500;
+  color: var(--papel-topo); background: rgba(255,255,255,.14);
+  border-radius: var(--r-c); padding: .48rem .9rem;
 }
-.pt-sair:hover { border-color: #F6F4F1; }
+.pt-sair:hover { background: rgba(255,255,255,.26); }
 
+/* O interruptor de tema, dentro do topo: o topo e escuro nos dois
+   temas, por isso o botao aqui nao pode usar as fichas de superficie. */
+.pt-topo .tm {
+  background: rgba(255,255,255,.14); color: var(--papel-topo);
+}
+.pt-topo .tm:hover { background: rgba(255,255,255,.26); }
+.pt-topo .tm-i {
+  background: var(--papel-topo);
+  box-shadow: inset -4px 0 0 0 #F3F1EE;
+}
+:root[data-tema="claro"] .pt-topo .tm-i {
+  box-shadow: inset -9px 0 0 0 #F3F1EE;
+}
+:root[data-tema="escuro"] .pt-topo .tm-i { box-shadow: none; }
+
+/* ------------------------------------------------- a navegacao
+   Pastilhas numa fita que rola, e nao separadores com um risco por
+   baixo. A pastilha activa e cheia: ve-se de relance qual e, que e a
+   unica pergunta que uma navegacao tem de responder. */
 .pt-nav {
-  background: #FFFFFF; border-bottom: 1px solid #D5D8D5;
+  background: var(--papel);
   overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.pt-nav-i { display: flex; gap: 0; }
+.pt-nav::-webkit-scrollbar { display: none; }
+.pt-nav-i { display: flex; gap: .3rem; padding: .7rem 0 .2rem; }
 .pt-nav a {
-  font: 500 .88rem/1 'Inter', system-ui, sans-serif;
-  color: #5B6F6E; text-decoration: none;
-  padding: .95rem 1.1rem; border-bottom: 3px solid transparent;
-  white-space: nowrap;
+  font-size: .89rem; font-weight: 500;
+  color: var(--tinta-2); text-decoration: none;
+  padding: .55rem .95rem; border-radius: var(--r-c);
+  white-space: nowrap; transition: background .15s, color .15s;
 }
-.pt-nav a:hover { color: #0B2B2A; background: #F6F4F1; }
+.pt-nav a:hover { background: var(--sup-2); color: var(--tinta); }
 .pt-nav a[aria-current="page"] {
-  color: #0B2B2A; border-bottom-color: #CE7030; font-weight: 600;
+  background: var(--sel); color: var(--sel-t); font-weight: 600;
 }
 
-.pt-corpo { padding: 1.6rem 0 4rem; }
-.pt-cab { margin-bottom: 1.4rem; }
+.pt-corpo { padding: 1.5rem 0 5rem; }
+.pt-cab { margin-bottom: 1.5rem; }
 .pt-cab h1 {
-  font: 700 clamp(1.4rem, 3vw, 1.9rem)/1.15 'Archivo', system-ui, sans-serif;
-  color: #0B2B2A; margin: 0 0 .3rem;
+  font-size: clamp(1.5rem, 3.4vw, 2.05rem); font-weight: 700;
+  line-height: 1.12; letter-spacing: -.02em;
+  color: var(--tinta); margin: 0 0 .35rem;
 }
 .pt-cab p {
-  font: 400 .95rem/1.5 'Inter', system-ui, sans-serif;
-  color: #5B6F6E; margin: 0; max-width: 56ch;
+  font-size: .96rem; line-height: 1.55;
+  color: var(--mudo); margin: 0; max-width: 58ch;
 }
 
-/* ------------------------------------------------------------- cartoes */
+/* ------------------------------------------------------------ cartoes */
 .cx {
-  background: #FFFFFF; border: 1px solid #D5D8D5; border-radius: 6px;
-  padding: 1.2rem; margin-bottom: 1.1rem;
+  background: var(--sup); border-radius: var(--r-g);
+  padding: 1.4rem; margin-bottom: 1rem;
+  box-shadow: var(--sombra);
 }
+/* O titulo do cartao era maiusculo, espacado e com um risco por baixo.
+   Agora e so uma linha mais forte com espaco a seguir — o espaco separa
+   tao bem como o risco e nao acrescenta nada ao ecra. */
 .cx-t {
-  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: #5B6F6E; margin: 0 0 .9rem;
-  padding-bottom: .6rem; border-bottom: 1px solid #D5D8D5;
+  font-size: .95rem; font-weight: 600; letter-spacing: -.01em;
+  color: var(--tinta); margin: 0 0 1rem;
 }
 .cx-v { display: grid; gap: 1.1rem; }
 @media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
@@ -434,38 +611,47 @@ body.pt { background: #F6F4F1; }
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
 }
 
-/* ------------------------------------------------------------ formulario */
-.campo { margin-bottom: 1rem; }
+/* --------------------------------------------------------- formulario */
+.campo { margin-bottom: 1.1rem; }
 .campo > label, .campo > .rot {
-  display: block; margin-bottom: .35rem;
-  font: 600 .82rem/1.3 'Inter', system-ui, sans-serif; color: #0B2B2A;
+  display: block; margin-bottom: .4rem;
+  font-size: .85rem; font-weight: 600; color: var(--tinta);
 }
 .campo .ajuda {
-  display: block; margin-top: .3rem;
-  font: 400 .78rem/1.45 'Inter', system-ui, sans-serif; color: #5B6F6E;
+  display: block; margin-top: .35rem;
+  font-size: .8rem; line-height: 1.45; color: var(--mudo);
 }
+/* Os campos nao levam moldura: levam uma superficie afundada. E a
+   mesma leitura — "aqui escreve-se" — com menos tracos no ecra. A
+   moldura so aparece no foco e no erro, que e quando ela informa. */
 input[type=text], input[type=email], input[type=tel], input[type=url],
-input[type=number], input[type=date], input[type=time], select, textarea {
+input[type=number], input[type=date], input[type=time], input[type=password],
+select, textarea {
   width: 100%; box-sizing: border-box;
-  font: 400 .95rem/1.4 'Inter', system-ui, sans-serif; color: #0B2B2A;
-  background: #FFFFFF; border: 1px solid #5B6F6E; border-radius: 4px;
-  padding: .66rem .7rem;
+  font-size: .96rem; line-height: 1.4; color: var(--tinta);
+  background: var(--sup-2); border: 0; border-radius: var(--r-m);
+  padding: .78rem .85rem;
+  transition: background .15s, box-shadow .15s;
 }
+input::placeholder, textarea::placeholder { color: var(--mudo); }
+input:hover, select:hover, textarea:hover { background: var(--sup-3); }
 input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 3px solid #CE7030; outline-offset: 1px; border-color: #0B2B2A;
+  outline: 0; background: var(--sup);
+  box-shadow: 0 0 0 2px var(--acento);
 }
 input[aria-invalid="true"], textarea[aria-invalid="true"] {
-  border-color: #B3261E; border-width: 2px;
+  box-shadow: 0 0 0 2px var(--fechado); background: var(--fechado-f);
 }
-textarea { min-height: 6.5rem; resize: vertical; }
+textarea { min-height: 7rem; resize: vertical; }
 .linha2 { display: grid; gap: 1rem; }
 @media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
-fieldset { border: 0; padding: 0; margin: 0 0 1rem; }
+fieldset { border: 0; padding: 0; margin: 0 0 1.2rem; }
 legend {
-  padding: 0; margin-bottom: .6rem;
-  font: 700 1.02rem/1.2 'Archivo', system-ui, sans-serif; color: #0B2B2A;
+  padding: 0; margin-bottom: .7rem;
+  font-size: 1.05rem; font-weight: 700; letter-spacing: -.015em;
+  color: var(--tinta);
 }
-.obrig { color: #8C1D18; }
+.obrig { color: var(--fechado); }
 
 /* --------------------------------------------------- linhas repetiveis
    Uma lista onde se acrescentam e apagam linhas: escaloes de preco,
@@ -474,133 +660,167 @@ legend {
 .rep { display: grid; gap: .7rem; }
 .rep-l {
   display: grid; gap: .6rem; align-items: start;
-  padding: .8rem; border: 1px solid #D5D8D5; border-radius: 5px;
-  background: #F6F4F1;
+  padding: 1rem; border-radius: var(--r-m);
+  background: var(--sup-2);
 }
 .rep-l > .campo { margin: 0; }
+.rep-l input, .rep-l select, .rep-l textarea { background: var(--sup); }
+.rep-l input:hover, .rep-l select:hover { background: var(--sup-3); }
 .rep-x {
   justify-self: start;
-  font: 500 .8rem/1 'Inter', system-ui, sans-serif;
-  color: #8C1D18; background: none; border: 1px solid #B3261E;
-  border-radius: 4px; padding: .45rem .6rem; cursor: pointer;
+  font-size: .82rem; font-weight: 600;
+  color: var(--fechado); background: var(--fechado-f);
+  border-radius: var(--r-c); padding: .48rem .85rem;
 }
-.rep-x:hover { background: #FCEEEC; }
+.rep-x:hover { filter: brightness(.96); }
+/* O "acrescentar" era um retangulo tracejado. O tracejado diz
+   "provisorio", e acrescentar uma linha nao e provisorio. */
 .rep-mais {
   justify-self: start; margin-top: .3rem;
-  font: 600 .85rem/1 'Inter', system-ui, sans-serif;
-  color: #0B2B2A; background: #FFFFFF;
-  border: 1px dashed #5B6F6E; border-radius: 4px;
-  padding: .6rem .85rem; cursor: pointer;
+  font-size: .87rem; font-weight: 600;
+  color: var(--tinta); background: var(--sup-2);
+  border-radius: var(--r-c); padding: .6rem 1rem;
 }
-.rep-mais:hover { border-style: solid; border-color: #0B2B2A; }
+.rep-mais:hover { background: var(--sup-3); }
 
 /* Os tours ligados a um recurso (um veiculo, um ponto de encontro). */
-.v-tours { display: grid; gap: .45rem; margin-top: .3rem; }
+.v-tours { display: grid; gap: .4rem; margin-top: .3rem; }
 .v-t {
-  display: flex; align-items: flex-start; gap: .55rem;
-  font: 400 .88rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
-  padding: .45rem .55rem; border-radius: 4px; background: #F6F4F1;
+  display: flex; align-items: flex-start; gap: .6rem;
+  font-size: .9rem; line-height: 1.45; color: var(--tinta-2);
+  padding: .6rem .7rem; border-radius: var(--r-p); background: var(--sup-2);
+  cursor: pointer;
 }
-.v-t input { margin: .15rem 0 0; width: 1.05rem; height: 1.05rem; flex: none; }
-.v-t span span { color: #5B6F6E; }
+.v-t:hover { background: var(--sup-3); }
+.v-t input {
+  margin: .15rem 0 0; width: 1.1rem; height: 1.1rem; flex: none;
+  accent-color: var(--acento);
+}
+.v-t span span { color: var(--mudo); }
 
-/* --------------------------------------------------------------- avisos */
+/* ------------------------------------------------------------- avisos
+   Sem a barra de 4px a esquerda: a cor do fundo ja diz de que tipo e o
+   aviso, e a barra era uma segunda vez a dizer o mesmo. */
 .aviso {
-  margin: .9rem 0; padding: .8rem .9rem; border-radius: 4px;
-  font: 400 .9rem/1.5 'Inter', system-ui, sans-serif;
-  border-left: 4px solid #5B6F6E; background: #F6F4F1; color: #354F4E;
+  margin: 1rem 0; padding: .9rem 1.05rem; border-radius: var(--r-m);
+  font-size: .91rem; line-height: 1.55;
+  background: var(--sup-2); color: var(--tinta-2);
 }
-.aviso-mal { border-left-color: #8C1D18; background: #FCEEEC; color: #5F1512; }
-.aviso-bem { border-left-color: #1B5E20; background: #EDF5EE; color: #14401A; }
-.aviso-nota { border-left-color: #CE7030; background: #FBF2EB; color: #354F4E; }
+.aviso-mal  { background: var(--fechado-f); color: var(--fechado); }
+.aviso-bem  { background: var(--bom-f);     color: var(--bom); }
+.aviso-nota { background: var(--acento-f);  color: var(--acento); }
+.aviso strong { color: inherit; }
 
-/* --------------------------------------------------------------- estados */
+/* ------------------------------------------------------------ estados */
 .est {
   display: inline-block; vertical-align: middle;
-  font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: .32rem .5rem; border-radius: 3px; white-space: nowrap;
+  font-size: .76rem; font-weight: 600;
+  padding: .26rem .65rem; border-radius: var(--r-c); white-space: nowrap;
 }
-.est-pending  { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
-.est-approved { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
-.est-live     { background: #EDF5EE; color: #14401A; border: 1px solid #8BB68F; }
-.est-rejected { background: #FCEEEC; color: #5F1512; border: 1px solid #D79C96; }
-.est-draft    { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
-.est-paused   { background: #F6F4F1; color: #354F4E; border: 1px solid #5B6F6E; }
-.est-new      { background: #FBF2EB; color: #7A3E12; border: 1px solid #D9A77C; }
+.est-pending  { background: var(--acento-f);  color: var(--acento); }
+.est-approved { background: var(--bom-f);     color: var(--bom); }
+.est-live     { background: var(--bom-f);     color: var(--bom); }
+.est-rejected { background: var(--fechado-f); color: var(--fechado); }
+.est-draft    { background: var(--sup-2);     color: var(--mudo); }
+.est-paused   { background: var(--sup-2);     color: var(--mudo); }
+.est-new      { background: var(--acento-f);  color: var(--acento); }
 
-/* --------------------------------------------------------------- tabelas */
+/* ------------------------------------------------------------ tabelas */
 .tab-rolo { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.tab-rolo:focus-visible { outline: 3px solid #CE7030; outline-offset: 2px; }
+.tab-rolo:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 table.tab { width: 100%; border-collapse: collapse; }
 table.tab th, table.tab td {
-  text-align: left; padding: .7rem .8rem;
-  border-bottom: 1px solid #D5D8D5; vertical-align: top;
-  font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: #354F4E;
+  text-align: left; padding: .85rem .9rem; vertical-align: top;
+  font-size: .91rem; line-height: 1.45; color: var(--tinta-2);
 }
+/* O cabecalho da tabela era maiusculo e espacado com um risco de 2px.
+   Agora e texto normal mais claro, e a linha que separa e a propria
+   mudanca de fundo das linhas abaixo. */
 table.tab th {
-  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .1em; text-transform: uppercase; color: #5B6F6E;
-  border-bottom: 2px solid #D5D8D5; white-space: nowrap;
+  font-size: .8rem; font-weight: 600; color: var(--mudo);
+  white-space: nowrap; padding-bottom: .5rem;
 }
-table.tab tr:last-child td { border-bottom: 0; }
-table.tab a { color: #A85426; font-weight: 500; }
+table.tab tbody tr { background: var(--sup); }
+table.tab tbody tr:nth-child(even) { background: var(--sup-2); }
+table.tab tbody tr:first-child td:first-child { border-top-left-radius: var(--r-m); }
+table.tab tbody tr:first-child td:last-child { border-top-right-radius: var(--r-m); }
+table.tab tbody tr:last-child td:first-child { border-bottom-left-radius: var(--r-m); }
+table.tab tbody tr:last-child td:last-child { border-bottom-right-radius: var(--r-m); }
+table.tab a { color: var(--acento); font-weight: 500; }
 
-/* ---------------------------------------------------------------- vazio */
+/* -------------------------------------------------------------- vazio
+   O retangulo tracejado sai. Um ecra vazio nao e um erro nem um
+   espaco por preencher: e um estado normal no primeiro dia de uso. */
 .vazio {
-  padding: 2.2rem 1.2rem; text-align: center;
-  border: 2px dashed #D5D8D5; border-radius: 6px; background: #FFFFFF;
+  padding: 2.6rem 1.4rem; text-align: center;
+  border-radius: var(--r-g); background: var(--sup-2);
 }
 .vazio h3 {
-  font: 700 1.05rem/1.25 'Archivo', system-ui, sans-serif;
-  color: #0B2B2A; margin: 0 0 .4rem;
+  font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em;
+  color: var(--tinta); margin: 0 0 .45rem;
 }
 .vazio p {
-  font: 400 .92rem/1.55 'Inter', system-ui, sans-serif;
-  color: #5B6F6E; margin: 0 auto 1rem; max-width: 42ch;
+  font-size: .94rem; line-height: 1.55;
+  color: var(--mudo); margin: 0 auto 1.2rem; max-width: 44ch;
 }
 
-/* --------------------------------------------------------------- acoes */
+/* -------------------------------------------------------------- acoes */
 .acoes { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
 .bt {
-  font: 600 .92rem/1 'Inter', system-ui, sans-serif;
-  padding: .75rem 1.15rem; border-radius: 4px; border: 1px solid transparent;
+  font-size: .93rem; font-weight: 600;
+  padding: .78rem 1.3rem; border-radius: var(--r-c); border: 0;
   cursor: pointer; text-decoration: none; display: inline-block;
+  transition: background .15s, filter .15s;
 }
-.bt-p { background: #0B2B2A; color: #F6F4F1; }
-.bt-p:hover { background: #354F4E; }
-.bt-s { background: #FFFFFF; color: #0B2B2A; border-color: #5B6F6E; }
-.bt-s:hover { border-color: #0B2B2A; background: #F6F4F1; }
-.bt-mal { background: #FFFFFF; color: #8C1D18; border-color: #B3261E; }
-.bt-mal:hover { background: #FCEEEC; }
-.bt[disabled] { opacity: .55; cursor: not-allowed; }
-.bt-pq { font-size: .82rem; padding: .5rem .7rem; }
+.bt-p { background: var(--sel); color: var(--sel-t); }
+.bt-p:hover { filter: brightness(1.12); }
+.bt-s { background: var(--sup-2); color: var(--tinta); }
+.bt-s:hover { background: var(--sup-3); }
+.bt-mal { background: var(--fechado-f); color: var(--fechado); }
+.bt-mal:hover { filter: brightness(.96); }
+.bt[disabled] { opacity: .5; cursor: not-allowed; filter: none; }
+.bt-pq { font-size: .84rem; padding: .52rem .9rem; }
 
 /* --------------------------------------------------------- a carregar */
 .carrega {
-  padding: 2rem 0; text-align: center;
-  font: 400 .92rem/1.5 'Inter', system-ui, sans-serif; color: #5B6F6E;
+  padding: 2.5rem 0; text-align: center;
+  font-size: .93rem; color: var(--mudo);
 }
 
 .ops-f { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.1rem; }
 .ops-f button {
   font: 500 .85rem/1 'Inter', system-ui, sans-serif;
-  background: #FFFFFF; border: 1px solid #5B6F6E; border-radius: 20px;
-  color: #354F4E; padding: .5rem .9rem; cursor: pointer;
+  background: var(--sup); border: 1px solid var(--mudo); border-radius: 20px;
+  color: var(--tinta-2); padding: .5rem .9rem; cursor: pointer;
 }
 .ops-f button[aria-pressed="true"] {
-  background: #0B2B2A; color: #F6F4F1; border-color: #0B2B2A;
+  background: var(--tinta); color: var(--papel); border-color: var(--tinta);
 }
 .com-in { width: 5.5rem; }
 .barra {
-  height: .5rem; border-radius: 3px; background: #CE7030; min-width: 3px;
+  height: .5rem; border-radius: 3px; background: var(--acento); min-width: 3px;
 }
-.barra-f { background: #D5D8D5; border-radius: 3px; }
-.proc-q { font-weight: 600; color: #0B2B2A; }
-.nada { font-style: italic; color: #5B6F6E; }
+.barra-f { background: var(--sup-3); border-radius: 3px; }
+.proc-q { font-weight: 600; color: var(--tinta); }
+.nada { font-style: italic; color: var(--mudo); }
 
 </style>
-<script src="/assets/lib/supabase.js"></script>
+
+<script>
+(function () {
+  try {
+    var g = localStorage.getItem('ewt-tema');
+    if (g === 'claro' || g === 'escuro') {
+      document.documentElement.setAttribute('data-tema', g);
+    }
+  } catch (e) {
+    /* Em navegacao privada o localStorage estoura ao ser LIDO, nao so ao
+       ser escrito. Sem este catch a pagina ficava sem tema nenhum — e o
+       preco de falhar aqui e um botao que nao se lembra, nao uma pagina
+       avariada. */
+  }
+})();
+</script><script src="/assets/lib/supabase.js"></script>
 <script src="/assets/ligacao.js"></script>
 </head>
 <body class="pt">
@@ -611,6 +831,12 @@ table.tab a { color: #A85426; font-weight: 500; }
     <span class="pt-etiq">Administration</span>
     <div class="pt-topo-fim">
       <span class="pt-quem" id="quem"></span>
+      
+<button class="tm" type="button" aria-live="polite"
+        aria-label="Theme: follow system">
+  <span class="tm-i" aria-hidden="true"></span>
+  <span class="tm-t">Auto</span>
+</button>
       <button type="button" class="pt-sair" id="sair" hidden>Sign out</button>
     </div>
   </div>
@@ -816,6 +1042,43 @@ table.tab a { color: #A85426; font-weight: 500; }
     });
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
   alvos.forEach(function (x) { obs.observe(x); });
+})();
+</script>
+
+<script>
+(function () {
+  var ciclo = ['auto', 'claro', 'escuro'];
+  var nomes = {auto: 'Auto', claro: 'Light', escuro: 'Dark'};
+  var raiz = document.documentElement;
+
+  function actual() {
+    var a = raiz.getAttribute('data-tema');
+    return (a === 'claro' || a === 'escuro') ? a : 'auto';
+  }
+
+  function por(v) {
+    if (v === 'auto') {
+      raiz.removeAttribute('data-tema');
+      try { localStorage.removeItem('ewt-tema'); } catch (e) {}
+    } else {
+      raiz.setAttribute('data-tema', v);
+      try { localStorage.setItem('ewt-tema', v); } catch (e) {}
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.tm'), function (b) {
+      var t = b.querySelector('.tm-t');
+      if (t) { t.textContent = nomes[v]; }
+      b.setAttribute('aria-label', v === 'auto'
+        ? 'Theme: follow system' : 'Theme: ' + nomes[v].toLowerCase());
+    });
+  }
+
+  por(actual());
+
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest && ev.target.closest('.tm');
+    if (!b) { return; }
+    por(ciclo[(ciclo.indexOf(actual()) + 1) % ciclo.length]);
+  });
 })();
 </script>
 </body>

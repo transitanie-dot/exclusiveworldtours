@@ -22,7 +22,10 @@ import pagina
 import portal_base
 from portal import NAV
 
-CORES = pagina.CORES
+# As cores vem das fichas do tema, nao de hexadecimais fixos:
+# ver a nota em portal_base.FICHAS. E isto que faz o modo
+# escuro desta pagina funcionar sem lhe mexer no CSS.
+CORES = portal_base.FICHAS
 
 CSS = """
 .cal-topo {
@@ -82,9 +85,12 @@ CSS = """
 }
 /* Fechado e vendido nao se distinguem so pela cor: um tem risco, o outro
    tem um ponto. Quem nao distingue cores tem de ver a diferenca. */
+/* O fundo era um cinzento escrito a mao: no modo escuro ficava claro
+   com o texto claro por cima. O par "fechado" diz a mesma coisa — este
+   dia nao se vende — e e verificado nos dois temas. */
 .dia-closed {
-  background: #F2EFEC; color: %(mudo)s; text-decoration: line-through;
-  text-decoration-thickness: 2px;
+  background: var(--fechado-f); color: var(--fechado);
+  text-decoration: line-through; text-decoration-thickness: 2px;
 }
 .dia-sold {
   background: #FBF2EB; color: #7A3E12;

@@ -36,7 +36,10 @@ sys.path.insert(0, AQUI)
 import pagina
 import portal_base
 
-CORES = pagina.CORES
+# As cores vem das fichas do tema, nao de hexadecimais fixos:
+# ver a nota em portal_base.FICHAS. E isto que faz o modo
+# escuro desta pagina funcionar sem lhe mexer no CSS.
+CORES = portal_base.FICHAS
 
 CSS = """
 .rv-abas { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;

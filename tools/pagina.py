@@ -509,6 +509,11 @@ FONTES = """<link rel="preload" as="font" type="font/woff2" crossorigin href="/a
   src:url(/assets/fontes/inter-latin-500-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
   src:url(/assets/fontes/inter-latin-600-normal.woff2) format('woff2')}
+/* A 700 entrou quando o portal passou a usar uma familia so: os titulos
+   que eram Archivo 700 passam a ser Inter 700. O ficheiro ja estava
+   servido do nosso dominio, so nao estava declarado. */
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;
+  src:url(/assets/fontes/inter-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
   src:url(/assets/fontes/archivo-latin-600-normal.woff2) format('woff2')}
 @font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
