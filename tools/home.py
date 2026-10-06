@@ -92,17 +92,46 @@ def css():
     """So o que e desta pagina. O resto vem de pagina.css_base()."""
     return ('''
 /* ----------------------------------------------------------------- heroi */
-.heroi{position:relative;background:var(--tinta);color:var(--branco)}
+/* O HEROI COMO CARTAO
+   Era um bloco a toda a largura com os cantos a bater nas bordas do
+   ecra. Passa a ser um cartao redondo, recuado das margens: e a forma
+   que diz "moderno" sem mudar uma unica cor, e e a mesma forma dos
+   cartoes de tour e de pais agora que todos sao redondos.
+
+   O `overflow` NAO entra aqui — era ele que cortava a lista de
+   sugestoes da procura, e e por isso que esta nota ja existia. Quem
+   recorta e a camada da fotografia, que leva o mesmo raio.
+
+   Em ecra estreito volta a toda a largura: num telemovel um recuo de
+   cada lado rouba largura a uma fotografia que ja e pequena, e os
+   cantos redondos num bloco que ocupa o ecra todo nao se veem. */
+.heroi{position:relative;background:var(--tinta);color:var(--branco);
+  border-radius:var(--r-xg);margin:0 var(--e3) var(--e3)}
+.heroi::after{border-radius:var(--r-xg)}
+@media (max-width:720px){
+  .heroi{border-radius:0;margin:0}
+  .heroi::after{border-radius:0}
+}
 /* sem overflow:hidden aqui: era ele que cortava a lista de sugestoes da
    procura. Quem recorta a fotografia e a camada da fotografia. */
-.heroi-foto{position:absolute;inset:0;overflow:hidden}
+.heroi-foto{position:absolute;inset:0;overflow:hidden;
+  border-radius:var(--r-xg)}
+@media (max-width:720px){.heroi-foto{border-radius:0}}
 .heroi-foto img{width:100%%;height:100%%;object-fit:cover}
 .heroi::after{content:'';position:absolute;inset:0;
   background:linear-gradient(100deg,
     rgba(11,43,42,.93) 0%%, rgba(11,43,42,.82) 46%%,
     rgba(11,43,42,.46) 76%%, rgba(11,43,42,.30) 100%%)}
-.heroi-i{position:relative;z-index:2;padding:84px 0 92px;max-width:720px}
-.heroi h2{color:var(--branco);
+/* O `max-width:720px` que estava aqui limitava a COLUNA e nao o texto,
+   e a `.folha` traz `margin:0 auto` com ela — o resultado era o heroi
+   centrado na pagina enquanto todas as outras seccoes comecavam a
+   esquerda. Ficavam desalinhados uns 150px, que e o tipo de desalinho
+   que se ve sem se saber porque.
+
+   Agora a coluna e a mesma de todas as seccoes, e quem limita a largura
+   de leitura e cada bloco de texto, que e onde isso pertence. */
+.heroi-i{position:relative;z-index:2;padding:84px 0 92px}
+.heroi h2{color:var(--branco);max-width:17ch;
   font-size:clamp(2.3rem, 1.3rem + 3.4vw, 4rem);margin:0 0 18px}
 .heroi p{font-size:clamp(1.05rem, .98rem + .4vw, 1.3rem);
   color:rgba(255,255,255,.88);margin:0 0 34px;max-width:33em}
@@ -131,7 +160,7 @@ def css():
 .paises{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
 @media (max-width:860px){.paises{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:460px){.paises{grid-template-columns:1fr}}
-.pais{position:relative;display:block;border-radius:var(--raio);
+.pais{position:relative;display:block;border-radius:var(--r-g);
   overflow:hidden;text-decoration:none;aspect-ratio:4/3;background:var(--tinta)}
 .pais-foto{position:absolute;inset:0}
 .pais-foto img{width:100%%;height:100%%;object-fit:cover}

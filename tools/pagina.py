@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from marca import CSS as CSS_MARCA, lockup  # noqa: E402
 from marca_base import PALETA, contraste, misturar  # noqa: E402
+import tema  # noqa: E402
 import empresa  # noqa: E402
 import politica  # noqa: E402
 import procura  # noqa: E402
@@ -272,7 +273,17 @@ def css_base():
   --tipo:'Inter',system-ui,-apple-system,sans-serif;
   --tipo-titulo:'Archivo','Inter',system-ui,sans-serif;
   --mono:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;
-  --raio:10px;
+  /* A ESCALA DE RAIOS
+     Vem do tools/tema.py, que e o mesmo sitio de onde o portal a tira.
+     Enquanto o site tinha um `--raio:10px` so para ele, o site e o
+     portal eram redondos de maneiras diferentes — e um utilizador que
+     passa de um para o outro ve dois produtos, nao dois ecras do
+     mesmo.
+     O `--raio` fica, apontado ao medio: ha quarenta e tal regras
+     espalhadas por dez ficheiros a usa-lo, e troca-las todas por nada
+     era mexer em dez ficheiros para dizer a mesma coisa. */
+%(raios)s
+  --raio:var(--r-m);
   /* a escala de intervalos: tudo no site sai daqui */
   --e1:6px; --e2:12px; --e3:20px; --e4:32px; --e5:52px;
 }
@@ -289,12 +300,36 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--tipo-titulo);color:var(--tinta);
   letter-spacing:-.025em;line-height:1.08;margin:0}
 .folha{max-width:1320px;margin:0 auto;padding:0 clamp(16px,2.4vw,32px)}
+
+/* ================================================== AS CAPAS ESCURAS
+   Cada pagina tinha a sua: `.pcapa`, `.capa-f`, `.jcapa`, `.fcapa`,
+   `.av-capa`, `.cand`. Faziam todas a mesma coisa — uma faixa escura a
+   toda a largura com o titulo da pagina — e eram seis sitios a decidir
+   a mesma forma. Enquanto a forma era "um rectangulo a toda a largura"
+   isso quase nao se notava; a partir do momento em que passa a ser um
+   cartao redondo recuado das margens, seis sitios sao seis
+   oportunidades de ficarem diferentes.
+
+   A forma fica aqui. O que cada pagina mantem e o seu conteudo.
+
+   Em ecra estreito voltam a toda a largura: num telemovel um recuo de
+   cada lado rouba largura ao que ja e estreito, e cantos redondos num
+   bloco que ocupa o ecra todo nao se veem. */
+.pcapa, .capa-f, .jcapa, .fcapa, .av-capa, .cand {
+  border-radius:var(--r-xg);
+  margin-inline:var(--e3);
+}
+@media (max-width:720px){
+  .pcapa, .capa-f, .jcapa, .fcapa, .av-capa, .cand {
+    border-radius:0; margin-inline:0;
+  }
+}
 /* o botao e o foco visivel sao de todas as paginas. Estiveram no CSS da
    homepage e a pagina de resultados ficou com um botao cinzento do
    browser — duas paginas, dois CSS, e a diferenca so se ve a olho. */
 .botao{display:inline-flex;align-items:center;justify-content:center;
-  background:var(--tinta);color:var(--branco);border:0;border-radius:10px;
-  padding:0 26px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
+  background:var(--tinta);color:var(--branco);border:0;border-radius:var(--r-c);
+  padding:0 30px;min-height:54px;font:inherit;font-weight:600;font-size:16px;
   cursor:pointer;text-decoration:none;white-space:nowrap}
 .botao:hover{background:var(--cor-escura)}
 a:focus-visible,button:focus-visible,input:focus-visible,
@@ -304,7 +339,8 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
    ponto. Escondido com left:-9999px e sem regra de foco, este atalho
    existe no HTML e nao serve a ninguem. */
 .saltar{position:absolute;left:16px;top:-60px;z-index:60;background:var(--tinta);
-  color:var(--branco);padding:12px 18px;border-radius:0 0 10px 10px;
+  color:var(--branco);padding:12px 18px;
+  border-radius:0 0 var(--r-m) var(--r-m);
   text-decoration:none;font-weight:600;transition:top .15s ease}
 .saltar:focus{top:0}
 
@@ -318,7 +354,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .nav{display:flex;align-items:center;gap:4px;margin-left:var(--e2);
   font-size:14.5px;font-weight:500}
 .nav > a,.nav-b{display:inline-flex;align-items:center;gap:6px;
-  padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--texto);
+  padding:8px 12px;border-radius:var(--r-p);text-decoration:none;color:var(--texto);
   background:transparent;border:0;font:inherit;font-weight:500;cursor:pointer}
 .nav > a:hover,.nav-b:hover{background:var(--branco);color:var(--tinta)}
 .nav-b svg{width:11px;height:8px;fill:none;stroke:currentColor;
@@ -330,18 +366,18 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .nav-d{position:relative}
 .men{position:absolute;left:0;top:calc(100%% + 10px);z-index:50;width:400px;
   background:var(--branco);border:1px solid var(--risco);
-  border-radius:var(--raio);padding:14px;
+  border-radius:var(--r-g);padding:16px;
   box-shadow:0 26px 54px -28px rgba(11,43,42,.45)}
 .men[hidden]{display:none}
 .men-t{margin:0 0 10px;font-size:11px;letter-spacing:.11em;
   text-transform:uppercase;color:var(--mudo);font-weight:600}
 .men-g{display:grid;grid-template-columns:1fr 1fr;gap:2px}
 .men-g a{display:flex;align-items:center;justify-content:space-between;
-  gap:10px;padding:9px 11px;border-radius:7px;text-decoration:none;
+  gap:10px;padding:9px 11px;border-radius:var(--r-p);text-decoration:none;
   color:var(--tinta);font-size:14.5px}
 .men-g a:hover{background:var(--papel)}
 .men-n{font-family:var(--mono);font-size:11.5px;color:var(--mudo)}
-.men-todos{display:block;margin-top:10px;padding:10px 11px;border-radius:7px;
+.men-todos{display:block;margin-top:10px;padding:11px 13px;border-radius:var(--r-p);
   background:var(--papel);text-decoration:none;color:var(--cor-escura);
   font-weight:600;font-size:14px}
 .men-todos:hover{background:var(--tinta);color:var(--branco)}
@@ -353,11 +389,11 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .topo-proc:hover{border-color:var(--tinta-f);color:var(--tinta)}
 .topo-proc svg{width:15px;height:15px;fill:none;stroke:currentColor;
   stroke-width:2;stroke-linecap:round}
-.botao-p{min-height:38px;padding:0 16px;font-size:14px;border-radius:8px}
+.botao-p{min-height:40px;padding:0 20px;font-size:14px;border-radius:var(--r-c)}
 
 /* a gaveta de ecra pequeno */
 .hamb{display:none;width:40px;height:38px;border:1px solid var(--risco);
-  border-radius:8px;background:var(--branco);cursor:pointer;
+  border-radius:var(--r-p);background:var(--branco);cursor:pointer;
   flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .hamb span{display:block;width:17px;height:2px;background:var(--tinta);
   border-radius:2px;transition:transform .2s, opacity .2s}
@@ -374,7 +410,7 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   stroke-width:2;stroke-linecap:round}
 .men-l{display:grid;gap:2px;margin-top:var(--e3);
   border-top:1px solid var(--risco);padding-top:var(--e2)}
-.men-l a{padding:11px;border-radius:7px;text-decoration:none;
+.men-l a{padding:11px;border-radius:var(--r-p);text-decoration:none;
   color:var(--tinta);font-weight:500}
 .men-l a:hover{background:var(--papel)}
 
@@ -449,21 +485,26 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .tours{display:grid;gap:14px;
   grid-template-columns:repeat(auto-fill,minmax(min(100%%,268px),1fr))}
 .tour{display:flex;flex-direction:column;text-decoration:none;
-  border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden;
-  background:var(--branco);transition:border-color .18s, transform .18s}
-.tour:hover{border-color:var(--tinta-f);transform:translateY(-2px)}
+  border-radius:var(--r-g);overflow:hidden;
+  background:var(--branco);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
+  transition:box-shadow .22s, transform .22s}
+.tour:hover{transform:translateY(-3px);
+  box-shadow:0 2px 4px rgba(11,43,42,.06),
+    0 22px 46px -22px rgba(11,43,42,.32)}
 .tour-foto{position:relative;aspect-ratio:16/10;background:var(--uma-f);
   display:block;overflow:hidden}
 .tour-foto img{width:100%%;height:100%%;object-fit:cover;
   transition:transform .5s ease}
 .tour:hover .tour-foto img{transform:scale(1.045)}
 .credito{position:absolute;right:7px;bottom:6px;z-index:2;font-size:10px;
-  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+  color:#fff;background:rgba(11,43,42,.62);padding:3px 8px;
+  border-radius:var(--r-c)}
 /* a duracao em cima da fotografia: le-se antes do titulo, que e a ordem
    por que as pessoas decidem */
 .tour-sel{position:absolute;left:7px;top:7px;z-index:2;font-family:var(--mono);
   font-size:11px;letter-spacing:.03em;color:var(--tinta);background:var(--branco);
-  padding:3px 8px;border-radius:4px;font-variant-numeric:tabular-nums}
+  padding:4px 10px;border-radius:var(--r-c);font-variant-numeric:tabular-nums}
 .tour-corpo{display:flex;flex-direction:column;gap:7px;padding:14px 15px 15px;
   flex:1}
 .tour-onde{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
@@ -496,7 +537,9 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
 .rodape-fim{margin-top:40px;padding-top:22px;border-top:1px solid var(--risco);
   font-size:13.5px;color:var(--mudo);display:flex;gap:18px;flex-wrap:wrap;
   justify-content:space-between}
-''' % CORES) + CSS_MARCA + (procura.CSS % CORES)
+''' % dict(CORES, raios='\n'.join(
+        '  --%s:%s;' % (k.replace('_', '-'), v)
+        for k, v in tema.RAIOS.items()))) + CSS_MARCA + (procura.CSS % CORES)
 
 
 # ---------------------------------------------------------- o invólucro

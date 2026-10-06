@@ -407,7 +407,12 @@ a{color:inherit;text-decoration:none}
    qual for a imagem que la esteja. */
 .heroi{position:relative;background:#081320;color:#fff;overflow:hidden;
        padding-block:var(--e9) var(--e9);min-height:clamp(440px,52vw,620px);
-       display:flex;align-items:center}
+       display:flex;align-items:center;
+       border-radius:var(--r-xg);margin:0 var(--e3) var(--e3);
+       isolation:isolate}
+@media (max-width:720px){
+  .heroi{border-radius:0;margin:0}
+}
 .heroi-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
             z-index:0;max-width:none}
 .heroi::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
@@ -422,7 +427,7 @@ a{color:inherit;text-decoration:none}
 .heroi-credito{position:absolute;right:var(--e4);bottom:var(--e3);z-index:3;
   font-size:11.5px;color:rgba(255,255,255,.72)}
 .heroi-credito a{text-decoration:underline;text-underline-offset:2px}
-.procura{margin-top:var(--e7);background:var(--branco);border-radius:var(--raio);
+.procura{margin-top:var(--e7);background:var(--branco);border-radius:var(--r-c);
   padding:var(--e2);display:grid;gap:var(--e2);box-shadow:var(--sombra-f)}
 @media(min-width:760px){
   .procura{grid-template-columns:minmax(0,1.5fr) minmax(154px,1fr)
@@ -523,7 +528,7 @@ a{color:inherit;text-decoration:none}
 .paises{display:grid;gap:var(--e4)}
 @media(min-width:560px){.paises{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:960px){.paises{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.pais{position:relative;border-radius:var(--raio);overflow:hidden;
+.pais{position:relative;border-radius:var(--r-g);overflow:hidden;
   display:grid;transition:transform .18s ease}
 .pais:hover{transform:translateY(-2px)}
 .pais .foto{grid-area:1/1;aspect-ratio:16/7}

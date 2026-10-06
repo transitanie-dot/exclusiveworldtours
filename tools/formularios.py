@@ -52,7 +52,8 @@ CSS = '''
     align-items:start}
 }
 
-.fcx{background:var(--branco);border:1px solid var(--risco);
+.fcx{background:var(--branco);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   border-radius:var(--raio);padding:var(--e4)}
 .fcx h2{margin:0 0 var(--e2);font-size:1.3rem}
 
@@ -63,7 +64,7 @@ CSS = '''
   color:var(--mudo);line-height:1.45}
 .fcampo input,.fcampo select,.fcampo textarea{width:100%%;
   box-sizing:border-box;font:400 .96rem/1.4 var(--tipo);color:var(--tinta);
-  background:var(--branco);border:1px solid var(--mudo);border-radius:4px;
+  background:var(--branco);border:1px solid var(--mudo);border-radius:var(--r-p);
   padding:11px 12px}
 .fcampo input:focus-visible,.fcampo select:focus-visible,
 .fcampo textarea:focus-visible{outline:3px solid var(--cor);
@@ -75,14 +76,15 @@ CSS = '''
 @media (min-width:600px){.f2{grid-template-columns:1fr 1fr}}
 .obg{color:#8C1D18}
 
-.faviso{margin:var(--e3) 0 0;padding:12px 14px;border-radius:4px;
-  font-size:.92rem;line-height:1.55;border-left:4px solid var(--mudo);
+.faviso{margin:var(--e3) 0 0;padding:12px 14px;border-radius:var(--r-p);
+  font-size:.92rem;line-height:1.55;
   background:var(--papel);color:var(--texto)}
 .faviso-mal{border-left-color:#8C1D18;background:#FCEEEC;color:#5F1512}
 .faviso-bem{border-left-color:#1B5E20;background:#EDF5EE;color:#14401A}
 
-.flado .quadro{background:var(--branco);border:1px solid var(--risco);
-  border-left:4px solid var(--cor);border-radius:var(--raio);
+.flado .quadro{background:var(--branco);border-radius:var(--r-g);
+  box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:var(--e3);margin-bottom:var(--e3)}
 .flado h3{margin:0 0 8px;font-size:1.02rem}
 .flado p{margin:0 0 10px;font-size:.92rem;line-height:1.6;color:var(--texto)}
@@ -92,7 +94,7 @@ CSS = '''
 .flado ol li{margin-bottom:7px}
 
 .bgrande{font:600 1rem/1 var(--tipo);background:var(--tinta);
-  color:var(--papel);border:1px solid transparent;border-radius:4px;
+  color:var(--papel);border:1px solid transparent;border-radius:var(--r-p);
   padding:15px 22px;cursor:pointer;width:100%%}
 .bgrande:hover{background:var(--texto)}
 .bgrande[disabled]{opacity:.55;cursor:not-allowed}

@@ -52,14 +52,15 @@ CSS = '''
 .ptexto li{margin-bottom:10px;font-size:1.02rem;line-height:1.7;
   color:var(--texto)}
 
-.pregra{background:var(--branco);border:1px solid var(--risco);
-  border-left:4px solid var(--cor);border-radius:var(--raio);
+.pregra{background:var(--branco);border-radius:var(--r-g);
+  box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:var(--e4);margin:0 0 var(--e4)}
 .pregra b{display:block;font-family:var(--tipo-titulo);font-size:1.3rem;
   color:var(--tinta);margin-bottom:8px}
 .pregra span{font-size:1rem;line-height:1.65;color:var(--texto)}
 
-.pnota{background:var(--papel);border:1px solid var(--risco);
+.pnota{background:var(--papel);
   border-radius:var(--raio);padding:var(--e3);margin:var(--e4) 0 0;
   font-size:.92rem;line-height:1.65;color:var(--mudo)}
 

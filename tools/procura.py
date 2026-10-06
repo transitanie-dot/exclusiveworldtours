@@ -65,7 +65,7 @@ HTML = '''<div class="pc" data-pc>
 CSS = '''
 .pc{position:relative;width:100%%}
 .pc-caixa{display:flex;align-items:center;gap:12px;background:var(--branco);
-  border-radius:14px;padding:8px 8px 8px 20px;
+  border-radius:var(--r-c);padding:8px 8px 8px 24px;
   box-shadow:0 18px 46px -22px rgba(11,43,42,.55)}
 .pc-lupa{width:21px;height:21px;flex:none;fill:none;stroke:var(--mudo);
   stroke-width:2;stroke-linecap:round}
@@ -80,17 +80,17 @@ CSS = '''
   clip:rect(0 0 0 0);clip-path:inset(50%%);white-space:nowrap;margin:0}
 
 .pc-lista{position:absolute;z-index:50;left:0;right:0;top:calc(100%% + 10px);
-  padding:8px;background:var(--branco);border:1px solid var(--risco);
-  border-radius:14px;max-height:400px;overflow:auto;
+  padding:10px;background:var(--branco);
+  border-radius:var(--r-g);max-height:400px;overflow:auto;
   box-shadow:0 24px 54px -26px rgba(11,43,42,.5);text-align:left}
 .pc-lista[hidden]{display:none}
-.pc-grupo{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--mudo);font-weight:600;padding:12px 12px 6px}
+.pc-grupo{font-size:12.5px;color:var(--mudo);font-weight:600;
+  padding:12px 12px 6px}
 .pc-grupo:first-child{padding-top:6px}
 .pc-op{display:flex;align-items:center;gap:12px;padding:10px 12px;
-  border-radius:9px;cursor:pointer;color:var(--texto);font-size:15px}
+  border-radius:var(--r-m);cursor:pointer;color:var(--texto);font-size:15px}
 .pc-op[aria-selected="true"],.pc-op:hover{background:var(--papel)}
-.pc-icone{width:34px;height:34px;flex:none;border-radius:9px;
+.pc-icone{width:34px;height:34px;flex:none;border-radius:var(--r-p);
   background:var(--papel);display:grid;place-items:center;color:var(--tinta)}
 .pc-op[aria-selected="true"] .pc-icone{background:var(--branco)}
 .pc-icone svg{width:17px;height:17px;fill:none;stroke:currentColor;

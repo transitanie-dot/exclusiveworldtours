@@ -46,11 +46,13 @@ CSS = '''
   align-items:center}
 @media (max-width:900px){.capa-g{grid-template-columns:1fr;gap:var(--e4)}}
 
-.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.18);
-  border-radius:var(--raio);overflow:hidden}
+/* Era uma caixa com molduras de 1px a dividir tres celulas — uma
+   tabela disfarcada. Sao tres afirmacoes independentes, e passam a tres
+   cartoes com espaco entre eles, que e o que sao. */
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media (max-width:760px){.tres{grid-template-columns:1fr}}
-.tres div{background:var(--tinta);padding:var(--e3)}
+.tres div{background:rgba(255,255,255,.1);padding:var(--e3);
+  border-radius:var(--r-m)}
 .tres b{display:block;font-family:var(--tipo-titulo);color:var(--branco);
   font-size:1.05rem;margin:0 0 5px}
 .tres p{margin:0;font-size:14px;color:rgba(255,255,255,.72)}
@@ -67,7 +69,7 @@ CSS = '''
 .passo-f h3{font-size:1.1rem;margin:0 0 5px}
 .passo-f p{margin:0;color:var(--mudo);max-width:56ch}
 .passo-f .marca-rev{display:inline-block;margin-top:9px;font-size:12px;
-  border-radius:4px;padding:3px 9px;border:1px solid var(--risco);
+  border-radius:var(--r-p);padding:3px 9px;border:1px solid var(--risco);
   background:var(--branco);color:var(--tinta)}
 
 .duas-c{display:grid;grid-template-columns:1fr 1fr;gap:var(--e5)}
@@ -78,7 +80,8 @@ CSS = '''
   stroke:var(--cor-escura);stroke-width:2.6;stroke-linecap:round;
   stroke-linejoin:round}
 
-.quadro{border:1px solid var(--risco);border-radius:var(--raio);
+.quadro{border-radius:var(--r-g);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   background:var(--branco);padding:var(--e3)}
 .quadro h3{font-size:1.05rem;margin:0 0 10px}
 .quadro p{margin:0 0 10px;color:var(--mudo);font-size:14.5px}

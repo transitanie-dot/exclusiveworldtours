@@ -61,13 +61,15 @@ CSS = '''
 .limpar[hidden]{display:none}
 .conta{margin-left:auto;color:var(--mudo);font-size:14.5px}
 
-.nada{border:1px solid var(--risco);border-radius:var(--raio);
+.nada{border-radius:var(--r-g);background:var(--branco);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:36px 28px;margin:0 0 34px;background:var(--papel)}
 .nada h2{font-size:1.35rem;margin:0 0 8px}
 .nada p{margin:0;color:var(--mudo);max-width:56ch}
 .nada .destino{display:flex;align-items:center;gap:13px;margin-top:20px;
-  padding:14px 16px;background:var(--branco);border:1px solid var(--risco);
-  border-radius:11px}
+  padding:14px 16px;background:var(--branco);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
+  border-radius:var(--r-m)}
 .nada .destino b{color:var(--tinta)}
 .nada .destino span{color:var(--mudo);font-size:14px}
 .sugestao{margin:30px 0 14px;font-size:1.1rem}

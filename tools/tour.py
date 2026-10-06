@@ -107,7 +107,9 @@ CSS = '''
 
 .av-lista{display:grid;gap:var(--e3)}
 @media(min-width:900px){.av-lista{grid-template-columns:1fr 1fr}}
-.av-item{border:1px solid var(--risco);border-radius:var(--raio);
+.av-item{border-radius:var(--r-g);background:var(--branco);
+  box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:var(--e3);background:var(--papel)}
 .av-item .cab{display:flex;align-items:center;gap:10px;margin-bottom:8px;
   flex-wrap:wrap}
@@ -127,14 +129,25 @@ CSS = '''
   padding-top:var(--e3);border-top:1px solid var(--risco)}
 
 .heroi-t{position:relative;min-height:clamp(380px,48vw,560px);
-  display:flex;align-items:flex-end;background:var(--tinta);overflow:hidden}
+  display:flex;align-items:flex-end;background:var(--tinta);overflow:hidden;
+  border-radius:var(--r-xg);margin:0 var(--e3)}
+@media (max-width:720px){.heroi-t{border-radius:0;margin:0}}
 .heroi-t .foto{position:absolute;inset:0;overflow:hidden}
 .heroi-t .foto img{width:100%;height:100%;object-fit:cover}
 .heroi-t::after{content:'';position:absolute;inset:0;
   background:linear-gradient(to top, rgba(11,43,42,.94) 0%,
     rgba(11,43,42,.78) 32%, rgba(11,43,42,.34) 66%, rgba(11,43,42,.22) 100%)}
-.heroi-t .folha{position:relative;z-index:2;padding-top:var(--e5);
-  padding-bottom:var(--e4)}
+/* O `flex:1` nao e decoracao: sem ele esta `.folha` e um item de um
+   contentor flex, encolhe ate ao tamanho do conteudo, e o `margin:0
+   auto` que a `.folha` traz centra-a. O resultado era o titulo do tour
+   a comecar 300px mais a direita do que a tira de fotografias logo por
+   baixo — desalinhado sem se perceber porque.
+
+   A mesma familia de erro que havia no heroi da homepage, por um
+   caminho diferente: la era um max-width a limitar a coluna em vez do
+   texto, aqui e um contentor flex a encolher a coluna. */
+.heroi-t .folha{position:relative;z-index:2;flex:1;min-width:0;
+  padding-top:var(--e5);padding-bottom:var(--e4)}
 .migalhas{font-size:12.5px;color:rgba(255,255,255,.72);margin:0 0 var(--e2)}
 .migalhas a{color:rgba(255,255,255,.72);text-decoration:underline;
   text-underline-offset:2px;text-decoration-color:rgba(255,255,255,.3)}
@@ -145,26 +158,25 @@ CSS = '''
   font-size:clamp(2rem, 1.3rem + 2.6vw, 3.4rem);margin:0 0 12px}
 .t-lede{color:rgba(255,255,255,.85);max-width:54ch;margin:0 0 var(--e3);
   font-size:clamp(1rem,.95rem + .3vw,1.12rem)}
-.factos{display:flex;flex-wrap:wrap;gap:0;border:1px solid rgba(255,255,255,.22);
-  border-radius:var(--raio);overflow:hidden;width:fit-content;max-width:100%}
-.facto{padding:10px 18px;border-right:1px solid rgba(255,255,255,.22)}
-.facto:last-child{border-right:0}
+.factos{display:flex;flex-wrap:wrap;gap:8px;width:fit-content;max-width:100%}
+.facto{padding:10px 18px;border-radius:var(--r-m);
+  background:rgba(255,255,255,.1)}
 .facto b{display:block;font-family:var(--tipo-titulo);color:var(--branco);
   font-size:.98rem;line-height:1.2;font-variant-numeric:tabular-nums}
 .facto span{font-size:11.5px;color:rgba(255,255,255,.66)}
-@media (max-width:620px){.factos{width:100%}.facto{flex:1 1 44%;
-  border-bottom:1px solid rgba(255,255,255,.22)}}
+@media (max-width:620px){.factos{width:100%}.facto{flex:1 1 44%}}
 
 /* a tira de fotografias, por baixo do heroi */
 /* o numero de colunas segue o numero de fotografias: fixo em tres, com
    duas ficava um buraco do tamanho de uma fotografia */
-.tira{display:grid;gap:8px;padding:8px 0 0;
+.tira{display:grid;gap:10px;padding:10px var(--e3) 0;
   grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
-.tira figure{position:relative;margin:0;border-radius:var(--raio);
+@media (max-width:720px){.tira{padding-inline:0}}
+.tira figure{position:relative;margin:0;border-radius:var(--r-g);
   overflow:hidden;background:var(--uma-f);aspect-ratio:3/2}
 .tira img{width:100%;height:100%;object-fit:cover}
 .tira figcaption{position:absolute;right:7px;bottom:6px;font-size:10px;
-  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:4px}
+  color:#fff;background:rgba(11,43,42,.62);padding:2px 6px;border-radius:var(--r-p)}
 @media (max-width:700px){.tira{grid-template-columns:1fr 1fr}
   .tira figure:first-child{grid-column:1/-1}}
 
@@ -234,7 +246,7 @@ CSS = '''
 .paragem p{margin:0;color:rgba(255,255,255,.76);font-size:14px}
 .paragem .nota{display:inline-block;margin-top:7px;font-size:11.5px;
   color:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.22);
-  border-radius:4px;padding:2px 8px}
+  border-radius:var(--r-p);padding:2px 8px}
 
 .inclui{list-style:none;margin:0;padding:0;display:grid;gap:8px;
   grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
@@ -264,7 +276,8 @@ CSS = '''
 
 /* ----------------------------------------------------------- a coluna */
 .lado{position:sticky;top:74px;display:grid;gap:12px}
-.painel{border:1px solid var(--risco);border-radius:var(--raio);
+.painel{border-radius:var(--r-g);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:18px;background:var(--branco);
   box-shadow:0 14px 36px -26px rgba(11,43,42,.45)}
 .painel .desde{font-size:11.5px;color:var(--mudo);margin:0;
@@ -291,7 +304,8 @@ CSS = '''
 
 /* o que a concorrencia nao mostra: o resumo do que esta incluido, ali
    mesmo ao lado do preco, para nao ser preciso ir procurar */
-.lado-bloco{border:1px solid var(--risco);border-radius:var(--raio);
+.lado-bloco{border-radius:var(--r-g);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   padding:14px 16px;background:var(--branco)}
 .lado-bloco h3{font-size:11px;letter-spacing:.11em;text-transform:uppercase;
   color:var(--mudo);font-family:var(--tipo);font-weight:600;margin:0 0 10px}
@@ -321,7 +335,7 @@ CSS = '''
 .campo-g label{display:block;font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--mudo);font-weight:600;margin:0 0 6px}
 .stepper{display:flex;align-items:center;border:1px solid var(--risco);
-  border-radius:8px;overflow:hidden}
+  border-radius:var(--r-p);overflow:hidden}
 .stepper button{flex:none;width:44px;height:42px;border:0;background:var(--papel);
   color:var(--tinta);font-size:19px;line-height:1;cursor:pointer;
   font-family:var(--tipo)}
@@ -330,12 +344,12 @@ CSS = '''
   font-weight:600;font-size:1.05rem;color:var(--tinta);
   font-variant-numeric:tabular-nums}
 .campo-g input[type=date]{width:100%;border:1px solid var(--risco);
-  border-radius:8px;padding:11px 12px;font:inherit;font-size:14.5px;
+  border-radius:var(--r-p);padding:11px 12px;font:inherit;font-size:14.5px;
   color:var(--tinta);background:var(--branco)}
 /* O que a base diz sobre o dia escolhido. Nunca inventa: ou sabe e diz,
    ou nao sabe e diz que nao sabe. Um "disponivel" a adivinhar e uma
    reserva que vai ter de ser cancelada. */
-.dia-estado{margin:0 0 var(--e2);padding:10px 12px;border-radius:6px;
+.dia-estado{margin:0 0 var(--e2);padding:10px 12px;border-radius:var(--r-p);
   font-size:13.5px;line-height:1.5;border-left:3px solid var(--risco);
   background:var(--papel);color:var(--texto)}
 .dia-estado b{color:var(--tinta)}
@@ -361,7 +375,7 @@ CSS = '''
 .tira figure{cursor:zoom-in}
 .tira figure:focus-visible{outline:3px solid var(--cor);outline-offset:2px}
 .lupa{position:absolute;left:8px;top:8px;width:26px;height:26px;
-  display:grid;place-items:center;border-radius:6px;font-size:14px;
+  display:grid;place-items:center;border-radius:var(--r-p);font-size:14px;
   background:rgba(255,255,255,.9);color:var(--tinta);opacity:0;
   transition:opacity .18s}
 .tira figure:hover .lupa,.tira figure:focus-visible .lupa{opacity:1}

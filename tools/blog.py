@@ -57,7 +57,8 @@ CSS = '''
 /* ------------------------------------------------------------- o indice */
 .jlista{padding:var(--e5) 0 var(--e6)}
 .jgrelha{display:grid;gap:1px;background:var(--risco);
-  border:1px solid var(--risco);border-radius:var(--raio);overflow:hidden}
+  border-radius:var(--r-g);overflow:hidden;box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);}
 @media (min-width:860px){.jgrelha{grid-template-columns:1fr 1fr}}
 .jart{background:var(--branco);padding:var(--e4);display:block;
   text-decoration:none;color:inherit}
@@ -95,8 +96,9 @@ CSS = '''
 
 /* Os numeros que saem dos dados. Ficam marcados a olho para nao se
    confundirem com o texto: sao a parte que muda sozinha. */
-.jdados{margin:var(--e3) 0 var(--e4);border:1px solid var(--risco);
-  border-left:4px solid var(--cor);border-radius:var(--raio);
+.jdados{margin:var(--e3) 0 var(--e4);border-radius:var(--r-g);
+  background:var(--branco);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);
   background:var(--branco);overflow:hidden}
 .jdados-t{margin:0;padding:12px var(--e3);border-bottom:1px solid var(--risco);
   font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
@@ -124,7 +126,8 @@ CSS = '''
 .joutros-g{display:grid;gap:var(--e3)}
 @media (min-width:760px){.joutros-g{grid-template-columns:repeat(3,1fr)}}
 .joutro{display:block;text-decoration:none;color:inherit;
-  border:1px solid var(--risco);border-radius:var(--raio);padding:var(--e3)}
+  border-radius:var(--r-g);padding:var(--e3);box-shadow:0 1px 2px rgba(11,43,42,.05),
+    0 10px 30px -18px rgba(11,43,42,.22);}
 .joutro:hover{background:var(--papel)}
 .joutro b{display:block;font-family:var(--tipo-titulo);font-size:1.02rem;
   line-height:1.25;margin-bottom:6px;color:var(--tinta)}

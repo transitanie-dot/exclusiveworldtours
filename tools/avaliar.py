@@ -44,7 +44,7 @@ CSS = '''
 .estrela{position:relative}
 .estrela input{position:absolute;opacity:0;width:100%;height:100%;
   margin:0;cursor:pointer}
-.estrela span{display:block;width:2.6rem;height:2.6rem;border-radius:6px;
+.estrela span{display:block;width:2.6rem;height:2.6rem;border-radius:var(--r-p);
   border:1px solid var(--risco);background:var(--branco);
   display:flex;align-items:center;justify-content:center;
   font-size:1.3rem;line-height:1;color:var(--risco)}
@@ -60,7 +60,7 @@ CSS = '''
   font-size:.9rem;color:var(--tinta)}
 .av-campo input,.av-campo textarea{width:100%;box-sizing:border-box;
   font:400 .96rem/1.5 var(--tipo);color:var(--tinta);background:var(--branco);
-  border:1px solid var(--mudo);border-radius:4px;padding:11px 12px}
+  border:1px solid var(--mudo);border-radius:var(--r-p);padding:11px 12px}
 .av-campo input:focus-visible,.av-campo textarea:focus-visible{
   outline:3px solid var(--cor);outline-offset:1px;border-color:var(--tinta)}
 .av-campo textarea{min-height:7rem;resize:vertical}
@@ -70,14 +70,14 @@ CSS = '''
 .av-temas{display:grid;gap:var(--e3);margin:var(--e3) 0}
 @media(min-width:620px){.av-temas{grid-template-columns:1fr 1fr}}
 
-.av-aviso{margin:var(--e3) 0 0;padding:12px 14px;border-radius:4px;
+.av-aviso{margin:var(--e3) 0 0;padding:12px 14px;border-radius:var(--r-p);
   font-size:.92rem;line-height:1.55;border-left:4px solid var(--mudo);
   background:var(--papel);color:var(--texto)}
 .av-aviso-mal{border-left-color:#8C1D18;background:#FCEEEC;color:#5F1512}
 .av-aviso-bem{border-left-color:#1B5E20;background:#EDF5EE;color:#14401A}
 
 .av-bt{font:600 1rem/1 var(--tipo);background:var(--tinta);color:var(--papel);
-  border:1px solid transparent;border-radius:4px;padding:15px 22px;
+  border:1px solid transparent;border-radius:var(--r-p);padding:15px 22px;
   cursor:pointer;width:100%}
 .av-bt:hover{background:var(--texto)}
 .av-bt[disabled]{opacity:.55;cursor:not-allowed}
