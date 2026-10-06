@@ -28,6 +28,13 @@ CORES = portal_base.FICHAS
 
 NAV = [('My tours', '/portal/'),
        ('Bookings', '/portal/bookings/'),
+       # As epocas vem ANTES do calendario de proposito. A epoca e a
+       # regra — "abro de segunda a sexta, de Junho a Setembro" — e o
+       # calendario sao as excepcoes a ela. Quem chega primeiro ao
+       # calendario acaba a pintar dia a dia o que uma frase resolvia,
+       # que era a queixa de origem: "e super confuso mexer no
+       # calendario".
+       ('Seasons', '/portal/seasons/'),
        ('Calendar', '/portal/calendar/'),
        ('Fleet', '/portal/fleet/'),
        ('Meeting points', '/portal/places/'),

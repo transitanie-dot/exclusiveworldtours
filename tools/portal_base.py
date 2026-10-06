@@ -246,10 +246,18 @@ body.pt {
 
 /* --------------------------------------------------------- formulario */
 .campo { margin-bottom: 1.1rem; }
-.campo > label, .campo > .rot {
+/* `.rotc` e nao `.rot`: o site ja tinha uma `.rot`, que e outra coisa
+   — a etiqueta de seccao, maiuscula e com um filete a seguir — e o
+   portal herda a folha do site. As duas com o mesmo nome davam rotulos
+   de campo em maiusculas espacadas no meio de um formulario que nao as
+   tem em mais lado nenhum, e o ultimo a ser carregado ganhava. Dois
+   nomes para duas coisas e mais barato que a regra que desfaz a outra. */
+.campo > label, .campo > .rotc {
   display: block; margin-bottom: .4rem;
   font-size: .85rem; font-weight: 600; color: var(--tinta);
+  letter-spacing: normal; text-transform: none;
 }
+.campo > .rotc::after { content: none; }
 .campo .ajuda {
   display: block; margin-top: .35rem;
   font-size: .8rem; line-height: 1.45; color: var(--mudo);

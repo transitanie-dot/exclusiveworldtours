@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Review queue — Exclusive World Tours</title>
+<title>Seasons — Exclusive World Tours</title>
 <meta name="description" content="Operator area of Exclusive World Tours.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
@@ -795,100 +795,136 @@ table.tab a { color: var(--acento); font-weight: 500; }
   font-size: .93rem; color: var(--mudo);
 }
 
-.pub-l { margin: .5rem 0 .6rem; padding-left: 1.1rem; }
-.pub-l li { margin-bottom: .2rem; }
-.pub-l code {
-  font: 600 .84rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+/* ----------------------------------------------------------- a fita
+   Os doze meses como UMA fita, e nao doze cartoes. Doze cartoes sao
+   doze molduras a dizer "sou uma caixa" quando o que interessa e a
+   COMPARACAO entre eles — e uma fita continua faz a comparacao sem
+   dizer nada. */
+.fita {
+  display: flex; gap: 4px; align-items: flex-end;
+  background: var(--sup); border-radius: var(--r-g);
+  padding: 1.2rem 1.1rem 1rem; margin-bottom: 1.6rem;
+  box-shadow: var(--sombra); overflow-x: auto;
+  scrollbar-width: none;
 }
-.pub-c {
-  margin: 0; padding: .6rem .7rem; border-radius: 4px;
-  background: var(--tinta); color: var(--papel); overflow-x: auto;
-  font: 400 .8rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
-  -webkit-user-select: all; user-select: all;
+.fita::-webkit-scrollbar { display: none; }
+.mes {
+  flex: 1 1 0; min-width: 2.6rem;
+  display: flex; flex-direction: column; align-items: center; gap: .45rem;
+  padding: 0; background: none; border: 0; cursor: pointer;
 }
-.abas {
-  display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;
-  border-bottom: 2px solid var(--sup-3);
+.mes-b {
+  width: 100%; height: 5.5rem; border-radius: var(--r-p);
+  background: var(--sup-2); display: flex; align-items: flex-end;
+  overflow: hidden;
 }
-.aba {
-  font: 600 .9rem/1 'Inter', system-ui, sans-serif;
-  background: none; border: 0; border-bottom: 3px solid transparent;
-  color: var(--mudo); padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px;
-  display: flex; align-items: center; gap: .45rem;
+/* A altura e `--p`, mas NAO e a percentagem crua. Um mes com 20 de 31
+   dias abertos da 65%, e 22 de 30 da 73%: a olho, duas barras de 65% e
+   73% numa altura de 5.5rem diferem em 4px e lem-se como iguais.
+   O calc estica a escala — 0% fica em 0, 100% fica em 100, e o meio
+   abre-se — para a diferenca entre "quase todo o mes" e "metade do
+   mes" se ver sem contar os numeros. O numero exacto esta por baixo,
+   em texto, para quem precisar dele. */
+.mes-f {
+  width: 100%; height: calc(12% + var(--p, 0%) * 0.88);
+  background: var(--sel); border-radius: var(--r-p);
+  transition: height .25s ease;
 }
-.aba:hover { color: var(--tinta); }
-.aba[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--acento); }
-.aba .n {
-  font: 700 .72rem/1 'Archivo', system-ui, sans-serif;
-  background: var(--acento); color: #FFF; border-radius: 10px;
-  padding: .22rem .42rem; min-width: 1.1rem; text-align: center;
-}
-.aba .n-0 { background: var(--sup-3); color: var(--mudo); }
+/* Zero dias abertos e zero altura, sem o minimo de 12%: uma barrinha
+   num mes vazio dizia "ha aqui alguma coisa" quando nao ha nada. */
+.mes-zero .mes-f { height: 0; }
+/* O mes em que nao ha um unico dia aberto nao fica so vazio: fica
+   pintado com a cor do que esta fechado. Um rectangulo vazio le-se
+   como "ainda nao carregou"; este le-se como "aqui nao se vende". */
+.mes-zero .mes-b { background: var(--fechado-f); }
+.mes-n { font-size: .78rem; font-weight: 600; color: var(--tinta-2); }
+.mes-d { font-size: .72rem; color: var(--mudo); }
+.mes-agora .mes-n { color: var(--acento); }
+.mes:hover .mes-b { background: var(--sup-3); }
+.mes-zero:hover .mes-b { filter: brightness(.97); }
 
-/* ------------------------------------------------------------- revisao */
-.rv {
-  background: var(--sup); border: 1px solid var(--sup-3); border-radius: 6px;
-  margin-bottom: 1.2rem; overflow: hidden;
+/* -------------------------------------------------- epocas como frases */
+.eps { display: grid; gap: .7rem; margin-bottom: 1.6rem; }
+.ep {
+  background: var(--sup); border-radius: var(--r-g);
+  padding: 1.1rem 1.2rem; box-shadow: var(--sombra);
+  display: flex; flex-wrap: wrap; gap: .8rem 1rem; align-items: baseline;
 }
-.rv-t {
-  padding: 1rem 1.1rem; border-bottom: 1px solid var(--sup-3);
-  display: grid; gap: .5rem;
+.ep-f {
+  flex: 1 1 22rem; margin: 0;
+  font-size: 1rem; line-height: 1.6; color: var(--tinta-2);
 }
-@media (min-width: 820px) {
-  .rv-t { grid-template-columns: 1fr auto; align-items: center; }
+.ep-f b { color: var(--tinta); font-weight: 600; }
+.ep-nota {
+  flex-basis: 100%; margin: 0;
+  font-size: .85rem; line-height: 1.5; color: var(--mudo);
 }
-.rv-n {
-  font: 700 1.1rem/1.25 'Archivo', system-ui, sans-serif;
-  color: var(--tinta); margin: 0 0 .25rem;
-}
-.rv-m {
-  font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: var(--mudo);
-  margin: 0; display: flex; flex-wrap: wrap; gap: .4rem .9rem;
-}
-.rv-c { padding: 1.1rem; }
+.ep-acoes { display: flex; gap: .5rem; margin-left: auto; }
+/* Uma epoca que ja passou nao se apaga sozinha: fica, com a palavra
+   "ended". Apagar o que aconteceu e perder a resposta a pergunta
+   "porque e que Agosto do ano passado estava aberto?".
 
-/* O que mudou. Verde entra, vermelho sai — e com sinal, nao so cor. */
-.dif { display: grid; gap: .6rem; }
-.dif-l {
-  border-left: 4px solid var(--sup-3); padding: .5rem .8rem;
-  background: var(--papel); border-radius: 0 4px 4px 0;
-}
-.dif-campo {
-  font: 600 .7rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--mudo);
-  margin: 0 0 .4rem;
-}
-.dif-v {
-  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif;
-  margin: 0; white-space: pre-wrap; word-break: break-word;
-}
-.dif-fora { color: #5F1512; background: #FCEEEC; }
-.dif-dentro { color: #14401A; background: #EDF5EE; }
-.dif-fora::before  { content: '\2212  '; font-weight: 700; }
-.dif-dentro::before { content: '+  '; font-weight: 700; }
-.dif-novo { border-left-color: #1B5E20; }
-.dif-ido  { border-left-color: #B3261E; }
-.dif-mud  { border-left-color: var(--acento); }
-.dif-igual { color: var(--mudo); font-style: italic; }
+   Recuar NAO se faz com `opacity`. Foi a primeira tentativa e o axe
+   recusou-a nos dois temas: o opacity apaga tudo o que esta dentro —
+   incluindo a pastilha "ended" e o botao de remover, que tem de
+   continuar a ler-se tao bem como os outros. Recua-se so o texto da
+   frase, e com a ficha do texto apagado, que a porta de contraste ja
+   garante sobre esta superficie. */
+.ep-fim .ep-f { color: var(--mudo); }
+.ep-fim .ep-f b { color: var(--mudo); font-weight: 500; }
 
-.rv-acoes {
-  padding: 1rem 1.1rem; border-top: 1px solid var(--sup-3); background: var(--papel);
-  display: grid; gap: .8rem;
+/* ------------------------------------------------- os dias da semana */
+.ds-l { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ds {
+  padding: .55rem .9rem; border-radius: var(--r-c);
+  background: var(--sup-2); color: var(--tinta-2);
+  font-size: .87rem; font-weight: 600;
+  transition: background .15s, color .15s;
 }
-.rv-acoes .campo { margin: 0; }
+.ds:hover { background: var(--sup-3); }
+.ds-on { background: var(--sel); color: var(--sel-t); }
+.ds-on:hover { background: var(--sel); filter: brightness(1.12); }
 
-.dobra {
-  font: 500 .86rem/1 'Inter', system-ui, sans-serif; color: var(--acento);
-  background: none; border: 0; padding: .5rem 0; cursor: pointer;
-  text-decoration: underline;
+/* ------------------------------------------------------- as partidas */
+.hs-l { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.hora {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: var(--sup-2); border-radius: var(--r-c);
+  padding: .4rem .45rem .4rem .9rem;
+  font-size: .95rem; font-weight: 600; color: var(--tinta);
 }
-.todo {
-  margin-top: .8rem; padding: .8rem; border: 1px solid var(--sup-3);
-  border-radius: 4px; background: var(--papel);
-  font: 400 .82rem/1.5 'Inter', ui-monospace, monospace;
-  white-space: pre-wrap; word-break: break-word; max-height: 24rem;
-  overflow: auto; color: var(--tinta-2);
+.hora button {
+  width: 1.5rem; height: 1.5rem; border-radius: var(--r-c);
+  background: var(--sup-3); color: var(--tinta-2);
+  font-size: .9rem; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
 }
+.hora button:hover { background: var(--fechado-f); color: var(--fechado); }
+
+/* ------------------------------------------------------- o formulario */
+.ep-novo { background: var(--sup-2); }
+.ep-novo .cx-t { margin-bottom: 1.2rem; }
+
+/* O modo: duas opcoes, lado a lado, com a explicacao de cada uma por
+   baixo. Um <select> com dois valores esconde metade da decisao atras
+   de um toque — e esta decisao muda o que a pagina do tour pergunta ao
+   cliente. */
+.modos { display: grid; gap: .7rem; margin-bottom: 1.2rem; }
+@media (min-width: 680px) { .modos { grid-template-columns: 1fr 1fr; } }
+.modo {
+  text-align: left; padding: 1rem 1.1rem; border-radius: var(--r-m);
+  background: var(--sup); cursor: pointer;
+}
+.modo:hover { background: var(--sup-3); }
+.modo-on { background: var(--sel); }
+.modo-on:hover { background: var(--sel); filter: brightness(1.12); }
+.modo b { display: block; font-size: .95rem; color: var(--tinta); }
+.modo span {
+  display: block; margin-top: .25rem;
+  font-size: .83rem; line-height: 1.5; color: var(--mudo);
+}
+.modo-on b, .modo-on span { color: var(--sel-t); }
+.modo-on span { opacity: .8; }
 
 </style>
 
@@ -914,7 +950,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 <header class="pt-topo">
   <div class="folha pt-topo-i">
     <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
-    <span class="pt-etiq">Administration</span>
+    <span class="pt-etiq">Operator portal</span>
     <div class="pt-topo-fim">
       <span class="pt-quem" id="quem"></span>
       
@@ -928,41 +964,121 @@ table.tab a { color: var(--acento); font-weight: 500; }
   </div>
 </header>
   <nav class="pt-nav" aria-label="Portal">
-    <div class="folha pt-nav-i"><a href="/admin/" aria-current="page">Review queue</a>
-<a href="/admin/bookings/">Bookings</a>
-<a href="/admin/operators/">Operators</a>
-<a href="/admin/searches/">Searches</a></div>
+    <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
+<a href="/portal/bookings/">Bookings</a>
+<a href="/portal/seasons/" aria-current="page">Seasons</a>
+<a href="/portal/calendar/">Calendar</a>
+<a href="/portal/fleet/">Fleet</a>
+<a href="/portal/places/">Meeting points</a>
+<a href="/portal/reviews/">Reviews</a>
+<a href="/portal/account/">Account</a></div>
   </nav><main id="principal" class="pt-corpo">
   <div class="folha" id="conteudo">
-    <p class="carrega" id="carrega">Loading the queue&hellip;</p>
+    <p class="carrega" id="carrega">Loading your seasons&hellip;</p>
 
-    <div id="ad" hidden>
+    <div id="ep" hidden>
       <div class="pt-cab">
-        <h1>Review queue</h1>
-        <p>Nothing an operator writes reaches the site until it passes
-          through here. Every submission is shown against the version
-          already online, so you read what changed and not the whole
-          thing again.</p>
+        <h1>Seasons</h1>
+        <p>A season is the rule: which months, which days of the week,
+          which departure times. Say it once and the calendar is only
+          for the exceptions &mdash; the one week you are away, the day
+          the van is in for service.</p>
       </div>
 
-      <p class="aviso" id="publicar" role="status" hidden></p>
-
-      <div class="abas" id="abas" role="tablist">
-        <button type="button" class="aba" id="aba-tours" data-aba="tours"
-                role="tab" aria-selected="true">
-          Tours <span class="n n-0" id="n-tours">0</span>
-        </button>
-        <button type="button" class="aba" id="aba-ops" data-aba="ops"
-                role="tab" aria-selected="false">
-          Operators <span class="n n-0" id="n-ops">0</span>
-        </button>
-        <button type="button" class="aba" id="aba-peds" data-aba="peds"
-                role="tab" aria-selected="false">
-          Enquiries <span class="n n-0" id="n-peds">0</span>
-        </button>
+      <div class="campo" style="max-width:26rem">
+        <label for="qual">Tour</label>
+        <select id="qual"></select>
       </div>
 
-      <div id="fila"></div>
+      <p class="aviso" id="av" role="status" hidden></p>
+
+      <h2 class="cx-t" style="margin:1.4rem 0 .7rem">The next twelve months</h2>
+      <div class="fita" id="fita"></div>
+      <p class="aviso" id="av-fita" hidden></p>
+
+      <h2 class="cx-t" style="margin:1.8rem 0 .7rem">Your seasons</h2>
+      <div class="eps" id="eps"></div>
+
+      <div class="cx ep-novo">
+        <h2 class="cx-t">Add a season</h2>
+
+        <div class="modos" role="group" aria-label="How this tour runs">
+          <button type="button" class="modo" id="modo-departures"
+                  aria-pressed="true">
+            <b>Fixed departure times</b>
+            <span>The tour leaves at set times. The customer picks
+              one.</span>
+          </button>
+          <button type="button" class="modo" id="modo-opening_hours"
+                  aria-pressed="false">
+            <b>Driver at their disposal</b>
+            <span>You are available within a window and the exact hour is
+              agreed afterwards.</span>
+          </button>
+        </div>
+
+        <div class="linha2">
+          <div class="campo">
+            <label for="de">First day</label>
+            <input type="date" id="de">
+          </div>
+          <div class="campo">
+            <label for="ate">Last day</label>
+            <input type="date" id="ate">
+            <span class="ajuda">Leave this empty and the season keeps
+              rolling forward. That is the safe choice: a season with an
+              end date stops quietly on the day it ends, and nothing
+              warns you.</span>
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="rotc" id="rotc-dias">Days of the week</span>
+          <div class="ds-l" id="ds-l" role="group"
+               aria-labelledby="rotc-dias"></div>
+        </div>
+
+        <div class="campo" id="bl-horas">
+          <span class="rotc">Departure times</span>
+          <div class="hs-l" id="hs-l" style="margin-bottom:.6rem"></div>
+          <form class="hs-l" id="f-hora">
+            <label class="so-leitor" for="hora-nova">Add a departure
+              time</label>
+            <input type="time" id="hora-nova" step="300"
+                   style="width:9rem">
+            <button type="submit" class="bt bt-s bt-pq">Add</button>
+          </form>
+        </div>
+
+        <div id="bl-janela" hidden>
+          <div class="linha2">
+            <div class="campo">
+              <label for="abre">Available from</label>
+              <input type="time" id="abre" step="300">
+            </div>
+            <div class="campo">
+              <label for="fecha">Until</label>
+              <input type="time" id="fecha" step="300">
+            </div>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="nota">Note to yourself <span
+            class="ajuda" style="display:inline">(optional)</span></label>
+          <input type="text" id="nota"
+                 placeholder="Summer, two drivers">
+          <span class="ajuda">Only you see this. It is here for the day
+            you look at three overlapping seasons and wonder why.</span>
+        </div>
+
+        <p class="aviso" id="av-novo" role="status" hidden></p>
+
+        <div class="acoes">
+          <button type="button" class="bt bt-p" id="bt-criar">Add
+            season</button>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -971,498 +1087,413 @@ table.tab a { color: var(--acento); font-weight: 500; }
   'use strict';
   if (!window.ewt || window.ewt.avariado) return;
 
-  var E = { aba: 'tours' };
+  var DIAS = [[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],
+              [6,'Sat'],[7,'Sun']];
+  var MESES = ['Jan','Feb','Mar','Apr','May','Jun',
+               'Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  // ----------------------------------------------------------- o que mudou
-  //
-  // Comparam-se os campos que interessam, e nao o jsonb inteiro: a
-  // ordem das chaves num objecto nao e informacao, e um diff que a
-  // conta diz que mudou tudo quando nao mudou nada.
-  var CAMPOS = [
-    ['title', 'Title'], ['slug', 'Web address'], ['kicker', 'Kicker'],
-    ['lede', 'Opening paragraph'], ['city', 'City'],
-    ['countryName', 'Country'], ['ticketTo', 'Main attraction'],
-    ['metaDesc', 'Search description'],
-    ['stopsIntro', 'Intro to the stops'],
-    ['includedIntro', 'Intro to what is included'],
-    ['notIncluded', 'Not included'], ['practical', 'Practical notes']
-  ];
+  var E = { anuncios: [], tour: null, slug: null, modo: 'departures',
+            epocas: [], horas: [], dias: [1,2,3,4,5], novoModo: 'departures' };
 
-  function texto(x) {
-    if (x === null || x === undefined) return '';
-    return typeof x === 'string' ? x : JSON.stringify(x, null, 1);
+  function hhmm(t) { return String(t || '').slice(0, 5); }
+  function esc(s) { return ewt.escapar(String(s == null ? '' : s)); }
+
+  // Uma data em ISO para o que se le. O `new Date('2026-06-01')` e UTC,
+  // e num fuso a oeste de Greenwich isso mostra 31 de Maio — por isso a
+  // data parte-se a mao em vez de se entregar ao construtor.
+  function legivel(iso) {
+    if (!iso) return '';
+    var p = String(iso).split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString(undefined,
+      { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  function precos(p) {
-    var d = (p.durations && p.durations[0]) || {};
-    var t = (d.tiers || []).map(function (x) {
-      return 'up to ' + x.max + (x.vehicle ? ' (' + x.vehicle + ')' : '')
-        + ': €' + ewt.euros(x.price);
+  // "Mon to Fri" quando sao seguidos, "Mon, Wed and Fri" quando nao sao.
+  // Vale a pena porque "Mon, Tue, Wed, Thu, Fri" e a frase que o
+  // operador mais vezes vai ler, e e a que menos se le.
+  function frasedias(ws) {
+    var s = (ws || []).slice().sort(function (a, b) { return a - b; });
+    if (!s.length) return 'no days';
+    if (s.length === 7) return 'every day';
+    var nomes = s.map(function (n) { return DIAS[n - 1][1]; });
+    var seguidos = s.every(function (v, i) { return i === 0 || v === s[i-1] + 1; });
+    if (seguidos && s.length > 2) {
+      return '<b>' + nomes[0] + '</b> to <b>' + nomes[nomes.length - 1] + '</b>';
+    }
+    var b = nomes.map(function (n) { return '<b>' + n + '</b>'; });
+    if (b.length === 1) return b[0];
+    return b.slice(0, -1).join(', ') + ' and ' + b[b.length - 1];
+  }
+
+  function frasequando(ep) {
+    if (!ep.ends_on) {
+      return 'from <b>' + legivel(ep.starts_on) + '</b> onwards';
+    }
+    return '<b>' + legivel(ep.starts_on) + '</b> to <b>'
+         + legivel(ep.ends_on) + '</b>';
+  }
+
+  function frasehoras(ep) {
+    if (E.modo === 'opening_hours') {
+      if (!ep.opens_at) return '';
+      return ', open <b>' + hhmm(ep.opens_at) + '</b> to <b>'
+           + hhmm(ep.closes_at) + '</b>';
+    }
+    var hs = (ep.horas || []).map(hhmm);
+    if (!hs.length) {
+      // Isto nao e um detalhe cosmetico: uma epoca sem partidas nao
+      // vende nada. Diz-se por palavras, aqui, em vez de o operador
+      // descobrir pelo telefone que nao lhe entram reservas.
+      return ', <b>but with no departure times — nothing can be '
+           + 'booked</b>';
+    }
+    var b = hs.map(function (h) { return '<b>' + h + '</b>'; });
+    return ', leaving at ' + (b.length === 1 ? b[0]
+      : b.slice(0, -1).join(', ') + ' and ' + b[b.length - 1]);
+  }
+
+  // ------------------------------------------------------------ a fita
+  async function desenharFita() {
+    var c = document.getElementById('fita');
+    if (!E.slug) { c.innerHTML = ''; return; }
+
+    var hoje = new Date();
+    var de = ewt.iso(hoje);
+    var fim = new Date(hoje.getFullYear(), hoje.getMonth() + 12, 0);
+    var r = await ewt.sb.rpc('dias_abertos',
+      { p_slug: E.slug, p_de: de, p_ate: ewt.iso(fim) });
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+
+    // Quantos dias abertos por mes, e quantos dias tem cada mes a
+    // contar de hoje (o mes corrente conta so a partir de hoje: dizer
+    // "5 de 31" a 28 do mes era uma falsidade com ar de numero).
+    var abertos = {}, total = {};
+    (r.data || []).forEach(function (d) {
+      var k = String(d.dia || d).slice(0, 7);
+      abertos[k] = (abertos[k] || 0) + 1;
     });
-    return (d.h ? d.h + '\n' : '') + t.join('\n')
-      + ((d.startTimes || []).length ? '\ndeparts ' + d.startTimes.join(', ') : '');
-  }
-
-  function listas(p) {
-    return {
-      'Stops': (p.stops || []).map(function (s) {
-        return (s.when ? s.when + ' — ' : '') + (s.h || '')
-          + (s.p ? '\n    ' + s.p : '');
-      }).join('\n'),
-      'Included': (p.included || []).join('\n'),
-      'Questions': (p.faq || []).map(function (f) {
-        return f[0] + '\n    ' + f[1];
-      }).join('\n'),
-      'Photographs': (p.photos || []).map(function (f) {
-        return (f.url || f.id || '') + (f.alt ? ' — ' + f.alt : '');
-      }).join('\n')
-    };
-  }
-
-  function diferenca(velho, novo) {
-    var linhas = [];
-
-    function par(rotulo, a, b) {
-      a = texto(a); b = texto(b);
-      if (a === b) return;
-      var tipo = !a ? 'novo' : (!b ? 'ido' : 'mud');
-      var h = '<div class="dif-l dif-' + tipo + '">'
-        + '<p class="dif-campo">' + rotulo + '</p>';
-      if (a) h += '<p class="dif-v dif-fora">' + ewt.escapar(a) + '</p>';
-      if (b) h += '<p class="dif-v dif-dentro">' + ewt.escapar(b) + '</p>';
-      linhas.push(h + '</div>');
+    var cur = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    while (cur <= fim) {
+      var k2 = ewt.iso(cur).slice(0, 7);
+      total[k2] = (total[k2] || 0) + 1;
+      cur.setDate(cur.getDate() + 1);
     }
 
-    if (!velho) {
-      // Primeira versao: nao ha nada com que comparar, mostra-se tudo.
-      CAMPOS.forEach(function (c) {
-        if (novo[c[0]]) par(c[1], '', novo[c[0]]);
-      });
-      par('Prices', '', precos(novo));
-      var l = listas(novo);
-      Object.keys(l).forEach(function (k) { if (l[k]) par(k, '', l[k]); });
-      return '<div class="dif">' + linhas.join('') + '</div>';
-    }
-
-    CAMPOS.forEach(function (c) { par(c[1], velho[c[0]], novo[c[0]]); });
-    par('Prices', precos(velho), precos(novo));
-    var lv = listas(velho), ln = listas(novo);
-    Object.keys(ln).forEach(function (k) { par(k, lv[k], ln[k]); });
-
-    if (!linhas.length) {
-      return '<p class="dif-v dif-igual">Nothing changed from the version '
-        + 'already on the site. Approving this only moves the version '
-        + 'number forward.</p>';
-    }
-    return '<div class="dif">' + linhas.join('') + '</div>';
-  }
-
-  // ----------------------------------------------------------- as filas
-  async function filaTours() {
-    var r = await ewt.sb.from('listing_versions')
-      .select('id, listing_id, version, payload, submitted_at, '
-            + 'listings(id, slug, status, city, country, '
-            + 'operators(id, name, status, commission_rate))')
-      .eq('status', 'pending')
-      .order('submitted_at', { ascending: true });
-
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-
-    var vs = r.data || [];
-    if (!vs.length) {
-      return '<div class="vazio"><h3>Nothing waiting</h3>'
-        + '<p>No operator has submitted anything since you last looked.</p></div>';
-    }
-
-    // A versao que esta no ar, para cada um dos anuncios desta fila.
-    var noAr = {};
-    var ids = vs.map(function (v) { return v.listing_id; });
-    var a = await ewt.sb.from('listing_versions')
-      .select('listing_id, version, payload')
-      .in('listing_id', ids).eq('status', 'approved')
-      .order('version', { ascending: false });
-    (a.data || []).forEach(function (x) {
-      if (!noAr[x.listing_id]) noAr[x.listing_id] = x;
+    var saida = [];
+    Object.keys(total).sort().forEach(function (k, i) {
+      var a = abertos[k] || 0, t = total[k] || 1;
+      var pct = Math.round(a / t * 100);
+      var nome = MESES[+k.slice(5, 7) - 1];
+      saida.push('<button type="button" class="mes'
+        + (i === 0 ? ' mes-agora' : '') + (a === 0 ? ' mes-zero' : '')
+        + '" style="--p:' + pct + '%" data-mes="' + k
+        + '" aria-label="' + nome + ': ' + a + ' of ' + t
+        + ' days open. Open the calendar for this month.">'
+        + '<span class="mes-b"><span class="mes-f"></span></span>'
+        + '<span class="mes-n">' + nome + '</span>'
+        + '<span class="mes-d">' + a + '</span></button>');
     });
+    c.innerHTML = saida.join('');
 
-    return vs.map(function (v) {
-      var l = v.listings || {};
-      var o = l.operators || {};
-      var velho = noAr[v.listing_id];
-      var p = v.payload || {};
-      var d = new Date(v.submitted_at);
-      return '<article class="rv" data-v="' + v.id + '">'
-        + '<div class="rv-t"><div>'
-        + '<h3 class="rv-n">' + ewt.escapar(p.title || l.slug) + '</h3>'
-        + '<p class="rv-m">'
-        + '<span><b>' + ewt.escapar(o.name || 'unknown operator') + '</b></span>'
-        + '<span class="est est-' + (o.status || 'pending') + '">'
-        + (o.status || 'pending') + '</span>'
-        + '<span>' + ewt.escapar(l.city || '') + ', '
-        + ewt.escapar(l.country || '') + '</span>'
-        + '<span>version ' + v.version
-        + (velho ? ' — replacing v' + velho.version : ' — first version')
-        + '</span>'
-        + '<span>sent ' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-        + '</span></p></div>'
-        + '<div class="acoes">'
-        + '<a class="bt bt-s bt-pq" href="/tours/' + ewt.escapar(l.slug)
-        + '/" target="_blank" rel="noopener">See it live</a>'
-        + '</div></div>'
-        + '<div class="rv-c">' + diferenca(velho ? velho.payload : null, p)
-        + '<button type="button" class="dobra" data-todo="' + v.id
-        + '">Show everything that was submitted</button>'
-        + '<pre class="todo" id="todo-' + v.id + '" hidden>'
-        + ewt.escapar(JSON.stringify(p, null, 2)) + '</pre>'
-        + '</div>'
-        + '<div class="rv-acoes">'
-        + '<div class="campo"><label for="nota-' + v.id + '">Why, if you '
-        + 'are sending it back</label>'
-        + '<input type="text" id="nota-' + v.id + '" maxlength="300" '
-        + 'placeholder="The operator reads this exactly as you write it."></div>'
-        + '<div class="acoes">'
-        + '<button type="button" class="bt bt-p" data-sim="' + v.id
-        + '">Approve</button>'
-        + '<button type="button" class="bt bt-mal" data-nao="' + v.id
-        + '">Send back</button>'
-        + '</div>'
-        + '<p class="aviso" id="av-' + v.id + '" role="status" hidden></p>'
-        + '</div></article>';
-    }).join('');
-  }
-
-  async function filaOperadores() {
-    var r = await ewt.sb.from('operator_applications')
-      .select('*').eq('status', 'new').order('created_at', { ascending: true });
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-    var cs = r.data || [];
-    if (!cs.length) {
-      return '<div class="vazio"><h3>No new applications</h3>'
-        + '<p>When an operator applies through <a href="/suppliers/">the '
-        + 'operators page</a>, it lands here.</p></div>';
-    }
-    return cs.map(function (c) {
-      var d = new Date(c.created_at);
-      function l(r, v) {
-        return v ? '<p class="rv-m"><span><b>' + r + ':</b> '
-          + ewt.escapar(v) + '</span></p>' : '';
-      }
-      return '<article class="rv" data-c="' + c.id + '">'
-        + '<div class="rv-t"><div>'
-        + '<h3 class="rv-n">' + ewt.escapar(c.company) + '</h3>'
-        + '<p class="rv-m"><span>' + ewt.escapar(c.city) + ', '
-        + ewt.escapar(c.country) + '</span>'
-        + '<span>applied ' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short' }) + '</span></p>'
-        + '</div></div>'
-        + '<div class="rv-c">'
-        + l('Contact', c.contact_name) + l('Email', c.email)
-        + l('Phone', c.phone) + l('Website', c.website)
-        + l('Years operating', c.years) + l('Licence', c.licence_ref)
-        + (c.fleet ? '<div class="dif-l dif-mud"><p class="dif-campo">Fleet'
-            + '</p><p class="dif-v">' + ewt.escapar(c.fleet) + '</p></div>' : '')
-        + (c.tours_text ? '<div class="dif-l dif-mud"><p class="dif-campo">'
-            + 'Tours they run today</p><p class="dif-v">'
-            + ewt.escapar(c.tours_text) + '</p></div>' : '')
-        + '</div>'
-        + '<div class="rv-acoes"><div class="acoes">'
-        + '<button type="button" class="bt bt-p" data-cand="' + c.id
-        + '">Approve as an operator</button>'
-        + '<button type="button" class="bt bt-s" data-cont="' + c.id
-        + '">Mark as contacted</button>'
-        + '<button type="button" class="bt bt-mal" data-rec="' + c.id
-        + '">Decline</button>'
-        + '</div>'
-        + '<p class="aviso" id="av-' + c.id + '" role="status" hidden></p>'
-        + '<p class="lado-nota">Approving creates the company in the system '
-        + 'with a 20% commission. It does not give anyone a login yet — '
-        + 'you link their email to the company afterwards.</p>'
-        + '</div></article>';
-    }).join('');
-  }
-
-  async function filaPedidos() {
-    // Dois grupos: os por responder, e os que ja viajaram e ainda nao
-    // foram convidados a avaliar. O segundo e o que se esquece — e
-    // esquece-se exatamente quando mais vale a pena pedir, logo a
-    // seguir ao dia.
-    var r = await ewt.sb.from('enquiries')
-      .select('*').in('status', ['new', 'answered', 'booked'])
-      .order('created_at', { ascending: false });
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-    var ps = r.data || [];
-    if (!ps.length) {
-      return '<div class="vazio"><h3>No unanswered enquiries</h3>'
-        + '<p>Everything anyone asked has been dealt with.</p></div>';
-    }
-    return '<div class="tab-rolo" tabindex="0" role="region" '
-      + 'aria-label="Table, scrolls sideways"><table class="tab">'
-      + '<thead><tr><th>When</th><th>Who</th><th>Wants</th><th>Message</th>'
-      + '<th></th></tr></thead><tbody>'
-      + ps.map(function (p) {
-        var d = new Date(p.created_at);
-        return '<tr><td>' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short' }) + '</td>'
-          + '<td><b>' + ewt.escapar(p.name) + '</b><br>'
-          + '<a href="mailto:' + ewt.escapar(p.email) + '">'
-          + ewt.escapar(p.email) + '</a>'
-          + (p.phone ? '<br>' + ewt.escapar(p.phone) : '') + '</td>'
-          + '<td>' + (p.listing_slug
-              ? '<a href="/tours/' + ewt.escapar(p.listing_slug) + '/">'
-                + ewt.escapar(p.listing_slug) + '</a><br>' : '')
-          + (p.wanted_on ? ewt.escapar(p.wanted_on) : '')
-          + (p.party ? '<br>' + p.party + ' people' : '') + '</td>'
-          + '<td>' + ewt.escapar(p.message || '') + '</td>'
-          + '<td><button type="button" class="bt bt-s bt-pq" data-ped="'
-          + p.id + '">Done</button></td></tr>';
-      }).join('')
-      + '</tbody></table></div>';
-  }
-
-  // ---------------------------------------------------------- as acoes
-  async function decidir(id, aprovar) {
-    var nota = document.getElementById('nota-' + id);
-    var texto = nota ? nota.value.trim() : '';
-    if (!aprovar && texto.length < 5) {
-      ewt.dizer('av-' + id, 'Write why you are sending it back. The '
-        + 'operator sees this sentence and nothing else — without it '
-        + 'they do not know what to change.', 'mal');
-      if (nota) nota.focus();
-      return;
-    }
-    travar(id, true);
-    var r = await ewt.sb.rpc('rever_versao', {
-      p_version: id, p_aprovar: aprovar, p_nota: texto || null
+    var vazios = Object.keys(total).filter(function (k) {
+      return !(abertos[k] || 0);
     });
-    travar(id, false);
-    if (r.error) {
-      ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal');
-      return;
-    }
-    var art = document.querySelector('[data-v="' + id + '"]');
-    if (art) {
-      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
-        + (aprovar ? '<b>Approved.</b> It is live in the database. The site '
-            + 'picks it up the next time the pages are generated.'
-          : '<b>Sent back.</b> The operator sees your note in their portal.')
-        + '</p></div>';
-    }
-    contar();
-  }
-
-  function travar(id, sim) {
-    var art = document.querySelector('[data-v="' + id + '"], [data-c="' + id + '"]');
-    if (!art) return;
-    [].slice.call(art.querySelectorAll('.bt')).forEach(function (b) {
-      b.disabled = sim;
-    });
-  }
-
-  async function candidatura(id, acao) {
-    travar(id, true);
-    var r;
-    if (acao === 'aprovar') {
-      r = await ewt.sb.rpc('aprovar_candidatura', { p_cand: id });
+    var av = document.getElementById('av-fita');
+    if (vazios.length) {
+      av.innerHTML = '<b>' + vazios.length + ' of the next 12 months '
+        + 'have no open day at all.</b> If that is not deliberate, the '
+        + 'season covering them has ended — or there is none.';
+      av.className = 'aviso aviso-nota';
+      av.hidden = false;
     } else {
-      r = await ewt.sb.from('operator_applications')
-        .update({ status: acao === 'contactar' ? 'contacted' : 'declined' })
-        .eq('id', id);
+      av.hidden = true;
     }
-    travar(id, false);
-    if (r.error) { ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal'); return; }
-    var art = document.querySelector('[data-c="' + id + '"]');
-    if (art) {
-      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
-        + (acao === 'aprovar'
-            ? '<b>Approved.</b> The company exists in the system. Next: link '
-              + 'their email to it so they can sign in to the portal.'
-            : acao === 'contactar'
-              ? '<b>Marked as contacted.</b> It leaves this queue.'
-              : '<b>Declined.</b> Nothing was sent to them automatically.')
-        + '</p></div>';
-    }
-    contar();
-    // Acabou de aprovar: a faixa tem de dizer logo que ha mais um a
-    // espera de publicacao. Dizer so na proxima visita era tarde.
-    porPublicar();
   }
 
-  async function pedidoFeito(id) {
-    var r = await ewt.sb.from('enquiries')
-      .update({ status: 'answered' }).eq('id', id);
-    if (r.error) { alert(ewt.legivel(r.error)); return; }
-    var tr = document.querySelector('[data-ped="' + id + '"]');
-    if (tr) {
-      var l = tr.closest('tr');
-      if (l) l.remove();
-    }
-    contar();
-  }
+  // ---------------------------------------------------------- as epocas
+  async function carregar() {
+    if (!E.tour) return;
+    document.getElementById('eps').innerHTML =
+      '<p class="carrega">Loading…</p>';
 
-  // ============================================================
-  // APROVADO NAO E PUBLICADO
-  //
-  // O botao dizia "Approve and publish" e nao publicava nada: aprovar
-  // escreve na base, e o site e estatico. Entre aprovar e correr o
-  // gerador podem passar dias, e o operador fica com o tour aprovado e
-  // invisivel sem saber porque.
-  //
-  // Esta faixa compara o que a base aprovou com o /assets/publicado.json
-  // que o gerador escreveu, e diz quantos estao a espera — com os
-  // comandos, para nao se andar a procura deles.
-  // ============================================================
-  async function porPublicar() {
-    var cx = document.getElementById('publicar');
-    if (!cx) return;
+    var r = await ewt.sb.from('listing_seasons')
+      .select('id, starts_on, ends_on, weekdays, opens_at, closes_at, note, '
+            + 'season_times(starts_at)')
+      .eq('listing_id', E.tour)
+      .order('starts_on');
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
 
-    var pub = null;
-    try {
-      var r = await fetch('/assets/publicado.json', { cache: 'no-store' });
-      if (r.ok) pub = await r.json();
-    } catch (e) { /* sem manifesto, cala-se */ }
-    if (!pub || !pub.tours) { cx.hidden = true; return; }
-
-    // A ultima versao aprovada de cada anuncio que esta 'live'.
-    var r2 = await ewt.sb.from('listings')
-      .select('slug, status, listing_versions(version, status)')
-      .eq('status', 'live');
-    if (r2.error) { cx.hidden = true; return; }
-
-    var atrasados = [];
-    (r2.data || []).forEach(function (l) {
-      var vs = (l.listing_versions || [])
-        .filter(function (v) { return v.status === 'approved'; })
-        .map(function (v) { return v.version; });
-      if (!vs.length) return;
-      var aprovada = Math.max.apply(null, vs);
-      var p = pub.tours[l.slug];
-      if (!p || p.versao !== aprovada) {
-        atrasados.push({ slug: l.slug, aprovada: aprovada,
-                         no_site: p ? p.versao : null });
-      }
+    E.epocas = (r.data || []).map(function (x) {
+      x.horas = (x.season_times || []).map(function (h) { return h.starts_at; })
+                 .sort();
+      return x;
     });
+    desenharEpocas();
+    await desenharFita();
+  }
 
-    if (!atrasados.length) {
-      cx.className = 'aviso aviso-bem';
-      cx.innerHTML = '<b>The site is up to date.</b> Everything approved is '
-        + 'published' + (pub.gerado_em
-            ? ' — last publish ' + new Date(pub.gerado_em)
-                .toLocaleString(undefined, { day: 'numeric', month: 'short',
-                  hour: '2-digit', minute: '2-digit' })
-            : '') + '.';
-      cx.hidden = false;
+  function desenharEpocas() {
+    var c = document.getElementById('eps');
+    if (!E.epocas.length) {
+      c.innerHTML = '<div class="vazio"><h3>No season yet</h3>'
+        + '<p>Until there is one, this tour is offered on whatever days '
+        + 'you opened by hand in the calendar — and on no others. '
+        + 'One season below replaces all that tapping.</p></div>';
+      return;
+    }
+    var hoje = ewt.iso(new Date());
+    c.innerHTML = E.epocas.map(function (ep) {
+      var acabou = ep.ends_on && ep.ends_on < hoje;
+      return '<div class="ep' + (acabou ? ' ep-fim' : '') + '">'
+        + '<p class="ep-f">Open ' + frasedias(ep.weekdays) + ', '
+        + frasequando(ep) + frasehoras(ep) + '.'
+        + (acabou ? ' <span class="est est-draft">ended</span>' : '')
+        + '</p>'
+        + '<div class="ep-acoes">'
+        + '<button type="button" class="bt bt-mal bt-pq" data-apaga="'
+        + esc(ep.id) + '">Remove</button></div>'
+        + (ep.note ? '<p class="ep-nota">' + esc(ep.note) + '</p>' : '')
+        + '</div>';
+    }).join('');
+  }
+
+  // ------------------------------------------------------------ gravar
+  async function criar() {
+    var de = document.getElementById('de').value;
+    var ate = document.getElementById('ate').value;
+    var nota = document.getElementById('nota').value.trim();
+
+    if (!de) {
+      ewt.dizer('av-novo', 'A season needs a start date.', 'mal'); return;
+    }
+    if (ate && ate < de) {
+      ewt.dizer('av-novo', 'The end date is before the start date.', 'mal');
+      return;
+    }
+    if (!E.dias.length) {
+      ewt.dizer('av-novo', 'Pick at least one day of the week.', 'mal');
       return;
     }
 
-    cx.className = 'aviso aviso-nota';
-    cx.innerHTML = '<b>' + atrasados.length + ' tour'
-      + (atrasados.length === 1 ? ' is' : 's are')
-      + ' approved and not on the site yet.</b> Approving writes to the '
-      + 'database; the site is static and only changes when you publish it.'
-      + '<ul class="pub-l">' + atrasados.map(function (x) {
-          return '<li><code>' + ewt.escapar(x.slug) + '</code> — approved v'
-            + x.aprovada + ', site shows '
-            + (x.no_site === null ? 'nothing' : 'v' + x.no_site) + '</li>';
-        }).join('') + '</ul>'
-      + '<pre class="pub-c">python3 tools/puxar.py\npython3 tools/gerar.py\ngit add -A \u0026\u0026 git commit -m \'Publicar os tours aprovados\' \u0026\u0026 git push</pre>';
-    cx.hidden = false;
+    var linha = { listing_id: E.tour, starts_on: de, ends_on: ate || null,
+                  weekdays: E.dias.slice().sort(function (a,b) { return a-b; }),
+                  note: nota || null };
+
+    if (E.novoModo === 'opening_hours') {
+      var ab = document.getElementById('abre').value;
+      var fe = document.getElementById('fecha').value;
+      if (!ab || !fe) {
+        ewt.dizer('av-novo', 'Opening hours need both a start and an end.',
+                  'mal');
+        return;
+      }
+      if (fe <= ab) {
+        ewt.dizer('av-novo', 'The closing time is not after the opening one.',
+                  'mal');
+        return;
+      }
+      linha.opens_at = ab + ':00';
+      linha.closes_at = fe + ':00';
+    } else if (!E.horas.length) {
+      ewt.dizer('av-novo', 'Add at least one departure time — a season '
+        + 'without one cannot be booked.', 'mal');
+      return;
+    }
+
+    var b = document.getElementById('bt-criar');
+    b.disabled = true;
+    var r = await ewt.sb.from('listing_seasons').insert(linha).select('id');
+    if (r.error) {
+      b.disabled = false;
+      ewt.dizer('av-novo', ewt.legivel(r.error), 'mal'); return;
+    }
+    var id = r.data[0].id;
+
+    if (E.novoModo === 'departures' && E.horas.length) {
+      var h = await ewt.sb.from('season_times').insert(
+        E.horas.map(function (x) {
+          return { season_id: id, starts_at: hhmm(x) + ':00' };
+        }));
+      if (h.error) {
+        // A epoca ficou sem horas, e uma epoca sem horas nao vende. Nao
+        // se deixa isso em pe: desfaz-se e diz-se porque.
+        await ewt.sb.from('listing_seasons').delete().eq('id', id);
+        b.disabled = false;
+        ewt.dizer('av-novo', 'The season could not be saved with its '
+          + 'departure times, so nothing was saved: '
+          + ewt.legivel(h.error), 'mal');
+        return;
+      }
+    }
+
+    // O modo do anuncio acompanha a epoca que se acabou de criar: um
+    // anuncio com uma epoca de janela e modo 'departures' pergunta ao
+    // cliente uma hora de partida que nao existe.
+    if (E.modo !== E.novoModo) {
+      var m = await ewt.sb.from('listings')
+        .update({ schedule_mode: E.novoModo }).eq('id', E.tour);
+      if (!m.error) { E.modo = E.novoModo; }
+    }
+
+    b.disabled = false;
+    E.horas = [];
+    document.getElementById('nota').value = '';
+    desenharHoras();
+    ewt.dizer('av-novo', '', '');
+    ewt.dizer('av', 'Season added. It is live on the site now.', 'bem');
+    await carregar();
   }
 
-  // --------------------------------------------------------- as contagens
-  async function contar() {
-    var a = await ewt.sb.from('listing_versions')
-      .select('id', { count: 'exact', head: true }).eq('status', 'pending');
-    var b = await ewt.sb.from('operator_applications')
-      .select('id', { count: 'exact', head: true }).eq('status', 'new');
-    var c = await ewt.sb.from('enquiries')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['new', 'answered', 'booked']);
-    pintar('n-tours', a.count); pintar('n-ops', b.count); pintar('n-peds', c.count);
-  }
-  function pintar(id, n) {
-    var e = document.getElementById(id);
-    if (!e) return;
-    n = n || 0;
-    e.textContent = n;
-    e.className = 'n' + (n ? '' : ' n-0');
+  async function apagar(id) {
+    var ep = E.epocas.filter(function (x) { return x.id === id; })[0];
+    if (!ep) return;
+    if (!window.confirm('Remove this season? Days that only this season '
+        + 'opened stop being offered straight away.')) return;
+    var r = await ewt.sb.from('listing_seasons').delete().eq('id', id);
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+    ewt.dizer('av', 'Season removed.', 'bem');
+    await carregar();
   }
 
-  // ------------------------------------------------------------- abas
-  async function mostrar(qual) {
-    E.aba = qual;
-    ['tours','ops','peds'].forEach(function (k) {
-      var b = document.getElementById('aba-' + k);
-      if (b) b.setAttribute('aria-selected', k === qual ? 'true' : 'false');
+  // -------------------------------------------------------- o desenho
+  function desenharDias() {
+    document.getElementById('ds-l').innerHTML = DIAS.map(function (d) {
+      var on = E.dias.indexOf(d[0]) >= 0;
+      return '<button type="button" class="ds' + (on ? ' ds-on' : '')
+        + '" data-d="' + d[0] + '" aria-pressed="' + on + '">'
+        + d[1] + '</button>';
+    }).join('');
+  }
+
+  function desenharHoras() {
+    var c = document.getElementById('hs-l');
+    c.innerHTML = E.horas.length
+      ? E.horas.map(function (h) {
+          return '<span class="hora">' + hhmm(h)
+            + '<button type="button" data-tira="' + hhmm(h)
+            + '" aria-label="Remove the ' + hhmm(h)
+            + ' departure">×</button></span>';
+        }).join('')
+      : '<p class="campo" style="margin:0;color:var(--mudo);font-size:.87rem">'
+        + 'No departure time yet.</p>';
+  }
+
+  function desenharModo() {
+    ['departures', 'opening_hours'].forEach(function (m) {
+      var b = document.getElementById('modo-' + m);
+      var on = E.novoModo === m;
+      b.className = 'modo' + (on ? ' modo-on' : '');
+      b.setAttribute('aria-pressed', on);
     });
-    var c = document.getElementById('fila');
-    c.innerHTML = '<p class="carrega">Loading…</p>';
-    c.innerHTML = qual === 'tours' ? await filaTours()
-                : qual === 'ops'   ? await filaOperadores()
-                :                    await filaPedidos();
+    document.getElementById('bl-horas').hidden = E.novoModo !== 'departures';
+    document.getElementById('bl-janela').hidden = E.novoModo !== 'opening_hours';
   }
 
-  // ----------------------------------------------------------- arranque
+  // ------------------------------------------------------------- arranque
   (async function () {
-    var p = await ewt.exigir_entrada();
-    if (!p) return;
+    var u = await ewt.exigir_entrada();
+    if (!u) return;
+
+    var r = await ewt.sb.from('listings')
+      .select('id, slug, city, country, schedule_mode, listing_versions(payload)')
+      .order('created_at');
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+
+    var anuncios = (r.data || []).map(function (l) {
+      var v = (l.listing_versions || [])[0];
+      l.titulo = (v && v.payload && v.payload.title) || l.slug;
+      return l;
+    });
 
     document.getElementById('carrega').hidden = true;
-
-    if (!p.admin) {
-      // Nao e um erro tecnico: e alguem num sitio que nao e o dele.
+    if (!anuncios.length) {
       document.getElementById('conteudo').innerHTML =
-        '<div class="vazio"><h3>This area is not yours</h3>'
-        + '<p>You are signed in as ' + ewt.escapar(p.email)
-        + ', which is not an administrator account.</p>'
-        + '<a class="bt bt-p" href="/portal/">Go to the operator portal</a></div>';
+        '<div class="vazio"><h3>No tour yet</h3><p>Seasons say when a tour '
+        + 'runs, so there has to be a tour first.</p>'
+        + '<a class="bt bt-p" href="/portal/">Create a tour</a></div>';
       return;
     }
+    document.getElementById('ep').hidden = false;
 
-    document.getElementById('ad').hidden = false;
+    var sel = document.getElementById('qual');
+    sel.innerHTML = anuncios.map(function (a) {
+      return '<option value="' + esc(a.id) + '">' + esc(a.titulo)
+        + ' — ' + esc(a.city) + '</option>';
+    }).join('');
 
-    // A faixa do que esta aprovado e nao publicado. Nao se espera por ela
-    // para desenhar a fila: e informacao de contexto, nao o conteudo.
-    porPublicar();
+    E.anuncios = anuncios;
 
-    document.getElementById('abas').addEventListener('click', function (ev) {
-      var b = ev.target.closest('.aba');
-      if (b) mostrar(b.getAttribute('data-aba'));
-    });
+    function escolher() {
+      var a = anuncios.filter(function (x) { return x.id === sel.value; })[0];
+      E.tour = a.id; E.slug = a.slug;
+      E.modo = a.schedule_mode || 'departures';
+      E.novoModo = E.modo;
+      desenharModo();
+      carregar();
+    }
 
-    // A data da viagem grava-se ao sair do campo e nao a cada tecla.
-    document.getElementById('fila').addEventListener('change', function (ev) {
-      var i = ev.target.closest('[data-viajou]');
-      if (i) marcarViagem(i.getAttribute('data-viajou'), i.value);
-    });
+    sel.addEventListener('change', escolher);
 
-    document.getElementById('fila').addEventListener('click', function (ev) {
-      var t = ev.target;
-      var b = t.closest('button');
+    document.getElementById('ds-l').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-d]');
       if (!b) return;
-      if (b.hasAttribute('data-sim'))  return decidir(b.getAttribute('data-sim'), true);
-      if (b.hasAttribute('data-nao'))  return decidir(b.getAttribute('data-nao'), false);
-      if (b.hasAttribute('data-cand')) return candidatura(b.getAttribute('data-cand'), 'aprovar');
-      if (b.hasAttribute('data-cont')) return candidatura(b.getAttribute('data-cont'), 'contactar');
-      if (b.hasAttribute('data-rec'))  return candidatura(b.getAttribute('data-rec'), 'recusar');
-      if (b.hasAttribute('data-ped'))  return pedidoFeito(b.getAttribute('data-ped'));
-      if (b.hasAttribute('data-conv')) return convidar(b.getAttribute('data-conv'));
-      if (b.hasAttribute('data-liga')) return copiarLigacao(b.getAttribute('data-liga'));
-      if (b.hasAttribute('data-todo')) {
-        var pre = document.getElementById('todo-' + b.getAttribute('data-todo'));
-        if (pre) {
-          pre.hidden = !pre.hidden;
-          b.textContent = pre.hidden ? 'Show everything that was submitted'
-                                     : 'Hide the full submission';
-        }
+      var n = +b.getAttribute('data-d');
+      var i = E.dias.indexOf(n);
+      if (i >= 0) { E.dias.splice(i, 1); } else { E.dias.push(n); }
+      desenharDias();
+    });
+
+    document.getElementById('f-hora').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var i = document.getElementById('hora-nova');
+      var v = hhmm(i.value);
+      if (!v) { ewt.dizer('av-novo', 'Pick a time first.', 'mal'); return; }
+      if (E.horas.map(hhmm).indexOf(v) >= 0) {
+        ewt.dizer('av-novo', 'That departure is already there.', 'mal');
+        return;
+      }
+      E.horas = E.horas.map(hhmm).concat([v]).sort();
+      i.value = '';
+      ewt.dizer('av-novo', '', '');
+      desenharHoras();
+    });
+
+    document.getElementById('hs-l').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-tira]');
+      if (!b) return;
+      var fora = b.getAttribute('data-tira');
+      E.horas = E.horas.filter(function (h) { return hhmm(h) !== fora; });
+      desenharHoras();
+    });
+
+    ['departures', 'opening_hours'].forEach(function (m) {
+      document.getElementById('modo-' + m).addEventListener('click', function () {
+        E.novoModo = m;
+        desenharModo();
+      });
+    });
+
+    document.getElementById('eps').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-apaga]');
+      if (b) apagar(b.getAttribute('data-apaga'));
+    });
+
+    document.getElementById('fita').addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-mes]');
+      if (b) {
+        // A fita responde "onde e o buraco"; o calendario e onde se
+        // trata dele. A ligacao leva o mes para a pessoa nao ter de o
+        // procurar outra vez.
+        window.location.href = '/portal/calendar/?m=' + b.getAttribute('data-mes');
       }
     });
 
-    await contar();
-    await mostrar('tours');
+    document.getElementById('bt-criar').addEventListener('click', criar);
+
+    desenharDias();
+    desenharHoras();
+    escolher();
   })();
 })();
 

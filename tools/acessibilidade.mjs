@@ -111,8 +111,38 @@ function responder(url) {
   }
   if (c === '/rest/v1/listings') {
     return [{ id: AN, slug: 'exemplo', status: 'live', city: 'Lisbon',
-      country: 'Portugal', created_at: '2026-09-01',
+      country: 'Portugal', created_at: '2026-09-01', schedule_mode: 'departures',
+      listing_versions: [{ payload: V }],
       operators: { id: OP, name: 'Atlantic Private Tours', status: 'approved', commission_rate: 0.2 } }];
+  }
+  // As epocas. Duas, de proposito: uma a decorrer e uma ja terminada —
+  // a terminada e que faz aparecer o estado "ended", que e o que o axe
+  // tem de ver com contraste suficiente nos dois temas.
+  // A fita do ano pergunta que dias estao abertos nos proximos 12
+  // meses. Devolvem-se os dias uteis de uns meses e NENHUM de outros,
+  // para a fita ter buracos a serio: e com buracos que ela mostra o
+  // aviso, e e o aviso que o axe tem de ver.
+  if (c === '/rest/v1/rpc/dias_abertos') {
+    const out = [];
+    const h = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(h.getFullYear(), h.getMonth(), h.getDate() + i);
+      const m = d.getMonth();
+      if (m === 0 || m === 1) continue;          // dois meses sem nada
+      const dow = d.getDay();
+      if (dow === 0 || dow === 6) continue;      // so dias uteis
+      out.push({ dia: d.toISOString().slice(0, 10) });
+    }
+    return out;
+  }
+  if (c === '/rest/v1/listing_seasons') {
+    return [{ id: 'ep1', starts_on: '2026-06-01', ends_on: null,
+      weekdays: [1, 2, 3, 4, 5], opens_at: null, closes_at: null,
+      note: 'Summer, two drivers',
+      season_times: [{ starts_at: '09:00:00' }, { starts_at: '14:00:00' }] },
+      { id: 'ep2', starts_on: '2025-06-01', ends_on: '2025-09-30',
+      weekdays: [6, 7], opens_at: null, closes_at: null, note: null,
+      season_times: [{ starts_at: '10:00:00' }] }];
   }
   if (c === '/rest/v1/listing_versions') {
     return [{ id: 'v2', listing_id: AN, version: 2, payload: V, status: 'pending',
@@ -175,6 +205,7 @@ const PAGINAS = [
   ['entrada do portal', '/portal/', '#entrada'],
   ['painel do operador', '/portal/', '.an-l'],
   ['editor de anuncio', '/portal/listing/?id=' + AN, '#titulo'],
+  ['epocas', '/portal/seasons/', '.ep-f'],
   ['calendario', '/portal/calendar/?tour=' + AN, '.hora'],
   ['conta do operador', '/portal/account/', '.ct .cx'],
   ['frota', '/portal/fleet/', '.vd[data-d]'],

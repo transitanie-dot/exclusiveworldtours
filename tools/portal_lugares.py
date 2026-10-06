@@ -439,7 +439,7 @@ def corpo():
             </div>
 
             <div class="campo">
-              <span class="rot">Where the pin falls</span>
+              <span class="rotc">Where the pin falls</span>
               <div class="mapa-mini" id="mapa"></div>
             </div>
 
@@ -465,7 +465,7 @@ def corpo():
             </div>
 
             <div class="campo">
-              <span class="rot">Photograph of the spot</span>
+              <span class="rotc">Photograph of the spot</span>
               <div class="foto-cx">
                 <div class="foto-pre" id="foto-pre"></div>
                 <div class="foto-bts">
