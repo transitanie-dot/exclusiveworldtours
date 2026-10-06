@@ -162,6 +162,19 @@ begin
   begin perform count(*) from promotions;
         mal := mal || 'le promotions'; exception when others then null; end;
 
+  -- E as da 023. Se o anon conseguisse chamar a consumir_quota podia
+  -- gastar a quota de outra pessoa de proposito; se conseguisse ler a
+  -- rate_limits sabia quanto lhe falta para bater no limite; e a
+  -- limpar_quotas e so do cron.
+  begin perform count(*) from rate_limits;
+        mal := mal || 'le rate_limits'; exception when others then null; end;
+  begin perform consumir_quota('sonda', 'x', 1, interval '1 hour');
+        mal := mal || 'chama consumir_quota'; exception when others then null; end;
+  begin perform cliente_ip();
+        mal := mal || 'chama cliente_ip'; exception when others then null; end;
+  begin perform limpar_quotas();
+        mal := mal || 'chama limpar_quotas'; exception when others then null; end;
+
   if array_length(mal, 1) > 0 then
     raise exception 'O ANON VE DEMAIS: %', array_to_string(mal, '; ');
   end if;

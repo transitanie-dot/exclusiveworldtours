@@ -54,6 +54,55 @@ as $$
 $$;
 
 -- ---------------------------------------------------------------------
+-- Quem VAI ser administrador quando a conta aparecer
+-- ---------------------------------------------------------------------
+-- A tabela `admins` aponta para uma linha da auth.users, logo so se pode
+-- preencher depois de a conta existir. Mas a decisao de quem manda e
+-- anterior a isso: e tomada por endereco de email, antes de haver conta
+-- nenhuma. Por isso ha duas tabelas e nao uma.
+--
+-- Esta e a lista de enderecos. O trigger abaixo liga as duas: quando uma
+-- conta nasce com um endereco que esta ca, e promovida na mesma
+-- transacao. Isto e o que faz com que apagar a conta e registar outra
+-- vez com o mesmo email devolva o acesso sozinho — sem isto, ficava-se
+-- de fora do proprio administrador.
+create table if not exists admin_emails (
+  email       text primary key,
+  nota        text,
+  created_at  timestamptz not null default now()
+);
+
+alter table admin_emails enable row level security;
+
+-- Ninguem le isto pelo caminho publico. Nem um administrador: saber
+-- quem e administrador nao serve para nada a quem ja entrou, e a lista
+-- de enderecos de quem manda e exatamente o que um atacante quer para
+-- escolher em quem bater. A policy diz `false` e nao e um descuido.
+drop policy if exists ae_ninguem on admin_emails;
+create policy ae_ninguem on admin_emails for select using (false);
+
+create or replace function promover_admin()
+returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if exists (select 1 from admin_emails
+             where lower(email) = lower(new.email)) then
+    insert into admins (user_id) values (new.id)
+    on conflict (user_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+
+-- So em INSERT, de proposito: numa conta que ja existia a linha em
+-- `admins` tem de ser posta a mao, e esta nota esta repetida na 005
+-- porque e la que alguem vai tropecar nisso.
+drop trigger if exists promover_admin_tg on auth.users;
+create trigger promover_admin_tg
+  after insert on auth.users
+  for each row execute function promover_admin();
+
+-- ---------------------------------------------------------------------
 -- OPERADORES — as empresas que vendem no marketplace
 -- ---------------------------------------------------------------------
 do $$ begin

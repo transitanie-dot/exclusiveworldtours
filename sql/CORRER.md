@@ -60,10 +60,27 @@ for f in 000_supabase_simulado.sql 001_marketplace.sql 002_teste_regras.sql \
          012_pontos_de_encontro.sql 013_avaliacoes.sql \
          014_avaliacoes_publicas.sql 015_teste_avaliacoes.sql \
          017_reservas.sql 018_teste_reservas.sql \
-         020_epocas.sql 021_teste_epocas.sql 022_teste_anon.sql; do
+         020_epocas.sql 021_teste_epocas.sql \
+         023_limites.sql 024_teste_limites.sql \
+         099_teste_anon.sql; do
   psql -h . -p 5433 -U postgres -v ON_ERROR_STOP=1 -f "$f" || break
 done
 ```
+
+Ou, mais curto e sem lista para manter desactualizada — a numeração já
+põe os ficheiros na ordem certa:
+
+```bash
+for f in sql/[0-9]*.sql; do
+  psql -p 5433 -d ewt -v ON_ERROR_STOP=0 -f "$f" || break
+done
+```
+
+O `ON_ERROR_STOP=0` é de propósito: alguns ficheiros de teste *provocam*
+erros para provar que uma regra recusa. O que decide se um teste passou é
+o **código de saída** — todos acabam numa asserção sob `ON_ERROR_STOP 1`
+— e a ausência de `current transaction is aborted` na saída, que é o
+cheiro do erro silencioso.
 
 Duas regras que saíram de um erro a sério, e que não se mudam sem bom
 motivo:
@@ -76,12 +93,16 @@ avaliação — esse teste passava quando corria sozinho e falhava depois do
 `002`, porque depois do `002` aquele utilizador era administrador. Um
 teste cujo resultado depende da ordem em que corre não é um teste.
 
-**O varrimento do `anon` é o último ficheiro.** O `022_teste_anon.sql`
+**O varrimento do `anon` é o último ficheiro.** O `099_teste_anon.sql`
 corre *todas* as funções públicas como `anon`, por isso tem de vir depois
-de todas elas. Chamou-se `016`, depois `019`, e agora `022` — muda de número sempre que
-uma migração nova traz funções públicas. Quando acrescentares uma migração
-com funções públicas, muda o número deste ficheiro para continuar a ser o
-último, e acrescenta lá a função nova.
+de todas elas.
+
+Chamou-se `016`, depois `019`, depois `022`, e a cada migração nova havia
+que o renumerar outra vez — e uma vez já se esqueceu. Agora é o `099`, e
+o número não é decorativo: é alto o suficiente para nenhuma migração o
+ultrapassar, e por isso deixa de haver nada a lembrar. **Quando
+acrescentares uma migração com funções públicas, não mexas no número —
+acrescenta lá a função nova, e mais nada.**
 
 ## As reservas e o dinheiro (017 / 018)
 
@@ -137,3 +158,49 @@ informação que a pessoa vai ter na vida.
 | 9-10 | Uma falta exige minutos e texto, e não se regista antes do tour | É o registo feito no dia que ganha uma disputa de cartão |
 | 11 | Um operador não vê nem mexe nas épocas de outro | |
 | 12 | Quem ainda não migrou continua a vender | |
+
+## Os limites das escritas públicas (023 / 024)
+
+Há exactamente duas funções que um desconhecido pode usar para escrever
+na base: `candidatar_operador` e `registar_pedido`. As duas já tinham
+uma defesa — recusavam o mesmo email duas vezes seguidas — mas essa
+defesa travava o duplo clique e nada mais: quem quer encher a tabela
+muda o email a cada chamada.
+
+O desenho tem um detalhe que decide tudo o resto:
+
+> o corpo do pedido vem do navegador, logo vem do atacante. Um campo
+> chamado `ip` lá dentro é mentira assim que convém. **Não se pode
+> contar por ele.**
+
+O único sinal honesto é o cabeçalho que o proxy põe antes de o pedido
+chegar ao Postgres, que o PostgREST publica em `request.headers`. Mas
+não é garantido: numa chamada que não venha pelo PostgREST o GUC não
+existe. Por isso há **três baldes**, e cada um basta sozinho para o caso
+em que os outros nada dizem:
+
+| Balde | Limite (pedido) | Limite (candidatura) | Para que serve |
+|---|---|---|---|
+| por IP | 10 / hora | 3 / dia | o limite verdadeiro, quando há IP |
+| por email | 5 / hora | 2 / dia | a insistência de uma pessoa concreta |
+| global | 120 / minuto | 30 / hora | o tecto da plataforma — é **este** que protege a tabela quando não há IP e os emails vêm todos diferentes |
+
+| | O que o `024` prova |
+|---|---|
+| 1–3 | A contagem trava no limite; chaves e baldes não se estorvam |
+| 4 | Uma chamada **sem** chave passa — não sabemos nada contra ela |
+| 5 | Janela fixa: cinco chamadas no mesmo minuto são **uma** linha |
+| 6–7 | Sem cabeçalhos, ou com lixo lá dentro, o `cliente_ip()` devolve `sem-ip` e **não estoura** — uma candidatura não pode falhar por causa disto |
+| 8 | Com cabeçalho a valer lê o IP, e de `x-forwarded-for` lê o **primeiro** da cadeia (o cliente, não os proxies) |
+| 9–11 | Os limites batem onde devem: 10 de 12 pedidos, 5 por email, 3 candidaturas |
+| 12 | A `limpar_quotas()` apaga o velho e poupa o novo |
+| 13 | Nem `anon` nem `authenticated` chegam à tabela ou às funções |
+
+A janela é **fixa**, não deslizante: é o agora arredondado para baixo ao
+tamanho dela. Isto mantém a chave primária estável (sem isso cada chamada
+criava uma linha nova), torna o incremento um upsert de uma linha, e faz
+a limpeza ser "apaga o que é mais antigo que um dia". O preço é conhecido
+e aceitável: na fronteira entre duas janelas cabem até 2× o limite. Para
+travar enchimento de tabelas isso é indiferente.
+
+A `limpar_quotas()` vai no **mesmo cron horário** que a `limpar_marcas()`.

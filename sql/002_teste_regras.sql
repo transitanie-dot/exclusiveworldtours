@@ -50,8 +50,18 @@ insert into listings (id, operator_id, slug, city, country) values
   ('cccccccc-0000-0000-0000-000000000003','aaaaaaaa-0000-0000-0000-000000000001','sintra-dia','Lisbon','portugal'),
   ('dddddddd-0000-0000-0000-000000000004','bbbbbbbb-0000-0000-0000-000000000002','toledo-dia','Madrid','spain');
 
--- as politicas so se aplicam a quem nao e dono da tabela
-create role app nologin;
+-- as politicas so se aplicam a quem nao e dono da tabela.
+--
+-- O `create role` vai num bloco que engole o duplicado porque os roles
+-- sao do CLUSTER e nao da base: o rollback do fim deste ficheiro apaga
+-- as linhas mas nao apaga o role. Correr a sequencia duas vezes seguidas
+-- — que e o que se faz para provar que ela e idempotente — chegava aqui
+-- com o role ja feito e enchia a saida de um erro que nao e erro.
+do $$ begin
+  create role app nologin;
+exception
+  when duplicate_object then null;
+end $$;
 grant usage on schema public, auth to app;
 grant select, insert, update, delete on all tables in schema public to app;
 grant execute on all functions in schema public, auth to app;
