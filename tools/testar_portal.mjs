@@ -122,6 +122,23 @@ function cenarioPadrao() {
         customer_phone: null, pickup: null, notes: null,
         you_receive: 392.00, status: 'confirmed', paid_out: false }
     ],
+    // UM DIA QUE JA PASSOU
+    //
+    // O separador "past" e o unico onde o botao da falta aparece, por
+    // isso precisa de uma reserva com data no passado. A agenda do
+    // separador "past" responde com esta.
+    agendaPassado: [
+      { reference: 'EWPAST11', tour_title: 'Private Day in Sintra',
+        booking_date: '2026-09-15', start_time: '09:00:00', pax: 2,
+        vehicle_name: 'Sedan', customer_name: 'Tom Ward',
+        customer_phone: '+351 911 111 111', pickup: 'Hotel Baixa',
+        notes: null, you_receive: 320.00, status: 'paid', paid_out: false }
+    ],
+    faltaEnviada: null,
+    reservasPassado: [
+      { id: '99999999-0000-0000-0000-000000000009',
+        reference: 'EWPAST11', no_show_at: null, no_show_wait: null }
+    ],
     aConvidar: [
       { booking_id: '77777777-0000-0000-0000-000000000007',
         reference: 'EWCCCC44', tour_title: 'Private Day in Sintra',
@@ -166,13 +183,53 @@ function responder(url, metodo, corpo) {
   const c = u.pathname;
 
   if (c === '/rest/v1/rpc/cotar') return CENARIO.cotar;
-  if (c === '/rest/v1/rpc/agenda_do_operador') return CENARIO.agenda;
+  if (c === '/rest/v1/rpc/agenda_do_operador') {
+    // O separador "past" pede um intervalo que acaba hoje; o "next" pede
+    // um que comeca hoje. E a data de fim que os distingue, e e por ela
+    // que se escolhe a lista — assim o mock responde ao que a pagina
+    // perguntou, em vez de devolver sempre o mesmo.
+    var ate = corpo && corpo.p_ate;
+    var hoje = new Date().toISOString().slice(0, 10);
+    if (ate && ate <= hoje && CENARIO.agendaPassado) {
+      return CENARIO.agendaPassado;
+    }
+    return CENARIO.agenda;
+  }
   if (c === '/rest/v1/rpc/reservas_a_convidar') return CENARIO.aConvidar;
   if (c === '/rest/v1/rpc/a_pagar') return CENARIO.aPagar;
   if (c === '/rest/v1/rpc/convidar_por_reserva') return CENARIO.token;
   if (c === '/rest/v1/rpc/cancelar_reserva') return CENARIO.cancelar;
   if (c === '/rest/v1/rpc/marcar_pago') return 2;
-  if (c === '/rest/v1/bookings') return CENARIO.reservasTabela;
+  // A FALTA
+  //
+  // Guarda-se o corpo do pedido para os testes poderem provar o que a
+  // pagina MANDOU, e nao so o que ela mostrou depois. Uma pagina que
+  // mostra "registado" sem ter mandado os minutos passava num teste que
+  // so olhasse para o ecra.
+  if (c === '/rest/v1/rpc/marcar_falta') {
+    CENARIO.faltaEnviada = corpo;
+    // A pagina mostra a agenda outra vez depois de registar, por isso o
+    // cenario tem de passar a dizer que esta reserva ja tem falta — e
+    // assim que se prova que o botao desaparece e a frase aparece.
+    [].concat(CENARIO.reservasTabela || [], CENARIO.reservasPassado || [])
+      .forEach(function (x) {
+        if (x.id === (corpo && corpo.p_booking)) {
+          x.no_show_at = '2026-10-05T18:00:00Z';
+          x.no_show_wait = corpo.p_esperou;
+        }
+      });
+    return { ok: true, reference: 'EWFFFF77' };
+  }
+  if (c === '/rest/v1/bookings') {
+    // A agenda le esta tabela so para ir buscar o id e o estado da
+    // falta das reservas passadas. Devolve-se a linha do dia que ja
+    // passou quando a pagina pergunta por ela; caso contrario, a lista
+    // de sempre, que e a que o admin usa.
+    if (CENARIO.reservasPassado && /no_show_at/.test(url)) {
+      return CENARIO.reservasPassado;
+    }
+    return CENARIO.reservasTabela;
+  }
   // So responde aqui se o cenario do pagamento tiver posto horas. A
   // partidas_no_dia ja tinha um mock em baixo, usado pelos testes do
   // painel do tour, e responder aqui sempre tapava-o — foi exatamente
@@ -1404,6 +1461,105 @@ await t('com tudo publicado, o admin diz que o site esta em dia',
     return [
       ['diz que esta em dia', /site is up to date/i.test(txt)],
       ['diz quando foi a ultima publicacao', /last publish/i.test(txt)]
+    ];
+  });
+
+// =====================================================================
+// A FALTA DO CLIENTE
+// =====================================================================
+// O que esta em jogo: um cliente que nao aparece e dinheiro que o
+// operador ja nao recupera, a menos que haja um registo feito no dia.
+// A funcao na base recusa um texto curto; o que estes testes provam e
+// que a PAGINA recusa antes de la chegar, e com as palavras certas.
+
+cenarioPadrao();
+await t('o botao da falta nao aparece num dia que ainda nao chegou',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    const html = await p.locator('#lista').innerHTML();
+    return [
+      // O separador abre nos dias que VEM. Um botao de "nao apareceu"
+      // numa reserva de Dezembro e um convite a carregar nele por
+      // engano.
+      ['sem botao de falta nos dias que vem', !/data-marca/.test(html)]
+    ];
+  });
+
+cenarioPadrao();
+await t('num dia que ja passou o botao da falta aparece',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    await p.click('#quando button[data-q="past"]');
+    await p.waitForSelector('.ag-falta', { timeout: 6000 });
+    const txt = await p.locator('#lista').innerText();
+    return [
+      ['mostra o dia passado', /EWPAST11/.test(txt)],
+      ['oferece registar a falta', /did not show up/i.test(txt)]
+    ];
+  });
+
+cenarioPadrao();
+await t('a falta sem minutos nao chega a rede',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    await p.click('#quando button[data-q="past"]');
+    await p.waitForSelector('.ag-falta', { timeout: 6000 });
+    await p.click('.ag-falta summary');
+    await p.fill('#fx-t-EWPAST11',
+      'esperei quarenta minutos no lobby e liguei duas vezes');
+    await p.click('[data-marca]');
+    await p.waitForTimeout(300);
+    const av = await p.locator('#fx-av-EWPAST11').innerText();
+    return [
+      ['diz o que falta', /how many minutes/i.test(av)],
+      ['e nao mandou nada', CENARIO.faltaEnviada === null]
+    ];
+  });
+
+cenarioPadrao();
+await t('a falta com "nao apareceu" e so isso tambem nao chega a rede',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    await p.click('#quando button[data-q="past"]');
+    await p.waitForSelector('.ag-falta', { timeout: 6000 });
+    await p.click('.ag-falta summary');
+    await p.fill('#fx-m-EWPAST11', '40');
+    await p.fill('#fx-t-EWPAST11', 'did not show');
+    await p.click('[data-marca]');
+    await p.waitForTimeout(300);
+    const av = await p.locator('#fx-av-EWPAST11').innerText();
+    return [
+      // Isto e o teste que importa. A base ja recusa vinte letras, mas
+      // recusar no browser poupa a ida e, sobretudo, diz PORQUE: nao e
+      // um limite tecnico, e o que faz a diferenca numa disputa.
+      ['explica porque e que nao chega',
+        /will not win a dispute/.test(av)],
+      ['e nao mandou nada', CENARIO.faltaEnviada === null]
+    ];
+  });
+
+cenarioPadrao();
+await t('com minutos e com o relato, a falta e registada e o botao sai',
+  '/portal/bookings/', '.ag-soma', async (p) => {
+    await p.click('#quando button[data-q="past"]');
+    await p.waitForSelector('.ag-falta', { timeout: 6000 });
+    await p.click('.ag-falta summary');
+    await p.fill('#fx-m-EWPAST11', '40');
+    await p.fill('#fx-t-EWPAST11',
+      'Waited 40 minutes at the hotel lobby, called the number on the '
+      + 'booking twice, left a message at reception.');
+    await p.click('[data-marca]');
+    await p.waitForSelector('.fx-feito', { timeout: 6000 });
+    const txt = await p.locator('#lista').innerText();
+    const html = await p.locator('#lista').innerHTML();
+    const env = CENARIO.faltaEnviada || {};
+    return [
+      ['mandou os minutos', env.p_esperou === 40],
+      ['mandou o relato', /hotel lobby/.test(env.p_nota || '')],
+      ['mandou a reserva certa',
+        env.p_booking === '99999999-0000-0000-0000-000000000009'],
+      ['passa a dizer que esta registada', /No-show recorded/.test(txt)],
+      ['diz quanto tempo se esperou', /waited 40 minutes/.test(txt)],
+      // Carregar duas vezes nao pode acontecer: a base recusa a segunda
+      // com uma excecao, e um erro depois de carregar e o pior sitio
+      // para descobrir que ja estava feito.
+      ['e o botao desaparece', !/data-marca/.test(html)]
     ];
   });
 

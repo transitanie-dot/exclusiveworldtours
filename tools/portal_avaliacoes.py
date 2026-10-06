@@ -32,7 +32,8 @@ CSS = """
 
 .rv-l { display: grid; gap: .9rem; }
 .rv-c {
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem;
 }
 .rv-cab {
@@ -55,7 +56,7 @@ CSS = """
   width: 100%%;
 }
 .rv-c h3 {
-  margin: 0 0 .35rem; font: 700 1rem/1.3 'Archivo', system-ui, sans-serif;
+  margin: 0 0 .35rem; font: 700 1rem/1.3 'Inter', system-ui, sans-serif;
   color: %(tinta)s;
 }
 .rv-c > p {
@@ -67,8 +68,7 @@ CSS = """
   border-left: 3px solid %(cor)s; border-radius: 0 4px 4px 0;
 }
 .rv-resp b {
-  display: block; font: 600 .68rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .1em; text-transform: uppercase; color: %(mudo)s;
+  display: block; font: 600 .68rem/1 'Inter', system-ui, sans-serif; color: %(mudo)s;
   margin-bottom: .4rem;
 }
 .rv-resp p {

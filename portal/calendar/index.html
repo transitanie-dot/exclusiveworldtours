@@ -603,6 +603,9 @@ body.pt {
 .cx-v { display: grid; gap: 1.1rem; }
 @media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
 
+.cx-fundo { background: var(--sup-2); }
+.cx-fundo .cx-t { margin-bottom: 1.2rem; }
+
 /* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
    onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
    rotulo nenhum e um campo que ninguem consegue usar as cegas. */
@@ -651,6 +654,27 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] {
   box-shadow: 0 0 0 2px var(--fechado); background: var(--fechado-f);
 }
 textarea { min-height: 7rem; resize: vertical; }
+
+/* ---------------------------------------------------- o cartao afundado
+   Os formularios de "acrescentar" (uma epoca, uma promocao) assentam
+   melhor num fundo afundado: ve-se que sao outra coisa do que a lista
+   por cima deles, sem um titulo a dize-lo.
+
+   Mas o fundo afundado e o MESMO `--sup-2` dos campos, e um campo da cor
+   do que esta por tras dele desaparece — foi exactamente o que aconteceu
+   na pagina das promocoes: o campo "how much" ficou um buraco entre o
+   rotulo e a ajuda. Dentro deste cartao os campos sobem uma superficie.
+
+   Isto TEM de vir depois das regras dos campos acima. `input[type=number]`
+   e `.cx-fundo input` tem a mesma especificidade — (0,1,1) as duas — e
+   num empate ganha a ultima. Posto antes, como estava a primeira vez, o
+   campo continuava invisivel e a regra parecia nao existir. */
+.cx-fundo input, .cx-fundo select, .cx-fundo textarea { background: var(--sup); }
+.cx-fundo input:hover, .cx-fundo select:hover, .cx-fundo textarea:hover {
+  background: var(--sup-3);
+}
+.cx-fundo input:focus-visible, .cx-fundo select:focus-visible,
+.cx-fundo textarea:focus-visible { background: var(--sup); }
 .linha2 { display: grid; gap: 1rem; }
 @media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
 fieldset { border: 0; padding: 0; margin: 0 0 1.2rem; }
@@ -802,11 +826,11 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .cal-topo select { max-width: 22rem; }
 .cal-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 .cal-mes {
-  font: 700 1.05rem/1 'Archivo', system-ui, sans-serif; color: var(--tinta);
+  font: 700 1.05rem/1 'Inter', system-ui, sans-serif; color: var(--tinta);
   min-width: 10.5rem; text-align: center;
 }
 .cal-b {
-  width: 2.6rem; height: 2.6rem; border-radius: 4px; cursor: pointer;
+  width: 2.6rem; height: 2.6rem; border-radius: var(--r-p); cursor: pointer;
   background: var(--sup); border: 1px solid var(--mudo); color: var(--tinta);
   font: 600 1rem/1 'Inter', system-ui, sans-serif;
 }
@@ -815,12 +839,15 @@ table.tab a { color: var(--acento); font-weight: 500; }
 
 .grelha {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  background: var(--sup-3); border: 1px solid var(--sup-3); border-radius: 6px;
+  background: var(--sup-2); border-radius: var(--r-g);
   padding: 3px; margin-bottom: 1rem;
+  /* Sem isto os cantos das celulas espetavam fora do raio da grelha: a
+     grelha era redonda e o conteudo dela quadrado. */
+  overflow: hidden;
 }
 .gd {
   background: var(--sup); text-align: center;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
   letter-spacing: .08em; text-transform: uppercase; color: var(--mudo);
   padding: .55rem 0;
 }
@@ -875,7 +902,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 }
 .leg span { display: flex; align-items: center; gap: .4rem; }
 .leg i {
-  width: 1.1rem; height: 1.1rem; border-radius: 3px; border: 1px solid var(--sup-3);
+  width: 1.1rem; height: 1.1rem; border-radius: var(--r-p); border: 1px solid var(--sup-3);
   display: inline-block;
 }
 .leg .i-open { background: var(--sup); }
@@ -883,19 +910,19 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .leg .i-sold { background: #FBF2EB; }
 
 .horas {
-  background: var(--sup); border: 1px solid var(--sup-3); border-radius: 6px;
+  background: var(--sup); border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: 1.3rem;
 }
 .horas-t {
-  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--mudo);
+  font: 600 .72rem/1 'Inter', system-ui, sans-serif; color: var(--mudo);
   margin: 0 0 .8rem; padding-bottom: .6rem;
   border-bottom: 1px solid var(--sup-3);
 }
 .horas-l { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .hora {
   display: inline-flex; align-items: center; gap: .45rem;
-  background: var(--papel); border: 1px solid var(--mudo); border-radius: 20px;
+  background: var(--papel); border: 1px solid var(--mudo); border-radius: var(--r-c);
   padding: .4rem .5rem .4rem .8rem;
   font: 600 .95rem/1 'Inter', system-ui, sans-serif; color: var(--tinta);
   font-variant-numeric: tabular-nums;
@@ -918,10 +945,11 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .horas-nota b { color: var(--tinta); }
 
 .cal-ajuda {
-  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif; color: var(--tinta-2);
-  background: var(--sup); border-left: 4px solid var(--acento);
-  border-radius: 4px; padding: .9rem 1rem; margin-bottom: 1.3rem;
+  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif; color: var(--acento);
+  background: var(--acento-f);
+  border-radius: var(--r-m); padding: .9rem 1.1rem; margin-bottom: 1.3rem;
 }
+.cal-ajuda b { color: inherit; }
 
 </style>
 
@@ -965,6 +993,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 <a href="/portal/bookings/">Bookings</a>
 <a href="/portal/seasons/">Seasons</a>
 <a href="/portal/calendar/" aria-current="page">Calendar</a>
+<a href="/portal/offers/">Offers</a>
 <a href="/portal/fleet/">Fleet</a>
 <a href="/portal/places/">Meeting points</a>
 <a href="/portal/reviews/">Reviews</a>

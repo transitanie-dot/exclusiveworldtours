@@ -603,6 +603,9 @@ body.pt {
 .cx-v { display: grid; gap: 1.1rem; }
 @media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
 
+.cx-fundo { background: var(--sup-2); }
+.cx-fundo .cx-t { margin-bottom: 1.2rem; }
+
 /* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
    onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
    rotulo nenhum e um campo que ninguem consegue usar as cegas. */
@@ -651,6 +654,27 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] {
   box-shadow: 0 0 0 2px var(--fechado); background: var(--fechado-f);
 }
 textarea { min-height: 7rem; resize: vertical; }
+
+/* ---------------------------------------------------- o cartao afundado
+   Os formularios de "acrescentar" (uma epoca, uma promocao) assentam
+   melhor num fundo afundado: ve-se que sao outra coisa do que a lista
+   por cima deles, sem um titulo a dize-lo.
+
+   Mas o fundo afundado e o MESMO `--sup-2` dos campos, e um campo da cor
+   do que esta por tras dele desaparece — foi exactamente o que aconteceu
+   na pagina das promocoes: o campo "how much" ficou um buraco entre o
+   rotulo e a ajuda. Dentro deste cartao os campos sobem uma superficie.
+
+   Isto TEM de vir depois das regras dos campos acima. `input[type=number]`
+   e `.cx-fundo input` tem a mesma especificidade — (0,1,1) as duas — e
+   num empate ganha a ultima. Posto antes, como estava a primeira vez, o
+   campo continuava invisivel e a regra parecia nao existir. */
+.cx-fundo input, .cx-fundo select, .cx-fundo textarea { background: var(--sup); }
+.cx-fundo input:hover, .cx-fundo select:hover, .cx-fundo textarea:hover {
+  background: var(--sup-3);
+}
+.cx-fundo input:focus-visible, .cx-fundo select:focus-visible,
+.cx-fundo textarea:focus-visible { background: var(--sup); }
 .linha2 { display: grid; gap: 1rem; }
 @media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
 fieldset { border: 0; padding: 0; margin: 0 0 1.2rem; }
@@ -803,7 +827,8 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .p-lista { display: grid; gap: .6rem; }
 .p {
   display: block; width: 100%; text-align: left; cursor: pointer;
-  background: var(--sup); border: 1px solid var(--sup-3); border-radius: 6px;
+  background: var(--sup); border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   border-left: 4px solid var(--sup-3); padding: .8rem .9rem;
   font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: var(--mudo);
 }
@@ -811,22 +836,22 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .p[aria-pressed="true"] { border-left-color: var(--acento); background: var(--papel); }
 .p:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
 .p b {
-  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
+  display: block; font: 700 1rem/1.25 'Inter', system-ui, sans-serif;
   color: var(--tinta); margin-bottom: .15rem;
 }
 /* A etiqueta estava a colar-se a morada: "Eyre Square, Galway1 TOUR".
    Um bloco proprio resolve, e e o que ela e — uma linha a parte. */
 .p-usos {
   display: block; margin-top: .35rem;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--acento);
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
+  color: var(--acento);
 }
 .p-usos + .p-usos { margin-top: .2rem; }
 
 /* ------------------------------------------------------- a fotografia */
 .foto-cx { display: grid; gap: .7rem; }
 .foto-pre {
-  position: relative; border-radius: 6px; overflow: hidden;
+  position: relative; border-radius: var(--r-m); overflow: hidden;
   background: var(--papel); border: 1px solid var(--sup-3);
   aspect-ratio: 4 / 3; display: flex; align-items: center;
   justify-content: center;
@@ -849,7 +874,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
    coordenadas — que sao o que a pessoa esta a editar — para fora do
    ecra. */
 .mapa-mini {
-  border: 1px solid var(--sup-3); border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--sup-3); border-radius: var(--r-m); overflow: hidden;
   background: var(--papel); aspect-ratio: 16 / 9; max-height: 15rem;
 }
 .mapa-mini iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -898,6 +923,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 <a href="/portal/bookings/">Bookings</a>
 <a href="/portal/seasons/">Seasons</a>
 <a href="/portal/calendar/">Calendar</a>
+<a href="/portal/offers/">Offers</a>
 <a href="/portal/fleet/">Fleet</a>
 <a href="/portal/places/" aria-current="page">Meeting points</a>
 <a href="/portal/reviews/">Reviews</a>

@@ -41,6 +41,7 @@ PASSOS = [
     ('o editor de anuncios',      'portal_anuncio.py'),
     ('a agenda do operador',      'portal_agenda.py'),
     ('as epocas',                 'portal_epocas.py'),
+    ('as promocoes',              'portal_promocoes.py'),
     ('o calendario',              'portal_calendario.py'),
     ('a frota',                   'portal_frota.py'),
     ('os pontos de encontro',     'portal_lugares.py'),

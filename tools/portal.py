@@ -36,6 +36,7 @@ NAV = [('My tours', '/portal/'),
        # calendario".
        ('Seasons', '/portal/seasons/'),
        ('Calendar', '/portal/calendar/'),
+       ('Offers', '/portal/offers/'),
        ('Fleet', '/portal/fleet/'),
        ('Meeting points', '/portal/places/'),
        ('Reviews', '/portal/reviews/'),
@@ -46,7 +47,7 @@ CSS = """
 .entrada { max-width: 27rem; margin: 2.5rem auto 4rem; }
 .entrada .cx { padding: 1.6rem; }
 .entrada h1 {
-  font: 700 1.5rem/1.2 'Archivo', system-ui, sans-serif;
+  font: 700 1.5rem/1.2 'Inter', system-ui, sans-serif;
   color: %(tinta)s; margin: 0 0 .5rem;
 }
 .entrada .sub {
@@ -72,12 +73,13 @@ CSS = """
 .resumo { display: grid; gap: .8rem; margin-bottom: 1.4rem; }
 @media (min-width: 680px) { .resumo { grid-template-columns: repeat(3, 1fr); } }
 .rs {
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   border-left: 4px solid %(cor)s; padding: .9rem 1rem;
 }
 .rs b {
   display: block;
-  font: 700 1.6rem/1 'Archivo', system-ui, sans-serif;
+  font: 700 1.6rem/1 'Inter', system-ui, sans-serif;
   color: %(tinta)s; font-variant-numeric: tabular-nums;
 }
 .rs span {
@@ -87,7 +89,8 @@ CSS = """
 /* ------------------------------------------------------- lista de anuncios */
 .an { display: grid; gap: .9rem; }
 .an-l {
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem;
   display: grid; gap: .7rem;
 }
@@ -95,7 +98,7 @@ CSS = """
   .an-l { grid-template-columns: 1fr auto; align-items: center; }
 }
 .an-n {
-  font: 700 1.08rem/1.25 'Archivo', system-ui, sans-serif;
+  font: 700 1.08rem/1.25 'Inter', system-ui, sans-serif;
   color: %(tinta)s; margin: 0 0 .3rem;
 }
 .an-m {
@@ -123,7 +126,7 @@ CSS = """
 }
 .an-site a { color: %(cor_escura)s; font-weight: 600; }
 .an-ar {
-  display: inline-block; padding: .14rem .45rem; border-radius: 3px;
+  display: inline-block; padding: .14rem .45rem; border-radius: var(--r-p);
   font: 700 .7rem/1.5 'Inter', system-ui, sans-serif; letter-spacing: .05em;
   text-transform: uppercase;
 }

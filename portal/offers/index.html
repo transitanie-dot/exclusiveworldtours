@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Review queue — Exclusive World Tours</title>
+<title>Offers — Exclusive World Tours</title>
 <meta name="description" content="Operator area of Exclusive World Tours.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fontes/archivo-latin-600-normal.woff2">
@@ -819,99 +819,66 @@ table.tab a { color: var(--acento); font-weight: 500; }
   font-size: .93rem; color: var(--mudo);
 }
 
-.pub-l { margin: .5rem 0 .6rem; padding-left: 1.1rem; }
-.pub-l li { margin-bottom: .2rem; }
-.pub-l code {
-  font: 600 .84rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.pub-c {
-  margin: 0; padding: .6rem .7rem; border-radius: var(--r-p);
-  background: var(--tinta); color: var(--papel); overflow-x: auto;
-  font: 400 .8rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
-  -webkit-user-select: all; user-select: all;
-}
-.abas {
-  display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.3rem;
-  border-bottom: 2px solid var(--sup-3);
-}
-.aba {
-  font: 600 .9rem/1 'Inter', system-ui, sans-serif;
-  background: none; border: 0; border-bottom: 3px solid transparent;
-  color: var(--mudo); padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px;
-  display: flex; align-items: center; gap: .45rem;
-}
-.aba:hover { color: var(--tinta); }
-.aba[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--acento); }
-.aba .n {
-  font: 700 .72rem/1 'Inter', system-ui, sans-serif;
-  background: var(--acento); color: #FFF; border-radius: var(--r-g);
-  padding: .22rem .42rem; min-width: 1.1rem; text-align: center;
-}
-.aba .n-0 { background: var(--sup-3); color: var(--mudo); }
-
-/* ------------------------------------------------------------- revisao */
-.rv {
+.pr { display: grid; gap: .7rem; margin-bottom: 1.6rem; }
+.pm {
   background: var(--sup); border-radius: var(--r-g);
-  box-shadow: var(--sombra);
-  margin-bottom: 1.2rem; overflow: hidden;
+  padding: 1.1rem 1.2rem; box-shadow: var(--sombra);
+  display: flex; flex-wrap: wrap; gap: .7rem 1rem; align-items: baseline;
 }
-.rv-t {
-  padding: 1rem 1.1rem; border-bottom: 1px solid var(--sup-3);
-  display: grid; gap: .5rem;
+/* Como nas epocas: uma promocao e uma FRASE, nao uma linha de tabela com
+   seis colunas e um cabecalho que e preciso ler para saber o que e
+   cada uma. */
+.pm-f {
+  flex: 1 1 22rem; margin: 0;
+  font-size: 1rem; line-height: 1.6; color: var(--tinta-2);
 }
-@media (min-width: 820px) {
-  .rv-t { grid-template-columns: 1fr auto; align-items: center; }
+.pm-f b { color: var(--tinta); font-weight: 600; }
+.pm-v {
+  font-size: 1.15rem; font-weight: 700; color: var(--acento);
+  background: var(--acento-f); border-radius: var(--r-c);
+  padding: .3rem .85rem; flex: 0 0 auto;
 }
-.rv-n {
-  font: 700 1.1rem/1.25 'Inter', system-ui, sans-serif;
-  color: var(--tinta); margin: 0 0 .25rem;
+.pm-nota {
+  flex-basis: 100%; margin: 0;
+  font-size: .85rem; line-height: 1.5; color: var(--mudo);
 }
-.rv-m {
-  font: 400 .84rem/1.5 'Inter', system-ui, sans-serif; color: var(--mudo);
-  margin: 0; display: flex; flex-wrap: wrap; gap: .4rem .9rem;
-}
-.rv-c { padding: 1.1rem; }
+.pm-acoes { display: flex; gap: .5rem; margin-left: auto; }
+/* Uma promocao desligada ou fora de prazo nao se apaga: fica, recuada.
+   Repetir a campanha do ano passado e uma coisa que se faz. */
+.pm-off .pm-f, .pm-off .pm-f b { color: var(--mudo); }
+.pm-off .pm-v { color: var(--mudo); background: var(--sup-2); }
 
-/* O que mudou. Verde entra, vermelho sai — e com sinal, nao so cor. */
-.dif { display: grid; gap: .6rem; }
-.dif-l {
-  border-left: 4px solid var(--sup-3); padding: .5rem .8rem;
-  background: var(--papel); border-radius: 0 4px 4px 0;
+/* O tipo: percentagem ou valor. Dois botoes e nao um <select>, pela
+   mesma razao do modo nas epocas — a escolha muda o campo seguinte. */
+.tipos { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.tipo {
+  flex: 1 1 0; padding: .8rem 1rem; border-radius: var(--r-m);
+  background: var(--sup); text-align: center;
+  font-size: .93rem; font-weight: 600; color: var(--tinta);
 }
-.dif-campo {
-  font: 600 .7rem/1 'Inter', system-ui, sans-serif; color: var(--mudo);
-  margin: 0 0 .4rem;
-}
-.dif-v {
-  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif;
-  margin: 0; white-space: pre-wrap; word-break: break-word;
-}
-.dif-fora { color: #5F1512; background: #FCEEEC; }
-.dif-dentro { color: #14401A; background: #EDF5EE; }
-.dif-fora::before  { content: '\2212  '; font-weight: 700; }
-.dif-dentro::before { content: '+  '; font-weight: 700; }
-.dif-novo { border-left-color: #1B5E20; }
-.dif-ido  { border-left-color: #B3261E; }
-.dif-mud  { border-left-color: var(--acento); }
-.dif-igual { color: var(--mudo); font-style: italic; }
+.tipo:hover { background: var(--sup-3); }
+.tipo-on { background: var(--sel); color: var(--sel-t); }
+.tipo-on:hover { background: var(--sel); filter: brightness(1.12); }
 
-.rv-acoes {
-  padding: 1rem 1.1rem; border-top: 1px solid var(--sup-3); background: var(--papel);
-  display: grid; gap: .8rem;
-}
-.rv-acoes .campo { margin: 0; }
 
-.dobra {
-  font: 500 .86rem/1 'Inter', system-ui, sans-serif; color: var(--acento);
-  background: none; border: 0; padding: .5rem 0; cursor: pointer;
-  text-decoration: underline;
+/* O que o desconto custa, em euros, antes de se carregar em gravar. */
+.custa {
+  margin: 0 0 1rem; padding: .9rem 1.05rem; border-radius: var(--r-m);
+  background: var(--acento-f); color: var(--acento);
+  font-size: .9rem; line-height: 1.6;
 }
-.todo {
-  margin-top: .8rem; padding: .8rem; border: 1px solid var(--sup-3);
-  border-radius: var(--r-p); background: var(--papel);
-  font: 400 .82rem/1.5 'Inter', ui-monospace, monospace;
-  white-space: pre-wrap; word-break: break-word; max-height: 24rem;
-  overflow: auto; color: var(--tinta-2);
+.custa b { color: inherit; font-weight: 700; }
+
+.janelas { display: grid; gap: 1.2rem; margin-bottom: .6rem; }
+@media (min-width: 760px) { .janelas { grid-template-columns: 1fr 1fr; } }
+.janela {
+  background: var(--sup); border-radius: var(--r-m); padding: 1.1rem;
+}
+.janela h3 {
+  margin: 0 0 .2rem; font-size: .95rem; font-weight: 600; color: var(--tinta);
+}
+.janela p {
+  margin: 0 0 .9rem; font-size: .83rem; line-height: 1.5; color: var(--mudo);
 }
 
 </style>
@@ -938,7 +905,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 <header class="pt-topo">
   <div class="folha pt-topo-i">
     <span class="marca" style="--t:34px"><svg viewBox="0 0 100 100" class="sim" role="img" aria-label="Exclusive World Tours"><path d="M26 8 h48 a6 6 0 0 1 6 6 v72 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="p"/><path d="M26 8 h7 v84 h-7 a6 6 0 0 1 -6 -6 v-72 a6 6 0 0 1 6 -6 Z" class="pf"/><rect x="20" y="36" width="60" height="30" class="c"/><path d="M44.5 54.0 A12.0 12.0 0 0 1 68.5 54.0 Z" class="papel"/><g class="p"><rect x="40.5" y="54.0" width="32.0" height="2.6" rx="1.3"/><rect x="43.7" y="60.9" width="17.9" height="2.1" rx="1.1"/><rect x="51.4" y="66.1" width="12.8" height="2.1" rx="1.1"/></g><g class="c"><rect x="43" y="74" width="27" height="3.4" rx="1.7"/><rect x="47" y="82" width="19" height="3.4" rx="1.7"/></g></svg><span class="marca-nome"><span class="marca-l1">Exclusive</span><span class="marca-l2">World Tours</span></span></span>
-    <span class="pt-etiq">Administration</span>
+    <span class="pt-etiq">Operator portal</span>
     <div class="pt-topo-fim">
       <span class="pt-quem" id="quem"></span>
       
@@ -952,41 +919,105 @@ table.tab a { color: var(--acento); font-weight: 500; }
   </div>
 </header>
   <nav class="pt-nav" aria-label="Portal">
-    <div class="folha pt-nav-i"><a href="/admin/" aria-current="page">Review queue</a>
-<a href="/admin/bookings/">Bookings</a>
-<a href="/admin/operators/">Operators</a>
-<a href="/admin/searches/">Searches</a></div>
+    <div class="folha pt-nav-i"><a href="/portal/">My tours</a>
+<a href="/portal/bookings/">Bookings</a>
+<a href="/portal/seasons/">Seasons</a>
+<a href="/portal/calendar/">Calendar</a>
+<a href="/portal/offers/" aria-current="page">Offers</a>
+<a href="/portal/fleet/">Fleet</a>
+<a href="/portal/places/">Meeting points</a>
+<a href="/portal/reviews/">Reviews</a>
+<a href="/portal/account/">Account</a></div>
   </nav><main id="principal" class="pt-corpo">
   <div class="folha" id="conteudo">
-    <p class="carrega" id="carrega">Loading the queue&hellip;</p>
+    <p class="carrega" id="carrega">Loading your offers&hellip;</p>
 
-    <div id="ad" hidden>
+    <div id="pg" hidden>
       <div class="pt-cab">
-        <h1>Review queue</h1>
-        <p>Nothing an operator writes reaches the site until it passes
-          through here. Every submission is shown against the version
-          already online, so you read what changed and not the whole
-          thing again.</p>
+        <h1>Offers</h1>
+        <p>An offer lowers the price on the site for the dates you pick.
+          It has two windows, and they are not the same thing: when the
+          customer can <b>book</b>, and when they <b>travel</b>.</p>
       </div>
 
-      <p class="aviso" id="publicar" role="status" hidden></p>
+      <p class="aviso" id="av" role="status" hidden></p>
 
-      <div class="abas" id="abas" role="tablist">
-        <button type="button" class="aba" id="aba-tours" data-aba="tours"
-                role="tab" aria-selected="true">
-          Tours <span class="n n-0" id="n-tours">0</span>
-        </button>
-        <button type="button" class="aba" id="aba-ops" data-aba="ops"
-                role="tab" aria-selected="false">
-          Operators <span class="n n-0" id="n-ops">0</span>
-        </button>
-        <button type="button" class="aba" id="aba-peds" data-aba="peds"
-                role="tab" aria-selected="false">
-          Enquiries <span class="n n-0" id="n-peds">0</span>
-        </button>
+      <div class="pr" id="pr"></div>
+
+      <div class="cx cx-fundo">
+        <h2 class="cx-t">Add an offer</h2>
+
+        <div class="campo">
+          <label for="nome">Name it</label>
+          <input type="text" id="nome" placeholder="Early booking, summer">
+          <span class="ajuda">Only you see this. It is here for the day
+            you have three offers running and need to tell them
+            apart.</span>
+        </div>
+
+        <div class="campo">
+          <span class="rotc" id="rotc-tipo">Discount</span>
+          <div class="tipos" role="group" aria-labelledby="rotc-tipo">
+            <button type="button" class="tipo" id="tipo-percent"
+                    aria-pressed="true">A percentage</button>
+            <button type="button" class="tipo" id="tipo-amount"
+                    aria-pressed="false">A fixed amount</button>
+          </div>
+        </div>
+
+        <div class="campo" style="max-width:20rem">
+          <label for="valor">How much</label>
+          <input type="number" id="valor" min="1" step="1" inputmode="decimal">
+          <span class="ajuda" id="valor-u">% off the price</span>
+        </div>
+
+        <p class="custa" id="custa" hidden></p>
+
+        <div class="campo" style="max-width:26rem">
+          <label for="qual">Which tour</label>
+          <select id="qual"></select>
+        </div>
+
+        <div class="janelas">
+          <div class="janela">
+            <h3>Booking window</h3>
+            <p>When the customer has to book to get it. Leave both empty
+              and it is always on.</p>
+            <div class="linha2">
+              <div class="campo">
+                <label for="bd">From</label>
+                <input type="date" id="bd">
+              </div>
+              <div class="campo">
+                <label for="ba">Until</label>
+                <input type="date" id="ba">
+              </div>
+            </div>
+          </div>
+          <div class="janela">
+            <h3>Travel window</h3>
+            <p>Which tour dates it applies to. This is what fills a quiet
+              month without discounting the busy one.</p>
+            <div class="linha2">
+              <div class="campo">
+                <label for="vd">From</label>
+                <input type="date" id="vd">
+              </div>
+              <div class="campo">
+                <label for="va">Until</label>
+                <input type="date" id="va">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="aviso" id="av-novo" role="status" hidden></p>
+
+        <div class="acoes">
+          <button type="button" class="bt bt-p" id="bt-criar">Add
+            offer</button>
+        </div>
       </div>
-
-      <div id="fila"></div>
     </div>
   </div>
 </main>
@@ -995,498 +1026,263 @@ table.tab a { color: var(--acento); font-weight: 500; }
   'use strict';
   if (!window.ewt || window.ewt.avariado) return;
 
-  var E = { aba: 'tours' };
+  var E = { operador: null, anuncios: [], promos: [], tipo: 'percent',
+            comissao: 0.20 };
 
-  // ----------------------------------------------------------- o que mudou
+  function esc(s) { return ewt.escapar(String(s == null ? '' : s)); }
+
+  function legivel(iso) {
+    if (!iso) return '';
+    var p = String(iso).split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString(undefined,
+      { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function janela(de, ate, verbo) {
+    if (!de && !ate) return 'any time';
+    if (de && ate) {
+      return verbo + ' between <b>' + legivel(de) + '</b> and <b>'
+           + legivel(ate) + '</b>';
+    }
+    if (de) return verbo + ' from <b>' + legivel(de) + '</b> onwards';
+    return verbo + ' until <b>' + legivel(ate) + '</b>';
+  }
+
+  function valor(p) {
+    return p.kind === 'percent'
+      ? Number(p.value).toFixed(0) + '% off'
+      : '€' + Number(p.value).toFixed(2) + ' off';
+  }
+
+  // Uma promocao esta a valer hoje? Nao basta `active`: pode estar
+  // ligada e com a janela de reserva ja fechada, e dizer "live" a uma
+  // promocao que nao desconta nada e exactamente o tipo de ecra que faz
+  // alguem passar uma tarde a perceber porque e que o preco nao muda.
+  function aValer(p) {
+    if (!p.active) return false;
+    var h = ewt.iso(new Date());
+    if (p.book_from && h < p.book_from) return false;
+    if (p.book_until && h > p.book_until) return false;
+    return true;
+  }
+
+  function desenhar() {
+    var c = document.getElementById('pr');
+    if (!E.promos.length) {
+      c.innerHTML = '<div class="vazio"><h3>No offer yet</h3>'
+        + '<p>An offer lowers the price the customer sees, for the dates '
+        + 'you choose. Nothing is discounted until you add one.</p></div>';
+      return;
+    }
+    c.innerHTML = E.promos.map(function (p) {
+      var vive = aValer(p);
+      var qual = p.listing_id
+        ? (E.anuncios.filter(function (a) { return a.id === p.listing_id; })[0]
+           || {}).titulo
+        : null;
+      return '<div class="pm' + (vive ? '' : ' pm-off') + '">'
+        + '<span class="pm-v">' + valor(p) + '</span>'
+        + '<p class="pm-f"><b>' + esc(p.label) + '</b> — on '
+        + (qual ? '<b>' + esc(qual) + '</b>' : '<b>every tour</b>')
+        + ', ' + janela(p.book_from, p.book_until, 'booked')
+        + ', ' + janela(p.travel_from, p.travel_until, 'travelling') + '.'
+        + (vive ? '' : ' <span class="est est-draft">'
+            + (p.active ? 'outside its booking window' : 'off') + '</span>')
+        + '</p>'
+        + '<div class="pm-acoes">'
+        + '<button type="button" class="bt bt-s bt-pq" data-liga="' + esc(p.id)
+        +   '" data-para="' + (p.active ? 'off' : 'on') + '">'
+        +   (p.active ? 'Turn off' : 'Turn on') + '</button>'
+        + '<button type="button" class="bt bt-mal bt-pq" data-apaga="'
+        +   esc(p.id) + '">Remove</button>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // ------------------------------------------------- o que isto custa
   //
-  // Comparam-se os campos que interessam, e nao o jsonb inteiro: a
-  // ordem das chaves num objecto nao e informacao, e um diff que a
-  // conta diz que mudou tudo quando nao mudou nada.
-  var CAMPOS = [
-    ['title', 'Title'], ['slug', 'Web address'], ['kicker', 'Kicker'],
-    ['lede', 'Opening paragraph'], ['city', 'City'],
-    ['countryName', 'Country'], ['ticketTo', 'Main attraction'],
-    ['metaDesc', 'Search description'],
-    ['stopsIntro', 'Intro to the stops'],
-    ['includedIntro', 'Intro to what is included'],
-    ['notIncluded', 'Not included'], ['practical', 'Practical notes']
-  ];
+  // O numero, antes de gravar. Um operador que carrega em "20%" sem
+  // perceber de onde sai descobre-o no fim do mes, e essa e a pior
+  // altura para descobrir.
+  function custa() {
+    var c = document.getElementById('custa');
+    var v = parseFloat(document.getElementById('valor').value);
+    if (!(v > 0)) { c.hidden = true; return; }
 
-  function texto(x) {
-    if (x === null || x === undefined) return '';
-    return typeof x === 'string' ? x : JSON.stringify(x, null, 1);
+    // Um tour de exemplo a 500 euros chega para a conta ser concreta. O
+    // que importa nao e o numero exacto: e que a comissao continua a
+    // ser calculada sobre o preco JA DESCONTADO, e que a diferenca sai
+    // toda do lado do operador.
+    var base = 500;
+    var desc = E.tipo === 'percent' ? base * v / 100 : v;
+    if (desc > base) { desc = base; }
+    var novo = base - desc;
+    var antes = base - base * E.comissao;
+    var depois = novo - novo * E.comissao;
+
+    c.innerHTML = 'On a €500 tour this takes the price to <b>€'
+      + novo.toFixed(2) + '</b>. Your share goes from €'
+      + antes.toFixed(2) + ' to <b>€' + depois.toFixed(2)
+      + '</b> — the discount comes out of your margin, not our '
+      + 'commission.';
+    c.hidden = false;
   }
 
-  function precos(p) {
-    var d = (p.durations && p.durations[0]) || {};
-    var t = (d.tiers || []).map(function (x) {
-      return 'up to ' + x.max + (x.vehicle ? ' (' + x.vehicle + ')' : '')
-        + ': €' + ewt.euros(x.price);
-    });
-    return (d.h ? d.h + '\n' : '') + t.join('\n')
-      + ((d.startTimes || []).length ? '\ndeparts ' + d.startTimes.join(', ') : '');
-  }
+  // ------------------------------------------------------------ gravar
+  async function criar() {
+    var nome = document.getElementById('nome').value.trim();
+    var v = parseFloat(document.getElementById('valor').value);
+    var qual = document.getElementById('qual').value;
 
-  function listas(p) {
-    return {
-      'Stops': (p.stops || []).map(function (s) {
-        return (s.when ? s.when + ' — ' : '') + (s.h || '')
-          + (s.p ? '\n    ' + s.p : '');
-      }).join('\n'),
-      'Included': (p.included || []).join('\n'),
-      'Questions': (p.faq || []).map(function (f) {
-        return f[0] + '\n    ' + f[1];
-      }).join('\n'),
-      'Photographs': (p.photos || []).map(function (f) {
-        return (f.url || f.id || '') + (f.alt ? ' — ' + f.alt : '');
-      }).join('\n')
+    if (nome.length < 3) {
+      ewt.dizer('av-novo', 'Give the offer a name you will recognise in '
+        + 'six months.', 'mal');
+      return;
+    }
+    if (!(v > 0)) {
+      ewt.dizer('av-novo', 'How much is the discount?', 'mal'); return;
+    }
+    if (E.tipo === 'percent' && v > 90) {
+      // A base tem a mesma regra. Dizer-se aqui poupa a ida e explica
+      // porque: noventa por cento nao e uma promocao, e um dedo no
+      // teclado.
+      ewt.dizer('av-novo', 'A discount above 90% is almost certainly a '
+        + 'typo. If you really mean it, use a fixed amount.', 'mal');
+      return;
+    }
+
+    var l = {
+      operator_id: E.operador,
+      listing_id: qual || null,
+      label: nome,
+      kind: E.tipo,
+      value: v,
+      book_from: document.getElementById('bd').value || null,
+      book_until: document.getElementById('ba').value || null,
+      travel_from: document.getElementById('vd').value || null,
+      travel_until: document.getElementById('va').value || null
+      // `quem_paga` fica no valor por omissao: ver a nota no topo deste
+      // ficheiro. Um operador nao tem um interruptor para gastar a
+      // comissao da plataforma.
     };
+
+    if (l.book_from && l.book_until && l.book_until < l.book_from) {
+      ewt.dizer('av-novo', 'The booking window ends before it starts.', 'mal');
+      return;
+    }
+    if (l.travel_from && l.travel_until && l.travel_until < l.travel_from) {
+      ewt.dizer('av-novo', 'The travel window ends before it starts.', 'mal');
+      return;
+    }
+
+    var b = document.getElementById('bt-criar');
+    b.disabled = true;
+    var r = await ewt.sb.from('promotions').insert(l);
+    b.disabled = false;
+    if (r.error) { ewt.dizer('av-novo', ewt.legivel(r.error), 'mal'); return; }
+
+    document.getElementById('nome').value = '';
+    document.getElementById('valor').value = '';
+    document.getElementById('custa').hidden = true;
+    ewt.dizer('av-novo', '', '');
+    ewt.dizer('av', 'Offer added. The price on the site changes now.', 'bem');
+    await carregar();
   }
 
-  function diferenca(velho, novo) {
-    var linhas = [];
-
-    function par(rotulo, a, b) {
-      a = texto(a); b = texto(b);
-      if (a === b) return;
-      var tipo = !a ? 'novo' : (!b ? 'ido' : 'mud');
-      var h = '<div class="dif-l dif-' + tipo + '">'
-        + '<p class="dif-campo">' + rotulo + '</p>';
-      if (a) h += '<p class="dif-v dif-fora">' + ewt.escapar(a) + '</p>';
-      if (b) h += '<p class="dif-v dif-dentro">' + ewt.escapar(b) + '</p>';
-      linhas.push(h + '</div>');
-    }
-
-    if (!velho) {
-      // Primeira versao: nao ha nada com que comparar, mostra-se tudo.
-      CAMPOS.forEach(function (c) {
-        if (novo[c[0]]) par(c[1], '', novo[c[0]]);
-      });
-      par('Prices', '', precos(novo));
-      var l = listas(novo);
-      Object.keys(l).forEach(function (k) { if (l[k]) par(k, '', l[k]); });
-      return '<div class="dif">' + linhas.join('') + '</div>';
-    }
-
-    CAMPOS.forEach(function (c) { par(c[1], velho[c[0]], novo[c[0]]); });
-    par('Prices', precos(velho), precos(novo));
-    var lv = listas(velho), ln = listas(novo);
-    Object.keys(ln).forEach(function (k) { par(k, lv[k], ln[k]); });
-
-    if (!linhas.length) {
-      return '<p class="dif-v dif-igual">Nothing changed from the version '
-        + 'already on the site. Approving this only moves the version '
-        + 'number forward.</p>';
-    }
-    return '<div class="dif">' + linhas.join('') + '</div>';
+  async function ligar(id, para) {
+    var r = await ewt.sb.from('promotions')
+      .update({ active: para === 'on' }).eq('id', id);
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+    await carregar();
   }
 
-  // ----------------------------------------------------------- as filas
-  async function filaTours() {
-    var r = await ewt.sb.from('listing_versions')
-      .select('id, listing_id, version, payload, submitted_at, '
-            + 'listings(id, slug, status, city, country, '
-            + 'operators(id, name, status, commission_rate))')
-      .eq('status', 'pending')
-      .order('submitted_at', { ascending: true });
-
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-
-    var vs = r.data || [];
-    if (!vs.length) {
-      return '<div class="vazio"><h3>Nothing waiting</h3>'
-        + '<p>No operator has submitted anything since you last looked.</p></div>';
-    }
-
-    // A versao que esta no ar, para cada um dos anuncios desta fila.
-    var noAr = {};
-    var ids = vs.map(function (v) { return v.listing_id; });
-    var a = await ewt.sb.from('listing_versions')
-      .select('listing_id, version, payload')
-      .in('listing_id', ids).eq('status', 'approved')
-      .order('version', { ascending: false });
-    (a.data || []).forEach(function (x) {
-      if (!noAr[x.listing_id]) noAr[x.listing_id] = x;
-    });
-
-    return vs.map(function (v) {
-      var l = v.listings || {};
-      var o = l.operators || {};
-      var velho = noAr[v.listing_id];
-      var p = v.payload || {};
-      var d = new Date(v.submitted_at);
-      return '<article class="rv" data-v="' + v.id + '">'
-        + '<div class="rv-t"><div>'
-        + '<h3 class="rv-n">' + ewt.escapar(p.title || l.slug) + '</h3>'
-        + '<p class="rv-m">'
-        + '<span><b>' + ewt.escapar(o.name || 'unknown operator') + '</b></span>'
-        + '<span class="est est-' + (o.status || 'pending') + '">'
-        + (o.status || 'pending') + '</span>'
-        + '<span>' + ewt.escapar(l.city || '') + ', '
-        + ewt.escapar(l.country || '') + '</span>'
-        + '<span>version ' + v.version
-        + (velho ? ' — replacing v' + velho.version : ' — first version')
-        + '</span>'
-        + '<span>sent ' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-        + '</span></p></div>'
-        + '<div class="acoes">'
-        + '<a class="bt bt-s bt-pq" href="/tours/' + ewt.escapar(l.slug)
-        + '/" target="_blank" rel="noopener">See it live</a>'
-        + '</div></div>'
-        + '<div class="rv-c">' + diferenca(velho ? velho.payload : null, p)
-        + '<button type="button" class="dobra" data-todo="' + v.id
-        + '">Show everything that was submitted</button>'
-        + '<pre class="todo" id="todo-' + v.id + '" hidden>'
-        + ewt.escapar(JSON.stringify(p, null, 2)) + '</pre>'
-        + '</div>'
-        + '<div class="rv-acoes">'
-        + '<div class="campo"><label for="nota-' + v.id + '">Why, if you '
-        + 'are sending it back</label>'
-        + '<input type="text" id="nota-' + v.id + '" maxlength="300" '
-        + 'placeholder="The operator reads this exactly as you write it."></div>'
-        + '<div class="acoes">'
-        + '<button type="button" class="bt bt-p" data-sim="' + v.id
-        + '">Approve</button>'
-        + '<button type="button" class="bt bt-mal" data-nao="' + v.id
-        + '">Send back</button>'
-        + '</div>'
-        + '<p class="aviso" id="av-' + v.id + '" role="status" hidden></p>'
-        + '</div></article>';
-    }).join('');
+  async function apagar(id) {
+    if (!window.confirm('Remove this offer? Prices go back to normal '
+        + 'straight away.')) return;
+    var r = await ewt.sb.from('promotions').delete().eq('id', id);
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+    ewt.dizer('av', 'Offer removed.', 'bem');
+    await carregar();
   }
 
-  async function filaOperadores() {
-    var r = await ewt.sb.from('operator_applications')
-      .select('*').eq('status', 'new').order('created_at', { ascending: true });
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-    var cs = r.data || [];
-    if (!cs.length) {
-      return '<div class="vazio"><h3>No new applications</h3>'
-        + '<p>When an operator applies through <a href="/suppliers/">the '
-        + 'operators page</a>, it lands here.</p></div>';
-    }
-    return cs.map(function (c) {
-      var d = new Date(c.created_at);
-      function l(r, v) {
-        return v ? '<p class="rv-m"><span><b>' + r + ':</b> '
-          + ewt.escapar(v) + '</span></p>' : '';
-      }
-      return '<article class="rv" data-c="' + c.id + '">'
-        + '<div class="rv-t"><div>'
-        + '<h3 class="rv-n">' + ewt.escapar(c.company) + '</h3>'
-        + '<p class="rv-m"><span>' + ewt.escapar(c.city) + ', '
-        + ewt.escapar(c.country) + '</span>'
-        + '<span>applied ' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short' }) + '</span></p>'
-        + '</div></div>'
-        + '<div class="rv-c">'
-        + l('Contact', c.contact_name) + l('Email', c.email)
-        + l('Phone', c.phone) + l('Website', c.website)
-        + l('Years operating', c.years) + l('Licence', c.licence_ref)
-        + (c.fleet ? '<div class="dif-l dif-mud"><p class="dif-campo">Fleet'
-            + '</p><p class="dif-v">' + ewt.escapar(c.fleet) + '</p></div>' : '')
-        + (c.tours_text ? '<div class="dif-l dif-mud"><p class="dif-campo">'
-            + 'Tours they run today</p><p class="dif-v">'
-            + ewt.escapar(c.tours_text) + '</p></div>' : '')
-        + '</div>'
-        + '<div class="rv-acoes"><div class="acoes">'
-        + '<button type="button" class="bt bt-p" data-cand="' + c.id
-        + '">Approve as an operator</button>'
-        + '<button type="button" class="bt bt-s" data-cont="' + c.id
-        + '">Mark as contacted</button>'
-        + '<button type="button" class="bt bt-mal" data-rec="' + c.id
-        + '">Decline</button>'
-        + '</div>'
-        + '<p class="aviso" id="av-' + c.id + '" role="status" hidden></p>'
-        + '<p class="lado-nota">Approving creates the company in the system '
-        + 'with a 20% commission. It does not give anyone a login yet — '
-        + 'you link their email to the company afterwards.</p>'
-        + '</div></article>';
-    }).join('');
-  }
-
-  async function filaPedidos() {
-    // Dois grupos: os por responder, e os que ja viajaram e ainda nao
-    // foram convidados a avaliar. O segundo e o que se esquece — e
-    // esquece-se exatamente quando mais vale a pena pedir, logo a
-    // seguir ao dia.
-    var r = await ewt.sb.from('enquiries')
-      .select('*').in('status', ['new', 'answered', 'booked'])
+  async function carregar() {
+    var r = await ewt.sb.from('promotions')
+      .select('id, listing_id, label, kind, value, active, '
+            + 'book_from, book_until, travel_from, travel_until')
       .order('created_at', { ascending: false });
-    if (r.error) return '<div class="aviso aviso-mal">'
-      + ewt.escapar(ewt.legivel(r.error)) + '</div>';
-    var ps = r.data || [];
-    if (!ps.length) {
-      return '<div class="vazio"><h3>No unanswered enquiries</h3>'
-        + '<p>Everything anyone asked has been dealt with.</p></div>';
-    }
-    return '<div class="tab-rolo" tabindex="0" role="region" '
-      + 'aria-label="Table, scrolls sideways"><table class="tab">'
-      + '<thead><tr><th>When</th><th>Who</th><th>Wants</th><th>Message</th>'
-      + '<th></th></tr></thead><tbody>'
-      + ps.map(function (p) {
-        var d = new Date(p.created_at);
-        return '<tr><td>' + d.toLocaleDateString(undefined,
-            { day: 'numeric', month: 'short' }) + '</td>'
-          + '<td><b>' + ewt.escapar(p.name) + '</b><br>'
-          + '<a href="mailto:' + ewt.escapar(p.email) + '">'
-          + ewt.escapar(p.email) + '</a>'
-          + (p.phone ? '<br>' + ewt.escapar(p.phone) : '') + '</td>'
-          + '<td>' + (p.listing_slug
-              ? '<a href="/tours/' + ewt.escapar(p.listing_slug) + '/">'
-                + ewt.escapar(p.listing_slug) + '</a><br>' : '')
-          + (p.wanted_on ? ewt.escapar(p.wanted_on) : '')
-          + (p.party ? '<br>' + p.party + ' people' : '') + '</td>'
-          + '<td>' + ewt.escapar(p.message || '') + '</td>'
-          + '<td><button type="button" class="bt bt-s bt-pq" data-ped="'
-          + p.id + '">Done</button></td></tr>';
-      }).join('')
-      + '</tbody></table></div>';
+    if (r.error) { ewt.dizer('av', ewt.legivel(r.error), 'mal'); return; }
+    E.promos = r.data || [];
+    desenhar();
   }
 
-  // ---------------------------------------------------------- as acoes
-  async function decidir(id, aprovar) {
-    var nota = document.getElementById('nota-' + id);
-    var texto = nota ? nota.value.trim() : '';
-    if (!aprovar && texto.length < 5) {
-      ewt.dizer('av-' + id, 'Write why you are sending it back. The '
-        + 'operator sees this sentence and nothing else — without it '
-        + 'they do not know what to change.', 'mal');
-      if (nota) nota.focus();
-      return;
-    }
-    travar(id, true);
-    var r = await ewt.sb.rpc('rever_versao', {
-      p_version: id, p_aprovar: aprovar, p_nota: texto || null
+  function desenharTipo() {
+    ['percent', 'amount'].forEach(function (k) {
+      var b = document.getElementById('tipo-' + k);
+      var on = E.tipo === k;
+      b.className = 'tipo' + (on ? ' tipo-on' : '');
+      b.setAttribute('aria-pressed', on);
     });
-    travar(id, false);
-    if (r.error) {
-      ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal');
-      return;
-    }
-    var art = document.querySelector('[data-v="' + id + '"]');
-    if (art) {
-      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
-        + (aprovar ? '<b>Approved.</b> It is live in the database. The site '
-            + 'picks it up the next time the pages are generated.'
-          : '<b>Sent back.</b> The operator sees your note in their portal.')
-        + '</p></div>';
-    }
-    contar();
+    var i = document.getElementById('valor');
+    i.setAttribute('max', E.tipo === 'percent' ? '90' : '100000');
+    document.getElementById('valor-u').textContent =
+      E.tipo === 'percent' ? '% off the price' : 'euros off the price';
+    custa();
   }
 
-  function travar(id, sim) {
-    var art = document.querySelector('[data-v="' + id + '"], [data-c="' + id + '"]');
-    if (!art) return;
-    [].slice.call(art.querySelectorAll('.bt')).forEach(function (b) {
-      b.disabled = sim;
-    });
-  }
-
-  async function candidatura(id, acao) {
-    travar(id, true);
-    var r;
-    if (acao === 'aprovar') {
-      r = await ewt.sb.rpc('aprovar_candidatura', { p_cand: id });
-    } else {
-      r = await ewt.sb.from('operator_applications')
-        .update({ status: acao === 'contactar' ? 'contacted' : 'declined' })
-        .eq('id', id);
-    }
-    travar(id, false);
-    if (r.error) { ewt.dizer('av-' + id, ewt.legivel(r.error), 'mal'); return; }
-    var art = document.querySelector('[data-c="' + id + '"]');
-    if (art) {
-      art.innerHTML = '<div class="rv-c"><p class="dif-v">'
-        + (acao === 'aprovar'
-            ? '<b>Approved.</b> The company exists in the system. Next: link '
-              + 'their email to it so they can sign in to the portal.'
-            : acao === 'contactar'
-              ? '<b>Marked as contacted.</b> It leaves this queue.'
-              : '<b>Declined.</b> Nothing was sent to them automatically.')
-        + '</p></div>';
-    }
-    contar();
-    // Acabou de aprovar: a faixa tem de dizer logo que ha mais um a
-    // espera de publicacao. Dizer so na proxima visita era tarde.
-    porPublicar();
-  }
-
-  async function pedidoFeito(id) {
-    var r = await ewt.sb.from('enquiries')
-      .update({ status: 'answered' }).eq('id', id);
-    if (r.error) { alert(ewt.legivel(r.error)); return; }
-    var tr = document.querySelector('[data-ped="' + id + '"]');
-    if (tr) {
-      var l = tr.closest('tr');
-      if (l) l.remove();
-    }
-    contar();
-  }
-
-  // ============================================================
-  // APROVADO NAO E PUBLICADO
-  //
-  // O botao dizia "Approve and publish" e nao publicava nada: aprovar
-  // escreve na base, e o site e estatico. Entre aprovar e correr o
-  // gerador podem passar dias, e o operador fica com o tour aprovado e
-  // invisivel sem saber porque.
-  //
-  // Esta faixa compara o que a base aprovou com o /assets/publicado.json
-  // que o gerador escreveu, e diz quantos estao a espera — com os
-  // comandos, para nao se andar a procura deles.
-  // ============================================================
-  async function porPublicar() {
-    var cx = document.getElementById('publicar');
-    if (!cx) return;
-
-    var pub = null;
-    try {
-      var r = await fetch('/assets/publicado.json', { cache: 'no-store' });
-      if (r.ok) pub = await r.json();
-    } catch (e) { /* sem manifesto, cala-se */ }
-    if (!pub || !pub.tours) { cx.hidden = true; return; }
-
-    // A ultima versao aprovada de cada anuncio que esta 'live'.
-    var r2 = await ewt.sb.from('listings')
-      .select('slug, status, listing_versions(version, status)')
-      .eq('status', 'live');
-    if (r2.error) { cx.hidden = true; return; }
-
-    var atrasados = [];
-    (r2.data || []).forEach(function (l) {
-      var vs = (l.listing_versions || [])
-        .filter(function (v) { return v.status === 'approved'; })
-        .map(function (v) { return v.version; });
-      if (!vs.length) return;
-      var aprovada = Math.max.apply(null, vs);
-      var p = pub.tours[l.slug];
-      if (!p || p.versao !== aprovada) {
-        atrasados.push({ slug: l.slug, aprovada: aprovada,
-                         no_site: p ? p.versao : null });
-      }
-    });
-
-    if (!atrasados.length) {
-      cx.className = 'aviso aviso-bem';
-      cx.innerHTML = '<b>The site is up to date.</b> Everything approved is '
-        + 'published' + (pub.gerado_em
-            ? ' — last publish ' + new Date(pub.gerado_em)
-                .toLocaleString(undefined, { day: 'numeric', month: 'short',
-                  hour: '2-digit', minute: '2-digit' })
-            : '') + '.';
-      cx.hidden = false;
-      return;
-    }
-
-    cx.className = 'aviso aviso-nota';
-    cx.innerHTML = '<b>' + atrasados.length + ' tour'
-      + (atrasados.length === 1 ? ' is' : 's are')
-      + ' approved and not on the site yet.</b> Approving writes to the '
-      + 'database; the site is static and only changes when you publish it.'
-      + '<ul class="pub-l">' + atrasados.map(function (x) {
-          return '<li><code>' + ewt.escapar(x.slug) + '</code> — approved v'
-            + x.aprovada + ', site shows '
-            + (x.no_site === null ? 'nothing' : 'v' + x.no_site) + '</li>';
-        }).join('') + '</ul>'
-      + '<pre class="pub-c">python3 tools/puxar.py\npython3 tools/gerar.py\ngit add -A \u0026\u0026 git commit -m \'Publicar os tours aprovados\' \u0026\u0026 git push</pre>';
-    cx.hidden = false;
-  }
-
-  // --------------------------------------------------------- as contagens
-  async function contar() {
-    var a = await ewt.sb.from('listing_versions')
-      .select('id', { count: 'exact', head: true }).eq('status', 'pending');
-    var b = await ewt.sb.from('operator_applications')
-      .select('id', { count: 'exact', head: true }).eq('status', 'new');
-    var c = await ewt.sb.from('enquiries')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['new', 'answered', 'booked']);
-    pintar('n-tours', a.count); pintar('n-ops', b.count); pintar('n-peds', c.count);
-  }
-  function pintar(id, n) {
-    var e = document.getElementById(id);
-    if (!e) return;
-    n = n || 0;
-    e.textContent = n;
-    e.className = 'n' + (n ? '' : ' n-0');
-  }
-
-  // ------------------------------------------------------------- abas
-  async function mostrar(qual) {
-    E.aba = qual;
-    ['tours','ops','peds'].forEach(function (k) {
-      var b = document.getElementById('aba-' + k);
-      if (b) b.setAttribute('aria-selected', k === qual ? 'true' : 'false');
-    });
-    var c = document.getElementById('fila');
-    c.innerHTML = '<p class="carrega">Loading…</p>';
-    c.innerHTML = qual === 'tours' ? await filaTours()
-                : qual === 'ops'   ? await filaOperadores()
-                :                    await filaPedidos();
-  }
-
-  // ----------------------------------------------------------- arranque
   (async function () {
-    var p = await ewt.exigir_entrada();
-    if (!p) return;
+    var u = await ewt.exigir_entrada();
+    if (!u) return;
+
+    var o = await ewt.sb.from('operators').select('id, name, commission_rate');
+    if (o.error || !(o.data || []).length) {
+      document.getElementById('carrega').hidden = true;
+      document.getElementById('conteudo').innerHTML =
+        '<div class="vazio"><h3>No operator account</h3>'
+        + '<p>Offers belong to an operator, and this sign-in is not linked '
+        + 'to one yet.</p></div>';
+      return;
+    }
+    E.operador = o.data[0].id;
+    if (o.data[0].commission_rate != null) {
+      E.comissao = Number(o.data[0].commission_rate);
+    }
+
+    var r = await ewt.sb.from('listings')
+      .select('id, slug, city, listing_versions(payload)').order('created_at');
+    E.anuncios = (r.data || []).map(function (l) {
+      var v = (l.listing_versions || [])[0];
+      l.titulo = (v && v.payload && v.payload.title) || l.slug;
+      return l;
+    });
 
     document.getElementById('carrega').hidden = true;
+    document.getElementById('pg').hidden = false;
 
-    if (!p.admin) {
-      // Nao e um erro tecnico: e alguem num sitio que nao e o dele.
-      document.getElementById('conteudo').innerHTML =
-        '<div class="vazio"><h3>This area is not yours</h3>'
-        + '<p>You are signed in as ' + ewt.escapar(p.email)
-        + ', which is not an administrator account.</p>'
-        + '<a class="bt bt-p" href="/portal/">Go to the operator portal</a></div>';
-      return;
-    }
+    document.getElementById('qual').innerHTML =
+      '<option value="">Every tour</option>'
+      + E.anuncios.map(function (a) {
+          return '<option value="' + esc(a.id) + '">' + esc(a.titulo)
+            + '</option>';
+        }).join('');
 
-    document.getElementById('ad').hidden = false;
-
-    // A faixa do que esta aprovado e nao publicado. Nao se espera por ela
-    // para desenhar a fila: e informacao de contexto, nao o conteudo.
-    porPublicar();
-
-    document.getElementById('abas').addEventListener('click', function (ev) {
-      var b = ev.target.closest('.aba');
-      if (b) mostrar(b.getAttribute('data-aba'));
+    ['percent', 'amount'].forEach(function (k) {
+      document.getElementById('tipo-' + k).addEventListener('click', function () {
+        E.tipo = k; desenharTipo();
+      });
+    });
+    document.getElementById('valor').addEventListener('input', custa);
+    document.getElementById('bt-criar').addEventListener('click', criar);
+    document.getElementById('pr').addEventListener('click', function (ev) {
+      var a = ev.target.closest('[data-apaga]');
+      if (a) { apagar(a.getAttribute('data-apaga')); return; }
+      var l = ev.target.closest('[data-liga]');
+      if (l) { ligar(l.getAttribute('data-liga'), l.getAttribute('data-para')); }
     });
 
-    // A data da viagem grava-se ao sair do campo e nao a cada tecla.
-    document.getElementById('fila').addEventListener('change', function (ev) {
-      var i = ev.target.closest('[data-viajou]');
-      if (i) marcarViagem(i.getAttribute('data-viajou'), i.value);
-    });
-
-    document.getElementById('fila').addEventListener('click', function (ev) {
-      var t = ev.target;
-      var b = t.closest('button');
-      if (!b) return;
-      if (b.hasAttribute('data-sim'))  return decidir(b.getAttribute('data-sim'), true);
-      if (b.hasAttribute('data-nao'))  return decidir(b.getAttribute('data-nao'), false);
-      if (b.hasAttribute('data-cand')) return candidatura(b.getAttribute('data-cand'), 'aprovar');
-      if (b.hasAttribute('data-cont')) return candidatura(b.getAttribute('data-cont'), 'contactar');
-      if (b.hasAttribute('data-rec'))  return candidatura(b.getAttribute('data-rec'), 'recusar');
-      if (b.hasAttribute('data-ped'))  return pedidoFeito(b.getAttribute('data-ped'));
-      if (b.hasAttribute('data-conv')) return convidar(b.getAttribute('data-conv'));
-      if (b.hasAttribute('data-liga')) return copiarLigacao(b.getAttribute('data-liga'));
-      if (b.hasAttribute('data-todo')) {
-        var pre = document.getElementById('todo-' + b.getAttribute('data-todo'));
-        if (pre) {
-          pre.hidden = !pre.hidden;
-          b.textContent = pre.hidden ? 'Show everything that was submitted'
-                                     : 'Hide the full submission';
-        }
-      }
-    });
-
-    await contar();
-    await mostrar('tours');
+    desenharTipo();
+    await carregar();
   })();
 })();
 

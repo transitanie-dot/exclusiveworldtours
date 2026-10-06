@@ -603,6 +603,9 @@ body.pt {
 .cx-v { display: grid; gap: 1.1rem; }
 @media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
 
+.cx-fundo { background: var(--sup-2); }
+.cx-fundo .cx-t { margin-bottom: 1.2rem; }
+
 /* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
    onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
    rotulo nenhum e um campo que ninguem consegue usar as cegas. */
@@ -651,6 +654,27 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] {
   box-shadow: 0 0 0 2px var(--fechado); background: var(--fechado-f);
 }
 textarea { min-height: 7rem; resize: vertical; }
+
+/* ---------------------------------------------------- o cartao afundado
+   Os formularios de "acrescentar" (uma epoca, uma promocao) assentam
+   melhor num fundo afundado: ve-se que sao outra coisa do que a lista
+   por cima deles, sem um titulo a dize-lo.
+
+   Mas o fundo afundado e o MESMO `--sup-2` dos campos, e um campo da cor
+   do que esta por tras dele desaparece — foi exactamente o que aconteceu
+   na pagina das promocoes: o campo "how much" ficou um buraco entre o
+   rotulo e a ajuda. Dentro deste cartao os campos sobem uma superficie.
+
+   Isto TEM de vir depois das regras dos campos acima. `input[type=number]`
+   e `.cx-fundo input` tem a mesma especificidade — (0,1,1) as duas — e
+   num empate ganha a ultima. Posto antes, como estava a primeira vez, o
+   campo continuava invisivel e a regra parecia nao existir. */
+.cx-fundo input, .cx-fundo select, .cx-fundo textarea { background: var(--sup); }
+.cx-fundo input:hover, .cx-fundo select:hover, .cx-fundo textarea:hover {
+  background: var(--sup-3);
+}
+.cx-fundo input:focus-visible, .cx-fundo select:focus-visible,
+.cx-fundo textarea:focus-visible { background: var(--sup); }
 .linha2 { display: grid; gap: 1rem; }
 @media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
 fieldset { border: 0; padding: 0; margin: 0 0 1.2rem; }
@@ -802,12 +826,13 @@ table.tab a { color: var(--acento); font-weight: 500; }
   padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px; }
 .rv-aba[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--acento); }
 .rv-aba .n { display: inline-block; margin-left: .4rem; padding: 0 .4rem;
-  border-radius: 10px; background: var(--sup-3); color: var(--tinta-2);
+  border-radius: var(--r-g); background: var(--sup-3); color: var(--tinta-2);
   font-size: .78rem; font-weight: 700; }
 
 /* Uma reserva. A referencia e a data sao o que se procura com os olhos,
    por isso sao as duas unicas coisas em destaque. */
-.rb { border: 1px solid var(--sup-3); border-radius: 10px; background: var(--sup);
+.rb { border-radius: var(--r-g); background: var(--sup);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: .8rem; }
 .rb-t { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: baseline;
   margin-bottom: .55rem; }
@@ -823,7 +848,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 /* O estado, numa palavra e numa cor. 'confirmed' nao e 'paid' e a
    diferenca e dinheiro: uma esta cobrada, a outra tem um cartao
    guardado e uma cobranca marcada. */
-.et { display: inline-block; padding: .18rem .5rem; border-radius: 4px;
+.et { display: inline-block; padding: .18rem .5rem; border-radius: var(--r-p);
   font: 700 .72rem/1.4 'Inter', system-ui, sans-serif; letter-spacing: .06em;
   text-transform: uppercase; }
 .et-paid { background: #e6f2ea; color: #1d5c35; }
@@ -836,7 +861,8 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .rb-cob { font-size: .85rem; color: var(--mudo); margin: .4rem 0 0;
   padding-left: .7rem; border-left: 2px solid var(--sup-3); }
 
-.pg { border: 1px solid var(--sup-3); border-radius: 10px; background: var(--sup);
+.pg { border-radius: var(--r-g); background: var(--sup);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: .8rem; display: flex;
   flex-wrap: wrap; gap: .7rem 1.2rem; align-items: center;
   justify-content: space-between; }

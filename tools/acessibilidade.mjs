@@ -55,7 +55,14 @@ function responder(url) {
   // preco preenchido e a pagina de confirmacao com as linhas todas — e
   // nao a pagina vazia a dizer "One moment".
   if (c === '/rest/v1/rpc/agenda_do_operador') {
-    return [{ reference: 'EWAAAA22', tour_title: 'Private Day in Sintra',
+    return [{ reference: 'EWPAST11', tour_title: 'Private Day in Sintra',
+      booking_date: '2020-01-01', start_time: '09:00:00', pax: 2,
+      vehicle_name: 'Sedan', customer_name: 'Tom Ward',
+      customer_phone: '+351 911 111 111', pickup: 'Hotel Baixa',
+      notes: null, you_receive: 320.00, status: 'paid', paid_out: false,
+      id: '99999999-0000-0000-0000-000000000009',
+      no_show_at: null, no_show_wait: null },
+      { reference: 'EWAAAA22', tour_title: 'Private Day in Sintra',
       booking_date: '2026-12-01', start_time: '08:30:00', pax: 2,
       vehicle_name: 'Sedan', customer_name: 'Maria Oliveira',
       customer_phone: '+351 900 000 000', pickup: 'Hotel Avenida',
@@ -135,6 +142,21 @@ function responder(url) {
     }
     return out;
   }
+  // As promocoes. Tres estados, para o axe ver os tres: uma a valer,
+  // uma desligada, e uma ligada mas com a janela de reserva ja fechada —
+  // que e o caso que a pagina tem de distinguir das outras duas.
+  if (c === '/rest/v1/promotions') {
+    return [{ id: 'pr1', listing_id: null, label: 'Early booking, summer',
+      kind: 'percent', value: 15, active: true,
+      book_from: null, book_until: null,
+      travel_from: '2027-06-01', travel_until: '2027-08-31' },
+      { id: 'pr2', listing_id: AN, label: 'November fill-up',
+      kind: 'amount', value: 40, active: false,
+      book_from: null, book_until: null, travel_from: null, travel_until: null },
+      { id: 'pr3', listing_id: null, label: 'Last winter', kind: 'percent',
+      value: 10, active: true, book_from: '2020-01-01',
+      book_until: '2020-03-01', travel_from: null, travel_until: null }];
+  }
   if (c === '/rest/v1/listing_seasons') {
     return [{ id: 'ep1', starts_on: '2026-06-01', ends_on: null,
       weekdays: [1, 2, 3, 4, 5], opens_at: null, closes_at: null,
@@ -206,6 +228,7 @@ const PAGINAS = [
   ['painel do operador', '/portal/', '.an-l'],
   ['editor de anuncio', '/portal/listing/?id=' + AN, '#titulo'],
   ['epocas', '/portal/seasons/', '.ep-f'],
+  ['promocoes', '/portal/offers/', '.pm-f'],
   ['calendario', '/portal/calendar/?tour=' + AN, '.hora'],
   ['conta do operador', '/portal/account/', '.ct .cx'],
   ['frota', '/portal/fleet/', '.vd[data-d]'],

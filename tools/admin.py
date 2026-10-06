@@ -42,7 +42,7 @@ CSS = """
   font: 600 .84rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 .pub-c {
-  margin: 0; padding: .6rem .7rem; border-radius: 4px;
+  margin: 0; padding: .6rem .7rem; border-radius: var(--r-p);
   background: %(tinta)s; color: %(papel)s; overflow-x: auto;
   font: 400 .8rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
   -webkit-user-select: all; user-select: all;
@@ -60,15 +60,16 @@ CSS = """
 .aba:hover { color: %(tinta)s; }
 .aba[aria-selected="true"] { color: %(tinta)s; border-bottom-color: %(cor)s; }
 .aba .n {
-  font: 700 .72rem/1 'Archivo', system-ui, sans-serif;
-  background: %(cor)s; color: #FFF; border-radius: 10px;
+  font: 700 .72rem/1 'Inter', system-ui, sans-serif;
+  background: %(cor)s; color: #FFF; border-radius: var(--r-g);
   padding: .22rem .42rem; min-width: 1.1rem; text-align: center;
 }
 .aba .n-0 { background: %(risco)s; color: %(mudo)s; }
 
 /* ------------------------------------------------------------- revisao */
 .rv {
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   margin-bottom: 1.2rem; overflow: hidden;
 }
 .rv-t {
@@ -79,7 +80,7 @@ CSS = """
   .rv-t { grid-template-columns: 1fr auto; align-items: center; }
 }
 .rv-n {
-  font: 700 1.1rem/1.25 'Archivo', system-ui, sans-serif;
+  font: 700 1.1rem/1.25 'Inter', system-ui, sans-serif;
   color: %(tinta)s; margin: 0 0 .25rem;
 }
 .rv-m {
@@ -95,8 +96,7 @@ CSS = """
   background: %(papel)s; border-radius: 0 4px 4px 0;
 }
 .dif-campo {
-  font: 600 .7rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .1em; text-transform: uppercase; color: %(mudo)s;
+  font: 600 .7rem/1 'Inter', system-ui, sans-serif; color: %(mudo)s;
   margin: 0 0 .4rem;
 }
 .dif-v {
@@ -125,7 +125,7 @@ CSS = """
 }
 .todo {
   margin-top: .8rem; padding: .8rem; border: 1px solid %(risco)s;
-  border-radius: 4px; background: %(papel)s;
+  border-radius: var(--r-p); background: %(papel)s;
   font: 400 .82rem/1.5 'Inter', ui-monospace, monospace;
   white-space: pre-wrap; word-break: break-word; max-height: 24rem;
   overflow: auto; color: %(texto)s;

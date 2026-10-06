@@ -165,8 +165,6 @@ CSS = """
 .hora button:hover { background: var(--fechado-f); color: var(--fechado); }
 
 /* ------------------------------------------------------- o formulario */
-.ep-novo { background: var(--sup-2); }
-.ep-novo .cx-t { margin-bottom: 1.2rem; }
 
 /* O modo: duas opcoes, lado a lado, com a explicacao de cada uma por
    baixo. Um <select> com dois valores esconde metade da decisao atras
@@ -636,7 +634,7 @@ def corpo():
       <h2 class="cx-t" style="margin:1.8rem 0 .7rem">Your seasons</h2>
       <div class="eps" id="eps"></div>
 
-      <div class="cx ep-novo">
+      <div class="cx cx-fundo">
         <h2 class="cx-t">Add a season</h2>
 
         <div class="modos" role="group" aria-label="How this tour runs">

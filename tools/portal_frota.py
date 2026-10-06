@@ -44,7 +44,8 @@ CSS = """
 .v {
   display: grid; grid-template-columns: 1fr auto; gap: .5rem 1rem;
   align-items: center; width: 100%%; text-align: left;
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   border-left: 4px solid %(risco)s;
   padding: .8rem .9rem; cursor: pointer;
   font: 400 .92rem/1.4 'Inter', system-ui, sans-serif; color: %(texto)s;
@@ -53,17 +54,17 @@ CSS = """
 .v[aria-pressed="true"] { border-left-color: %(cor)s; background: %(papel)s; }
 .v:focus-visible { outline: 3px solid %(cor)s; outline-offset: 2px; }
 .v b {
-  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
+  display: block; font: 700 1rem/1.25 'Inter', system-ui, sans-serif;
   color: %(tinta)s; margin-bottom: .15rem;
 }
 .v span { color: %(mudo)s; font-size: .84rem; }
 .v-pax {
-  font: 700 1.1rem/1 'Archivo', system-ui, sans-serif; color: %(tinta)s;
+  font: 700 1.1rem/1 'Inter', system-ui, sans-serif; color: %(tinta)s;
   text-align: right; white-space: nowrap;
 }
 .v-pax small {
   display: block; font: 400 .66rem/1.3 'Inter', system-ui, sans-serif;
-  color: %(mudo)s; letter-spacing: .06em; text-transform: uppercase;
+  color: %(mudo)s;
 }
 .v-inativo { opacity: .55; }
 
@@ -81,7 +82,7 @@ CSS = """
   margin-bottom: 1rem;
 }
 .vc-quem {
-  font: 700 1.05rem/1.2 'Archivo', system-ui, sans-serif; color: %(tinta)s;
+  font: 700 1.05rem/1.2 'Inter', system-ui, sans-serif; color: %(tinta)s;
 }
 .vc-quem span {
   display: block; font: 400 .82rem/1.4 'Inter', system-ui, sans-serif;
@@ -89,11 +90,11 @@ CSS = """
 }
 .vc-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 .vc-mes {
-  font: 700 1rem/1 'Archivo', system-ui, sans-serif; color: %(tinta)s;
+  font: 700 1rem/1 'Inter', system-ui, sans-serif; color: %(tinta)s;
   min-width: 10rem; text-align: center;
 }
 .vc-b {
-  width: 2.6rem; height: 2.6rem; border-radius: 4px; cursor: pointer;
+  width: 2.6rem; height: 2.6rem; border-radius: var(--r-p); cursor: pointer;
   background: %(branco)s; border: 1px solid %(mudo)s; color: %(tinta)s;
   font: 600 1rem/1 'Inter', system-ui, sans-serif;
 }
@@ -102,12 +103,12 @@ CSS = """
 
 .vgrelha {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  background: %(risco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: var(--sup-2); border-radius: var(--r-g);
   padding: 3px; margin-bottom: 1rem;
 }
 .vgd {
   background: %(branco)s; text-align: center;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
   letter-spacing: .08em; text-transform: uppercase; color: %(mudo)s;
   padding: .55rem 0;
 }
@@ -146,7 +147,7 @@ CSS = """
 }
 .vleg span { display: flex; align-items: center; gap: .4rem; }
 .vleg i {
-  width: 1.1rem; height: 1.1rem; border-radius: 3px;
+  width: 1.1rem; height: 1.1rem; border-radius: var(--r-p);
   border: 1px solid %(risco)s; display: inline-block;
 }
 .vleg .i-open { background: %(branco)s; }
@@ -155,8 +156,8 @@ CSS = """
 
 .vc-ajuda {
   font: 400 .88rem/1.6 'Inter', system-ui, sans-serif; color: %(texto)s;
-  background: %(branco)s; border-left: 4px solid %(cor)s;
-  border-radius: 4px; padding: .9rem 1rem; margin-bottom: 1.2rem;
+  background: %(branco)s; 
+  border-radius: var(--r-p); padding: .9rem 1rem; margin-bottom: 1.2rem;
 }
 .vc-ajuda b { color: %(tinta)s; }
 """ % CORES

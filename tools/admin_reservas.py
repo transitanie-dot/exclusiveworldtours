@@ -49,12 +49,13 @@ CSS = """
   padding: .8rem .9rem; cursor: pointer; margin-bottom: -2px; }
 .rv-aba[aria-selected="true"] { color: %(tinta)s; border-bottom-color: %(cor)s; }
 .rv-aba .n { display: inline-block; margin-left: .4rem; padding: 0 .4rem;
-  border-radius: 10px; background: %(risco)s; color: %(texto)s;
+  border-radius: var(--r-g); background: %(risco)s; color: %(texto)s;
   font-size: .78rem; font-weight: 700; }
 
 /* Uma reserva. A referencia e a data sao o que se procura com os olhos,
    por isso sao as duas unicas coisas em destaque. */
-.rb { border: 1px solid %(risco)s; border-radius: 10px; background: %(branco)s;
+.rb { border-radius: var(--r-g); background: %(branco)s;
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: .8rem; }
 .rb-t { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: baseline;
   margin-bottom: .55rem; }
@@ -70,7 +71,7 @@ CSS = """
 /* O estado, numa palavra e numa cor. 'confirmed' nao e 'paid' e a
    diferenca e dinheiro: uma esta cobrada, a outra tem um cartao
    guardado e uma cobranca marcada. */
-.et { display: inline-block; padding: .18rem .5rem; border-radius: 4px;
+.et { display: inline-block; padding: .18rem .5rem; border-radius: var(--r-p);
   font: 700 .72rem/1.4 'Inter', system-ui, sans-serif; letter-spacing: .06em;
   text-transform: uppercase; }
 .et-paid { background: #e6f2ea; color: #1d5c35; }
@@ -83,7 +84,8 @@ CSS = """
 .rb-cob { font-size: .85rem; color: %(mudo)s; margin: .4rem 0 0;
   padding-left: .7rem; border-left: 2px solid %(risco)s; }
 
-.pg { border: 1px solid %(risco)s; border-radius: 10px; background: %(branco)s;
+.pg { border-radius: var(--r-g); background: %(branco)s;
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: .8rem; display: flex;
   flex-wrap: wrap; gap: .7rem 1.2rem; align-items: center;
   justify-content: space-between; }

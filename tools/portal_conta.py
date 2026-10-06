@@ -35,7 +35,7 @@ CSS = """
 .ct-l:last-child { border-bottom: 0; }
 .ct-l b { color: %(tinta)s; text-align: right; }
 .conta-g {
-  background: %(papel)s; border-left: 4px solid %(cor)s; border-radius: 4px;
+  background: %(papel)s; border-left: 4px solid %(cor)s; border-radius: var(--r-p);
   padding: .9rem 1rem; margin-top: .9rem;
   font: 400 .92rem/1.7 'Inter', system-ui, sans-serif; color: %(texto)s;
 }

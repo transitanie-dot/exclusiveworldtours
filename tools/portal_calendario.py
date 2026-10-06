@@ -35,11 +35,11 @@ CSS = """
 .cal-topo select { max-width: 22rem; }
 .cal-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 .cal-mes {
-  font: 700 1.05rem/1 'Archivo', system-ui, sans-serif; color: %(tinta)s;
+  font: 700 1.05rem/1 'Inter', system-ui, sans-serif; color: %(tinta)s;
   min-width: 10.5rem; text-align: center;
 }
 .cal-b {
-  width: 2.6rem; height: 2.6rem; border-radius: 4px; cursor: pointer;
+  width: 2.6rem; height: 2.6rem; border-radius: var(--r-p); cursor: pointer;
   background: %(branco)s; border: 1px solid %(mudo)s; color: %(tinta)s;
   font: 600 1rem/1 'Inter', system-ui, sans-serif;
 }
@@ -48,12 +48,15 @@ CSS = """
 
 .grelha {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  background: %(risco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: var(--sup-2); border-radius: var(--r-g);
   padding: 3px; margin-bottom: 1rem;
+  /* Sem isto os cantos das celulas espetavam fora do raio da grelha: a
+     grelha era redonda e o conteudo dela quadrado. */
+  overflow: hidden;
 }
 .gd {
   background: %(branco)s; text-align: center;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
   letter-spacing: .08em; text-transform: uppercase; color: %(mudo)s;
   padding: .55rem 0;
 }
@@ -108,7 +111,7 @@ CSS = """
 }
 .leg span { display: flex; align-items: center; gap: .4rem; }
 .leg i {
-  width: 1.1rem; height: 1.1rem; border-radius: 3px; border: 1px solid %(risco)s;
+  width: 1.1rem; height: 1.1rem; border-radius: var(--r-p); border: 1px solid %(risco)s;
   display: inline-block;
 }
 .leg .i-open { background: %(branco)s; }
@@ -116,19 +119,19 @@ CSS = """
 .leg .i-sold { background: #FBF2EB; }
 
 .horas {
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   padding: 1rem 1.1rem; margin-bottom: 1.3rem;
 }
 .horas-t {
-  font: 600 .72rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .12em; text-transform: uppercase; color: %(mudo)s;
+  font: 600 .72rem/1 'Inter', system-ui, sans-serif; color: %(mudo)s;
   margin: 0 0 .8rem; padding-bottom: .6rem;
   border-bottom: 1px solid %(risco)s;
 }
 .horas-l { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .hora {
   display: inline-flex; align-items: center; gap: .45rem;
-  background: %(papel)s; border: 1px solid %(mudo)s; border-radius: 20px;
+  background: %(papel)s; border: 1px solid %(mudo)s; border-radius: var(--r-c);
   padding: .4rem .5rem .4rem .8rem;
   font: 600 .95rem/1 'Inter', system-ui, sans-serif; color: %(tinta)s;
   font-variant-numeric: tabular-nums;
@@ -151,10 +154,11 @@ CSS = """
 .horas-nota b { color: %(tinta)s; }
 
 .cal-ajuda {
-  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif; color: %(texto)s;
-  background: %(branco)s; border-left: 4px solid %(cor)s;
-  border-radius: 4px; padding: .9rem 1rem; margin-bottom: 1.3rem;
+  font: 400 .88rem/1.55 'Inter', system-ui, sans-serif; color: var(--acento);
+  background: var(--acento-f);
+  border-radius: var(--r-m); padding: .9rem 1.1rem; margin-bottom: 1.3rem;
 }
+.cal-ajuda b { color: inherit; }
 """ % CORES
 
 

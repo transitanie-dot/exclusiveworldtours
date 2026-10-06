@@ -32,7 +32,7 @@ CSS = """
 .ops-f { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.1rem; }
 .ops-f button {
   font: 500 .85rem/1 'Inter', system-ui, sans-serif;
-  background: %(branco)s; border: 1px solid %(mudo)s; border-radius: 20px;
+  background: %(branco)s; border: 1px solid %(mudo)s; border-radius: var(--r-c);
   color: %(texto)s; padding: .5rem .9rem; cursor: pointer;
 }
 .ops-f button[aria-pressed="true"] {
@@ -40,9 +40,9 @@ CSS = """
 }
 .com-in { width: 5.5rem; }
 .barra {
-  height: .5rem; border-radius: 3px; background: %(cor)s; min-width: 3px;
+  height: .5rem; border-radius: var(--r-p); background: %(cor)s; min-width: 3px;
 }
-.barra-f { background: %(risco)s; border-radius: 3px; }
+.barra-f { background: %(risco)s; border-radius: var(--r-p); }
 .proc-q { font-weight: 600; color: %(tinta)s; }
 .nada { font-style: italic; color: %(mudo)s; }
 """ % CORES

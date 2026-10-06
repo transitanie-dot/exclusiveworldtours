@@ -43,7 +43,8 @@ CSS = """
 .p-lista { display: grid; gap: .6rem; }
 .p {
   display: block; width: 100%%; text-align: left; cursor: pointer;
-  background: %(branco)s; border: 1px solid %(risco)s; border-radius: 6px;
+  background: %(branco)s; border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   border-left: 4px solid %(risco)s; padding: .8rem .9rem;
   font: 400 .9rem/1.45 'Inter', system-ui, sans-serif; color: %(mudo)s;
 }
@@ -51,22 +52,22 @@ CSS = """
 .p[aria-pressed="true"] { border-left-color: %(cor)s; background: %(papel)s; }
 .p:focus-visible { outline: 3px solid %(cor)s; outline-offset: 2px; }
 .p b {
-  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
+  display: block; font: 700 1rem/1.25 'Inter', system-ui, sans-serif;
   color: %(tinta)s; margin-bottom: .15rem;
 }
 /* A etiqueta estava a colar-se a morada: "Eyre Square, Galway1 TOUR".
    Um bloco proprio resolve, e e o que ela e — uma linha a parte. */
 .p-usos {
   display: block; margin-top: .35rem;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
-  letter-spacing: .08em; text-transform: uppercase; color: %(cor_escura)s;
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
+  color: %(cor_escura)s;
 }
 .p-usos + .p-usos { margin-top: .2rem; }
 
 /* ------------------------------------------------------- a fotografia */
 .foto-cx { display: grid; gap: .7rem; }
 .foto-pre {
-  position: relative; border-radius: 6px; overflow: hidden;
+  position: relative; border-radius: var(--r-m); overflow: hidden;
   background: %(papel)s; border: 1px solid %(risco)s;
   aspect-ratio: 4 / 3; display: flex; align-items: center;
   justify-content: center;
@@ -89,7 +90,7 @@ CSS = """
    coordenadas — que sao o que a pessoa esta a editar — para fora do
    ecra. */
 .mapa-mini {
-  border: 1px solid %(risco)s; border-radius: 6px; overflow: hidden;
+  border: 1px solid %(risco)s; border-radius: var(--r-m); overflow: hidden;
   background: %(papel)s; aspect-ratio: 16 / 9; max-height: 15rem;
 }
 .mapa-mini iframe { width: 100%%; height: 100%%; border: 0; display: block; }

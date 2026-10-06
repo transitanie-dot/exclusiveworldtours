@@ -603,6 +603,9 @@ body.pt {
 .cx-v { display: grid; gap: 1.1rem; }
 @media (min-width: 900px) { .cx-2 { grid-template-columns: 1fr 1fr; } }
 
+.cx-fundo { background: var(--sup-2); }
+.cx-fundo .cx-t { margin-bottom: 1.2rem; }
+
 /* Visivel para um leitor de ecra, invisivel para o olho. Serve as listas
    onde repetir o rotulo cinco vezes seria ruido, mas onde um campo sem
    rotulo nenhum e um campo que ninguem consegue usar as cegas. */
@@ -651,6 +654,27 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] {
   box-shadow: 0 0 0 2px var(--fechado); background: var(--fechado-f);
 }
 textarea { min-height: 7rem; resize: vertical; }
+
+/* ---------------------------------------------------- o cartao afundado
+   Os formularios de "acrescentar" (uma epoca, uma promocao) assentam
+   melhor num fundo afundado: ve-se que sao outra coisa do que a lista
+   por cima deles, sem um titulo a dize-lo.
+
+   Mas o fundo afundado e o MESMO `--sup-2` dos campos, e um campo da cor
+   do que esta por tras dele desaparece — foi exactamente o que aconteceu
+   na pagina das promocoes: o campo "how much" ficou um buraco entre o
+   rotulo e a ajuda. Dentro deste cartao os campos sobem uma superficie.
+
+   Isto TEM de vir depois das regras dos campos acima. `input[type=number]`
+   e `.cx-fundo input` tem a mesma especificidade — (0,1,1) as duas — e
+   num empate ganha a ultima. Posto antes, como estava a primeira vez, o
+   campo continuava invisivel e a regra parecia nao existir. */
+.cx-fundo input, .cx-fundo select, .cx-fundo textarea { background: var(--sup); }
+.cx-fundo input:hover, .cx-fundo select:hover, .cx-fundo textarea:hover {
+  background: var(--sup-3);
+}
+.cx-fundo input:focus-visible, .cx-fundo select:focus-visible,
+.cx-fundo textarea:focus-visible { background: var(--sup); }
 .linha2 { display: grid; gap: 1rem; }
 @media (min-width: 620px) { .linha2 { grid-template-columns: 1fr 1fr; } }
 fieldset { border: 0; padding: 0; margin: 0 0 1.2rem; }
@@ -805,7 +829,8 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .v {
   display: grid; grid-template-columns: 1fr auto; gap: .5rem 1rem;
   align-items: center; width: 100%; text-align: left;
-  background: var(--sup); border: 1px solid var(--sup-3); border-radius: 6px;
+  background: var(--sup); border-radius: var(--r-g);
+  box-shadow: var(--sombra);
   border-left: 4px solid var(--sup-3);
   padding: .8rem .9rem; cursor: pointer;
   font: 400 .92rem/1.4 'Inter', system-ui, sans-serif; color: var(--tinta-2);
@@ -814,17 +839,17 @@ table.tab a { color: var(--acento); font-weight: 500; }
 .v[aria-pressed="true"] { border-left-color: var(--acento); background: var(--papel); }
 .v:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
 .v b {
-  display: block; font: 700 1rem/1.25 'Archivo', system-ui, sans-serif;
+  display: block; font: 700 1rem/1.25 'Inter', system-ui, sans-serif;
   color: var(--tinta); margin-bottom: .15rem;
 }
 .v span { color: var(--mudo); font-size: .84rem; }
 .v-pax {
-  font: 700 1.1rem/1 'Archivo', system-ui, sans-serif; color: var(--tinta);
+  font: 700 1.1rem/1 'Inter', system-ui, sans-serif; color: var(--tinta);
   text-align: right; white-space: nowrap;
 }
 .v-pax small {
   display: block; font: 400 .66rem/1.3 'Inter', system-ui, sans-serif;
-  color: var(--mudo); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--mudo);
 }
 .v-inativo { opacity: .55; }
 
@@ -842,7 +867,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
   margin-bottom: 1rem;
 }
 .vc-quem {
-  font: 700 1.05rem/1.2 'Archivo', system-ui, sans-serif; color: var(--tinta);
+  font: 700 1.05rem/1.2 'Inter', system-ui, sans-serif; color: var(--tinta);
 }
 .vc-quem span {
   display: block; font: 400 .82rem/1.4 'Inter', system-ui, sans-serif;
@@ -850,11 +875,11 @@ table.tab a { color: var(--acento); font-weight: 500; }
 }
 .vc-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 .vc-mes {
-  font: 700 1rem/1 'Archivo', system-ui, sans-serif; color: var(--tinta);
+  font: 700 1rem/1 'Inter', system-ui, sans-serif; color: var(--tinta);
   min-width: 10rem; text-align: center;
 }
 .vc-b {
-  width: 2.6rem; height: 2.6rem; border-radius: 4px; cursor: pointer;
+  width: 2.6rem; height: 2.6rem; border-radius: var(--r-p); cursor: pointer;
   background: var(--sup); border: 1px solid var(--mudo); color: var(--tinta);
   font: 600 1rem/1 'Inter', system-ui, sans-serif;
 }
@@ -863,12 +888,12 @@ table.tab a { color: var(--acento); font-weight: 500; }
 
 .vgrelha {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  background: var(--sup-3); border: 1px solid var(--sup-3); border-radius: 6px;
+  background: var(--sup-2); border-radius: var(--r-g);
   padding: 3px; margin-bottom: 1rem;
 }
 .vgd {
   background: var(--sup); text-align: center;
-  font: 600 .66rem/1 'Archivo', system-ui, sans-serif;
+  font: 600 .66rem/1 'Inter', system-ui, sans-serif;
   letter-spacing: .08em; text-transform: uppercase; color: var(--mudo);
   padding: .55rem 0;
 }
@@ -907,7 +932,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 }
 .vleg span { display: flex; align-items: center; gap: .4rem; }
 .vleg i {
-  width: 1.1rem; height: 1.1rem; border-radius: 3px;
+  width: 1.1rem; height: 1.1rem; border-radius: var(--r-p);
   border: 1px solid var(--sup-3); display: inline-block;
 }
 .vleg .i-open { background: var(--sup); }
@@ -916,8 +941,8 @@ table.tab a { color: var(--acento); font-weight: 500; }
 
 .vc-ajuda {
   font: 400 .88rem/1.6 'Inter', system-ui, sans-serif; color: var(--tinta-2);
-  background: var(--sup); border-left: 4px solid var(--acento);
-  border-radius: 4px; padding: .9rem 1rem; margin-bottom: 1.2rem;
+  background: var(--sup); 
+  border-radius: var(--r-p); padding: .9rem 1rem; margin-bottom: 1.2rem;
 }
 .vc-ajuda b { color: var(--tinta); }
 
@@ -963,6 +988,7 @@ table.tab a { color: var(--acento); font-weight: 500; }
 <a href="/portal/bookings/">Bookings</a>
 <a href="/portal/seasons/">Seasons</a>
 <a href="/portal/calendar/">Calendar</a>
+<a href="/portal/offers/">Offers</a>
 <a href="/portal/fleet/" aria-current="page">Fleet</a>
 <a href="/portal/places/">Meeting points</a>
 <a href="/portal/reviews/">Reviews</a>
