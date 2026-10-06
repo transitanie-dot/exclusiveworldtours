@@ -42,6 +42,23 @@ vai para /tours/. Sem JS nao ha sugestoes, mas escrever e carregar em
 procurar continua a funcionar.
 """
 
+def html(cidades=None):
+    """A caixa de procura. `cidades` sao as cidades de partida reais; com
+    elas, o campo passa a VIAJAR por elas em vez de ficar parado numa
+    pergunta. Sem elas, fica a pergunta e mais nada — nunca se inventa
+    uma cidade onde nao ha tours."""
+    attr = ''
+    if cidades:
+        attr = ' data-cidades="%s"' % e(', '.join(cidades))
+    return HTML.replace('placeholder="Where are you going?"',
+                        'placeholder="Where are you going?"' + attr)
+
+
+def e(t):
+    return (str(t).replace('&', '&amp;').replace('<', '&lt;')
+            .replace('>', '&gt;').replace('"', '&quot;'))
+
+
 HTML = '''<div class="pc" data-pc>
   <div class="pc-caixa">
     <svg class="pc-lupa" viewBox="0 0 24 24" aria-hidden="true">
@@ -105,12 +122,101 @@ CSS = '''
 .pc-nada{flex:none;font-size:12.5px;color:var(--mudo)}
 .pc-vazio{padding:16px 12px 18px;color:var(--mudo);font-size:14.5px}
 .pc-vazio b{color:var(--tinta)}
+/* NO TELEMOVEL A PASTILHA DESFAZ-SE
+   O campo e o botao empilham — num ecra de 390 nao cabem lado a lado
+   sem o campo ficar inutilizavel. Mas o raio de pastilha fica para uma
+   caixa de UMA linha: numa caixa de duas, os 999px cortam os cantos de
+   cima e de baixo e o que aparece e uma mancha branca com um botao a
+   boiar la dentro. Era exactamente o que se via a 390px.
+   Empilhado, a forma e um rectangulo redondo — a mesma dos cartoes. */
 @media (max-width:700px){
-  .pc-caixa{flex-wrap:wrap;padding:8px}
-  .pc-caixa input{flex:1 1 100%%;padding:12px 8px}
+  /* O contentor DESAPARECE: empilhado, o campo e o botao ja tem fundo
+     proprio, e a caixa branca por tras deles so acrescentava uma
+     moldura de 8px a toda a volta — que e o que fazia a barra parecer
+     uma mancha em vez de dois controlos. */
+  .pc-caixa{flex-wrap:wrap;padding:0;gap:10px;border-radius:0;
+    background:transparent;box-shadow:none}
+  .pc-caixa:focus-within{box-shadow:none}
+  .pc-caixa input{flex:1 1 100%%;padding:15px 18px;border-radius:var(--r-g);
+    background:var(--branco);box-shadow:0 10px 26px -16px rgba(11,43,42,.5)}
+  .pc-caixa input:focus-visible{outline:3px solid var(--cor);outline-offset:2px}
   .pc-lupa{display:none}
-  .pc-botao{flex:1 1 100%%}
+  /* O BOTAO TROCA DE COR, E NAO E CAPRICHO
+     Em ecra largo o botao e escuro dentro de uma caixa branca e le-se
+     muito bem. Sem a caixa branca por tras, esse mesmo escuro fica
+     sobre o fundo escuro do heroi — e o botao desaparece. Vi-o num
+     screenshot: ficava "Search" em texto branco a flutuar.
+     Passa ao ambar ESCURO com branco por cima: 5.31:1, com folga.
+     O ambar normal com a tinta por cima dava 4.52 — tecnicamente passa
+     o minimo de 4.5, e por 0.02 nao se poe nada em producao: o axe
+     recusou-o, e tinha razao. Uma cor a dois centesimos da norma e uma
+     cor que reprova mal alguem lhe mexa um tom.
+     52px de altura: o minimo decente para um alvo de dedo e 44. */
+  .pc-botao{flex:1 1 100%%;min-height:52px;border-radius:var(--r-g);
+    background:var(--cor-escura);color:var(--branco)}
+  .pc-botao:hover{filter:brightness(1.1)}
 }
+'''
+
+
+VIAJAR = r'''
+(function () {
+  // ----------------------------------------------------- o campo viaja
+  //
+  // O site diz "19 departure cities" numa linha de numeros. Isto mostra
+  // as 19 — e mostrar vale mais do que contar. Nao e decoracao: alguem
+  // que chega sem saber o que ha aqui fica a saber em cinco segundos.
+  //
+  // As cidades vem do atributo, que o gerador preenche a partir dos
+  // tours que existem mesmo. Sem o atributo nao ha viagem: nunca se
+  // inventa uma cidade onde nao ha tours.
+  var campo = document.getElementById('pc-input');
+  if (!campo) return;
+  var lista = (campo.getAttribute('data-cidades') || '')
+                .split(',').map(function (x) { return x.trim(); })
+                .filter(Boolean);
+  if (lista.length < 3) return;
+
+  // Quem pediu menos movimento fica com a pergunta parada. Nao e uma
+  // gentileza: para algumas pessoas o texto a mudar sozinho torna o
+  // campo impossivel de usar.
+  var q = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (q.matches) return;
+
+  var PERGUNTA = 'Where are you going?';
+  var i = -1, t = null, parado = false;
+
+  function parar() {
+    parado = true;
+    if (t) { clearTimeout(t); t = null; }
+    campo.placeholder = PERGUNTA;
+  }
+
+  // Assim que a pessoa toca no campo, a viagem acaba para sempre. Um
+  // placeholder que muda enquanto se escreve e um campo que pisca por
+  // baixo do que se esta a fazer.
+  campo.addEventListener('focus', parar, { once: true });
+  campo.addEventListener('input', parar, { once: true });
+
+  function passo() {
+    if (parado) return;
+    i = (i + 1) % (lista.length + 1);
+    // De volta a pergunta de vez em quando: sem isso, quem chega a meio
+    // ve um nome de cidade num campo vazio e nao percebe que e um campo
+    // de procura.
+    campo.placeholder = i === 0 ? PERGUNTA : lista[i - 1];
+    t = setTimeout(passo, i === 0 ? 2600 : 1500);
+  }
+
+  // Parada enquanto o separador esta escondido: um temporizador a correr
+  // numa janela que ninguem ve gasta bateria e nao mostra nada.
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { if (t) { clearTimeout(t); t = null; } }
+    else if (!parado && !t) { t = setTimeout(passo, 900); }
+  });
+
+  t = setTimeout(passo, 2200);
+})();
 '''
 
 

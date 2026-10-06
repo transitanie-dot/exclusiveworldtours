@@ -477,6 +477,53 @@ select:focus-visible{outline:3px solid var(--cor);outline-offset:3px;
   [data-rev].vis{opacity:1;transform:none}
 }
 
+/* ============================================================ MOVIMENTO
+   Uma regra antes de qualquer outra: o site JA TINHA fade-up em todas as
+   seccoes ao rolar, e continuava morto. Espalhar transicoes nao da vida —
+   da o aspecto de pagina gerada, que e coisa diferente.
+   O que ha aqui sao tres coisas, e nenhuma delas se repete pela pagina:
+
+     1. UM momento de chegada, so no heroi, so ao carregar.
+     2. UMA deriva lenta na fotografia do heroi, que ACABA em vez de
+        andar as voltas — uma imagem que nunca para e inquietante.
+     3. Resposta ao TOQUE, em todo o lado. Esta e a que mais se sente no
+        telemovel e a que nao se nota: um cartao que nao responde ao dedo
+        parece uma fotografia de um site.
+
+   Tudo dentro do no-preference. Quem pediu menos movimento ve a pagina
+   inteira, parada, sem perder nada. */
+@media (prefers-reduced-motion:no-preference){
+
+  /* 1. a chegada */
+  @keyframes chegada{
+    from{opacity:0;transform:translateY(16px)}
+    to{opacity:1;transform:none}
+  }
+  .heroi-i>*{animation:chegada .6s cubic-bezier(.2,.7,.2,1) both}
+  .heroi-i>*:nth-child(1){animation-delay:.08s}
+  .heroi-i>*:nth-child(2){animation-delay:.16s}
+  .heroi-i>*:nth-child(3){animation-delay:.26s}
+  .heroi-i>*:nth-child(4){animation-delay:.36s}
+
+  /* 2. a deriva. 28s e `both`: comeca de mansinho e FICA onde parou. */
+  @keyframes deriva{
+    from{transform:scale(1.015)}
+    to{transform:scale(1.085)}
+  }
+  .heroi-foto img,.heroi-t .foto img{
+    animation:deriva 28s cubic-bezier(.33,0,.5,1) both}
+
+  /* 3. o toque. 120ms: abaixo disso nao se ve, acima parece lento. */
+  .tour,.pais,.botao,.botao-p,.cartao,.jcartao{
+    transition:transform .12s ease,box-shadow .24s ease}
+  .tour:active,.pais:active,.cartao:active,.jcartao:active{
+    transform:scale(.985)}
+  .botao:active,.botao-p:active{transform:scale(.97)}
+  /* O botao de procurar e o unico que recebe o dedo com pressa: fica
+     mais firme para nao parecer que escorregou. */
+  .pc-botao:active{transform:scale(.98)}
+}
+
 /* os cartoes de tour: o cartao e desenhado em pagina.cartao_tour(), por
    isso o CSS dele tem de estar aqui tambem. Esteve so na homepage e na
    pagina de resultados os cartoes sairam como texto corrido. */

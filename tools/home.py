@@ -130,7 +130,18 @@ def css():
 
    Agora a coluna e a mesma de todas as seccoes, e quem limita a largura
    de leitura e cada bloco de texto, que e onde isso pertence. */
-.heroi-i{position:relative;z-index:2;padding:84px 0 92px}
+/* `padding-block` e nao `padding`: a forma curta reescrevia tambem o
+   padding LATERAL que a `.folha` da, e punha-o a zero. Em ecra largo
+   isso quase nao se via, porque a folha ja estava recuada pela margem
+   do heroi. No telemovel o heroi vai a toda a largura — e o titulo
+   ficava encostado a borda do ecra, sem um pixel de respiro.
+
+   Num telemovel 84px em cima e 92 em baixo tambem sao de mais: e meio
+   ecra gasto antes de se ler a primeira palavra. */
+.heroi-i{position:relative;z-index:2;padding-block:84px 92px}
+@media (max-width:720px){
+  .heroi-i{padding-block:48px 52px}
+}
 .heroi h2{color:var(--branco);max-width:17ch;
   font-size:clamp(2.3rem, 1.3rem + 3.4vw, 4rem);margin:0 0 18px}
 .heroi p{font-size:clamp(1.05rem, .98rem + .4vw, 1.3rem);
@@ -212,6 +223,19 @@ def main():
     tours = carregar()
     paises = por_pais(tours)
     cidades = sorted({t['city'] for t in tours})
+
+    # A MESMA LISTA, POR OUTRA ORDEM, PARA O CAMPO DE PROCURA
+    #
+    # A contagem ("19 departure cities") quer a lista por ordem; o campo
+    # que viaja por elas quer a cidade com mais tours primeiro. Quem
+    # chega ve Dublin, London, Paris — e percebe o que ha aqui. Por
+    # ordem alfabetica via Algarve e Barcelona, que nao dizem o mesmo a
+    # quem nunca ca entrou.
+    _por_cidade = {}
+    for t in tours:
+        _por_cidade[t['city']] = _por_cidade.get(t['city'], 0) + 1
+    cidades_fortes = sorted(cidades,
+                            key=lambda c: (-_por_cidade[c], c))
     menor = min(t['_preco'] for t in tours)
 
     # o heroi usa a fotografia do tour mais barato do pais com mais tours,
@@ -335,7 +359,7 @@ def main():
         'nc': len(cidades), 'menor': euros(menor), 'ano': 2026,
         'heroi_img': (img(hf['id'], hf['alt'], (900, 1600, 2200),
                           '100vw', eager=True) if hf else ''),
-        'procura': procura.HTML,
+        'procura': procura.html(cidades_fortes),
         'paises': '\n'.join(cartao_pais(p, i) for i, p in enumerate(paises)),
         'tours': '\n'.join(cartao_tour(t, i == 0)
                            for i, t in enumerate(destaques)),
@@ -350,7 +374,7 @@ def main():
         '%d private day tours in %d countries. One vehicle for your group, '
         'a price for the whole group instead of per person.'
         % (len(tours), len(paises)),
-        css(), corpo, js=procura.JS)
+        css(), corpo, js=procura.JS + procura.VIAJAR)
 
     escrever(html, 'index.html')
     print('%d tours, %d paises, %d cidades, menor preco %s'
